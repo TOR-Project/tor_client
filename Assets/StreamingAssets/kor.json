@@ -1,0 +1,10 @@
+{"items":
+    [
+        {"key":"ID_APP_NAME",               "value":"Tale of Raynor"},
+        
+        {"key":"ID_NOTICE",                 "value":"공지사항"},
+        {"key":"ID_CONNECT_WALLET",         "value":"지갑 연결"},
+        
+        {"key":"LAST",                      "value":""}
+    ]
+}

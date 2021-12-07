@@ -1,3 +1,8 @@
+# Big resources
+/Assets/Medieval*
+/Assets/Animated*
+
+
 ###
 # VS/MD solution and project files
 ###
@@ -29,7 +34,6 @@ Thumbs.db
 # Created by https://www.gitignore.io/api/unity
 
 ### Unity ###
-/[Aa]ssets/
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
