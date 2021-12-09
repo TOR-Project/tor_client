@@ -21,18 +21,17 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("connectWallet", values);
     }
 
-    public void resConnectWallet(string addr, int err)
-    {
-        // do nothing
-    }
-
     public void reqLatestNotice()
     {
-        Application.ExternalCall("lastNotice", null);
+        Application.ExternalCall("reqLatestNotice", null);
     }
 
-    public void resLatestNotice(string title, long date, string contents)
+    public void reqLoginInfomation(string addr)
     {
-        // do nothing
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = addr;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqLoginInfomation", values);
     }
 }

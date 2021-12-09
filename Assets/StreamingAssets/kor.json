@@ -2,8 +2,10 @@
     [
         {"key":"ID_APP_NAME",               "value":"Tale of Raynor"},
         
-        {"key":"ID_NOTICE",                 "value":"공지사항"},
         {"key":"ID_CONNECT_WALLET",         "value":"지갑 연결"},
+        {"key":"ID_LOGIN_INFO",             "value":"* [루그란디스]는 Tor에서 발행한 모험가 NFT를 소유한 자만이 입장 가능합니다."},
+        
+        {"key":"ID_NFT_GALLERY",            "value":"NFT 갤러리"},
         
         {"key":"LAST",                      "value":""}
     ]

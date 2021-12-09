@@ -4,9 +4,12 @@ using System;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
+using MedievalKingdomUI.Scripts.Window;
 
 public class LoginController : MonoBehaviour
 {
+    [SerializeField]
+    Text noticeTitle;
     [SerializeField]
     Text noticeText;
     [SerializeField]
@@ -14,6 +17,11 @@ public class LoginController : MonoBehaviour
 
     [SerializeField]
     GameObject walletConnectPanel;
+
+    [SerializeField]
+    AnimatedWindowController windowController;
+    [SerializeField]
+    GameObject titleWindow;
 
     private void Awake()
     {
@@ -37,19 +45,27 @@ public class LoginController : MonoBehaviour
         walletConnectPanel.SetActive(true);
     }
 
-    internal void showingLoginError(int err)
-    {
-        walletConnectPanel.SetActive(false);
-    }
-
     internal void connectWallet(string addr)
     {
-        walletConnectPanel.SetActive(false);
+        UserManager.instance.setWalletAddress(addr);
+        ContractManager.instance.reqLoginInfomation(addr);
     }
 
     internal void displayNotice(string title, long date, string contents)
     {
         noticeLoadingIcon.SetActive(false);
-        noticeText.text = title + "\n\n" + contents;
+        noticeTitle.text = title;
+        noticeText.text = contents;
+    }
+
+    internal void showErrorPopup(int err)
+    {
+        walletConnectPanel.SetActive(false);
+    }
+
+    internal void enterTitlePage()
+    {
+        walletConnectPanel.SetActive(false);
+        windowController.OpenWindow(titleWindow);
     }
 }

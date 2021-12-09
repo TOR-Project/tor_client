@@ -67,10 +67,10 @@ public class ContractManager : MonoBehaviour
         string addr = values["addr"].ToString();
         int err = int.Parse(values["err"].ToString());
 
-        Debug.Log("resConnectWallet() addr = " + addr + ", err = " + err);
+        Debug.Log("resConnectWallet() json = " + json);
         if (err != 0)
         {
-            loginController.showingLoginError(err);
+            loginController.showErrorPopup(err);
         }
         else
         {
@@ -92,7 +92,33 @@ public class ContractManager : MonoBehaviour
         long date =  long.Parse(values["date"].ToString());
         string contents = values["contents"].ToString();
 
-        Debug.Log("resLatestNotice() title = " + title);
+        Debug.Log("resLatestNotice() json = " + json);
         loginController.displayNotice(title, date, contents);
+    }
+
+    public void reqLoginInfomation(string addr)
+    {
+        Debug.Log("reqLoginInfomation()");
+        loginController.showingConnectWalletLoading();
+        mContractCommunicator.reqLoginInfomation(addr);
+    }
+
+    public void resLoginInfomation(string json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+        int err = int.Parse(values["err"].ToString());
+
+        Debug.Log("resLoginInfomation() json = " + json);
+        if (err != 0)
+        {
+            loginController.showErrorPopup(err);
+        }
+        else
+        {
+            object userInfo = values["userInfo"].ToString();
+            int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+            CharacterManager.instance.loadCharacter(characterIdList, () => loginController.enterTitlePage());
+        }
     }
 }
