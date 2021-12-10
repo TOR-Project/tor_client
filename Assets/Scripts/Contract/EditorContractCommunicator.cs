@@ -76,7 +76,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private IEnumerator progLoginInfomation(string addr)
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
 
         bool userBanned = false;
         bool noCharacter = false;
@@ -93,11 +93,28 @@ public class EditorContractCommunicator : IContractCommunicator
 
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["userInfo"] = "null";
-        data["characterIdList"] = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         data["err"] = errCode;
+        data["characterCount"] = 100;
         var values = JsonConvert.SerializeObject(data);
         Debug.Log("resLoginInfomation() " + values);
         mContractManager.resLoginInfomation(values);
+
+        int[] characterList = new int[100];
+        for (int i = 0; i < 100; i++)
+        {
+            data.Clear();
+            data["progress"] = i;
+            values = JsonConvert.SerializeObject(data);
+            mContractManager.resFindingCharacter(values);
+            yield return new WaitForSeconds(0.02f);
+            characterList[i] = i;
+        }
+
+        data.Clear();
+        data["characterIdList"] = characterList;
+        values = JsonConvert.SerializeObject(data);
+        mContractManager.resFoundCharacter(values);
+
     }
 
 }

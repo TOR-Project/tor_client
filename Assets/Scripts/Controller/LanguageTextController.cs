@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LanguageTextController : MonoBehaviour, LanguageObserever
 {
-    [SerializeField] string key;
+    [SerializeField] internal string key;
 
     public void onLanguageChanged()
     {

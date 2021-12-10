@@ -5,6 +5,9 @@
         {"key":"ID_CONNECT_WALLET",         "value":"지갑 연결"},
         {"key":"ID_LOGIN_INFO",             "value":"* [루그란디스]는 Tor에서 발행한 모험가 NFT를 소유한 자만이 입장 가능합니다."},
         
+        {"key":"ID_FINDING_CHARACTER",      "value":"블럭체인에서 내 NFT를 찾고 있습니다."},
+        {"key":"ID_LOADING_CHARACTER",      "value":"내 NFT 정보를 불러오고 있습니다."},
+        
         {"key":"ID_NFT_GALLERY",            "value":"NFT 갤러리"},
         
         {"key":"LAST",                      "value":""}

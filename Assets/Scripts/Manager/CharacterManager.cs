@@ -10,6 +10,8 @@ public class CharacterManager : MonoBehaviour
 
     [SerializeField]
     private List<CharacterData> characterDataList = new List<CharacterData>();
+    private int maxCharacterCount = 0;
+    private int loadedCharacterCount = 0;
 
     static CharacterManager mInstance;
     public static CharacterManager instance {
@@ -28,24 +30,29 @@ public class CharacterManager : MonoBehaviour
         characterDataList.Clear();
     }
 
-    public void loadCharacter(int[] _idList, Action callback)
+    public void loadCharacter(int[] _idList, Func<int, bool> progressCallback, Action finishCallback)
     {
-        StartCoroutine(loadCharacterList(_idList, callback));
+        StartCoroutine(loadCharacterList(_idList, progressCallback, finishCallback));
     }
 
-    public IEnumerator loadCharacterList(int[] _idList, Action callback)
+    public IEnumerator loadCharacterList(int[] _idList, Func<int, bool> progressCallback, Action finishCallback)
     {
+        maxCharacterCount = _idList.Length;
+        loadedCharacterCount = 0;
+
         for (int i = 0; i < _idList.Length; i++)
         {
-            yield return loadCharacterSingle(_idList[i]);
+            StartCoroutine(loadCharacterSingle(progressCallback, _idList[i]));
         }
 
-        callback();
+        yield return new WaitUntil(() => maxCharacterCount <= loadedCharacterCount);
+
+        finishCallback();
     }
 
-    public IEnumerator loadCharacterSingle(int _id)
+    public IEnumerator loadCharacterSingle(Func<int, bool> progressCallback, int _id)
     {
-        while (true)
+        for(int i = 0; i < 10; i++)
         {
             string url = URL + _id + ".json";
             WWW www = new WWW(url);
@@ -61,9 +68,9 @@ public class CharacterManager : MonoBehaviour
             else
             {
                 Debug.Log("ERROR: " + www.error);
-                yield return new WaitForSeconds(100);
             }
         }
+        progressCallback(loadedCharacterCount++);
     }
 
     private CharacterData getCharacterData(string  jsonString)

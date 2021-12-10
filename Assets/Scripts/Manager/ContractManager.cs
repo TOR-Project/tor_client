@@ -13,7 +13,9 @@ public class ContractManager : MonoBehaviour
     private bool unityInstanceLoaded = false;
 
     [SerializeField]
-    LoginController loginController;    
+    LoginController loginController;
+    [SerializeField]
+    LoadingController loadingController;
 
     private static ContractManager mInstance;
     public static ContractManager instance {
@@ -117,8 +119,25 @@ public class ContractManager : MonoBehaviour
         else
         {
             object userInfo = values["userInfo"].ToString();
-            int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
-            CharacterManager.instance.loadCharacter(characterIdList, () => loginController.enterTitlePage());
+            loginController.enterLoadingPage();
+            int max = int.Parse(values["characterCount"].ToString());
+            loadingController.setMaxCharacterCount(max);
         }
+    }
+
+    public void resFindingCharacter(string json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+        int progress = int.Parse(values["progress"].ToString());
+
+        loadingController.updateFindingCharacter(progress);
+    }
+
+    public void resFoundCharacter(string json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+        CharacterManager.instance.loadCharacter(characterIdList, (idx) => loadingController.updateLoadingCharacter(idx), () => loadingController.enterTitlePage());
     }
 }

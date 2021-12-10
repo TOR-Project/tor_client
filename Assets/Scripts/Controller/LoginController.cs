@@ -21,7 +21,7 @@ public class LoginController : MonoBehaviour
     [SerializeField]
     AnimatedWindowController windowController;
     [SerializeField]
-    GameObject titleWindow;
+    GameObject loadingWindow;
 
     private void Awake()
     {
@@ -32,10 +32,7 @@ public class LoginController : MonoBehaviour
     {
         noticeLoadingIcon.SetActive(true);
 
-        while (!ContractManager.instance.isUnityInstanceLoaded())
-        {
-            yield return new WaitForSeconds(1);
-        }
+        yield return new WaitUntil(ContractManager.instance.isUnityInstanceLoaded);
 
         ContractManager.instance.reqLatestNotice();
     } 
@@ -63,9 +60,9 @@ public class LoginController : MonoBehaviour
         walletConnectPanel.SetActive(false);
     }
 
-    internal void enterTitlePage()
+    internal void enterLoadingPage()
     {
         walletConnectPanel.SetActive(false);
-        windowController.OpenWindow(titleWindow);
+        windowController.OpenWindow(loadingWindow);
     }
 }
