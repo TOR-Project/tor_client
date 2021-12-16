@@ -4,7 +4,6 @@ using System;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
-using MedievalKingdomUI.Scripts.Window;
 
 public class LoginController : MonoBehaviour
 {
@@ -19,9 +18,9 @@ public class LoginController : MonoBehaviour
     GameObject walletConnectPanel;
 
     [SerializeField]
-    AnimatedWindowController windowController;
+    WindowController windowController;
     [SerializeField]
-    GameObject loadingWindow;
+    GameObject titleWindow;
 
     private void Awake()
     {
@@ -63,6 +62,6 @@ public class LoginController : MonoBehaviour
     internal void enterLoadingPage()
     {
         walletConnectPanel.SetActive(false);
-        windowController.OpenWindow(loadingWindow);
+        windowController.OpenWindow(titleWindow);
     }
 }

@@ -121,7 +121,7 @@ public class ContractManager : MonoBehaviour
             object userInfo = values["userInfo"].ToString();
             loginController.enterLoadingPage();
             int max = int.Parse(values["characterCount"].ToString());
-            loadingController.setMaxCharacterCount(max);
+            CharacterManager.instance.setCharacterCount(max);
         }
     }
 
@@ -131,13 +131,13 @@ public class ContractManager : MonoBehaviour
 
         int progress = int.Parse(values["progress"].ToString());
 
-        loadingController.updateFindingCharacter(progress);
+        CharacterManager.instance.setFoundCharacterCount(progress + 1);
     }
 
     public void resFoundCharacter(string json)
     {
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
-        CharacterManager.instance.loadCharacter(characterIdList, (idx) => loadingController.updateLoadingCharacter(idx), () => loadingController.enterTitlePage());
+        CharacterManager.instance.loadCharacter(characterIdList);
     }
 }

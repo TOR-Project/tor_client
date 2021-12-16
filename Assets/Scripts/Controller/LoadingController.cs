@@ -2,58 +2,55 @@
 using UnityEditor;
 using System;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using System.Collections;
-using MedievalKingdomUI.Scripts.Window;
 
 public class LoadingController : MonoBehaviour
 {
     [SerializeField]
-    AnimatedWindowController windowController;
-    [SerializeField]
-    GameObject titleWindow;
-    [SerializeField]
     Slider slider;
     [SerializeField]
     LanguageTextController textController;
-    [SerializeField]
-    string findingCharacterTextKey;
-    [SerializeField]
-    string loadingCharacterTextKey;
 
-    internal void setMaxCharacterCount(int _max)
+    LoadingComponentPool loadingComponentPool;
+    public bool setupLoading(GameObject _targetWindow, Action _callback)
     {
-        if (slider.maxValue != _max * 2)
+        loadingComponentPool = _targetWindow.GetComponent<LoadingComponentPool>();
+        if (loadingComponentPool == null || loadingComponentPool.isAllLoadingCompleted())
         {
-            slider.maxValue = _max * 2;
+            return true;
         }
+
+        slider.value = 0;
+        StartCoroutine(checkProgress(_callback));
+        return false;
     }
 
-    internal void updateFindingCharacter(int _prog)
+    public IEnumerator checkProgress(Action _callback)
     {
-        if (textController.key != findingCharacterTextKey)
+        LoadingComponent[] loadingComponet = loadingComponentPool.getLoadingComponents();
+        if (loadingComponet != null)
         {
-            textController.key = findingCharacterTextKey;
+            slider.maxValue = loadingComponet.Length;
+            foreach (LoadingComponent lc in loadingComponet)
+            {
+                lc.startLoading();
+                updateText(lc.getLoadingTextKey());
+                yield return new WaitUntil(lc.isLoadingCompleted);
+
+                slider.value += 1;
+            }
+        }
+
+        loadingComponentPool = null;
+        _callback();
+    }
+
+    void updateText(string _key)
+    {
+        if (textController.key != _key)
+        {
+            textController.key = _key;
             textController.onLanguageChanged();
         }
-
-        slider.value = _prog + 1;
-    }
-
-    internal bool updateLoadingCharacter(int _idx)
-    {
-        if (textController.key != loadingCharacterTextKey)
-        {
-            textController.key = loadingCharacterTextKey;
-            textController.onLanguageChanged();
-        }
-
-        slider.value = slider.maxValue / 2 + _idx + 1;
-        return true;
-    }
-
-    internal void enterTitlePage()
-    {
-        windowController.OpenWindow(titleWindow);
     }
 }

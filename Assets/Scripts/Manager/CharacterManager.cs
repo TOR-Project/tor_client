@@ -11,6 +11,7 @@ public class CharacterManager : MonoBehaviour
     [SerializeField]
     private List<CharacterData> characterDataList = new List<CharacterData>();
     private int maxCharacterCount = 0;
+    private int foundCharacterCount = 0;
     private int loadedCharacterCount = 0;
 
     static CharacterManager mInstance;
@@ -28,29 +29,41 @@ public class CharacterManager : MonoBehaviour
     public void resetAllData()
     {
         characterDataList.Clear();
+        maxCharacterCount = foundCharacterCount = loadedCharacterCount = 0;
     }
 
-    public void loadCharacter(int[] _idList, Func<int, bool> progressCallback, Action finishCallback)
+    public void setCharacterCount(int _count)
     {
-        StartCoroutine(loadCharacterList(_idList, progressCallback, finishCallback));
+        maxCharacterCount = _count;
     }
 
-    public IEnumerator loadCharacterList(int[] _idList, Func<int, bool> progressCallback, Action finishCallback)
+    public void setFoundCharacterCount(int _count)
     {
-        maxCharacterCount = _idList.Length;
+        foundCharacterCount = _count;
+        // Debug.Log("Chracter found : (" + _count + "/" + maxCharacterCount + ")");
+    }
+
+    public bool isCharacterFindingCompleted()
+    {
+        return maxCharacterCount == foundCharacterCount;
+    }
+
+    public bool isCharacterLoadingCompleted()
+    {
+        return maxCharacterCount == loadedCharacterCount;
+    }
+
+    public void loadCharacter(int[] _idList)
+    {
         loadedCharacterCount = 0;
 
         for (int i = 0; i < _idList.Length; i++)
         {
-            StartCoroutine(loadCharacterSingle(progressCallback, _idList[i]));
+            StartCoroutine(loadCharacterSingle(_idList[i]));
         }
-
-        yield return new WaitUntil(() => maxCharacterCount <= loadedCharacterCount);
-
-        finishCallback();
     }
 
-    public IEnumerator loadCharacterSingle(Func<int, bool> progressCallback, int _id)
+    public IEnumerator loadCharacterSingle(int _id)
     {
         for(int i = 0; i < 10; i++)
         {
@@ -62,7 +75,7 @@ public class CharacterManager : MonoBehaviour
                 CharacterData data = getCharacterData(www.text);
                 data.url = url;
                 characterDataList.Add(data);
-                Debug.Log("Chracter loaded : " + data.tokenId);
+                // Debug.Log("Chracter loaded : " + data.tokenId + " (" + (loadedCharacterCount + 1) + "/" + maxCharacterCount + ")");
                 break;
             }
             else
@@ -70,12 +83,13 @@ public class CharacterManager : MonoBehaviour
                 Debug.Log("ERROR: " + www.error);
             }
         }
-        progressCallback(loadedCharacterCount++);
+
+        loadedCharacterCount++;
     }
 
-    private CharacterData getCharacterData(string  jsonString)
+    private CharacterData getCharacterData(string _jsonString)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_jsonString);
 
         CharacterData data = new CharacterData();
         data.tokenId = int.Parse(values["tokenId"].ToString());
