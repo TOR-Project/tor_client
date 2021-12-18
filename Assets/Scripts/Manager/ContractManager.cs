@@ -17,6 +17,9 @@ public class ContractManager : MonoBehaviour
     [SerializeField]
     LoadingController loadingController;
 
+    [SerializeField]
+    GlobalPopupController globalPopupController;
+
     private static ContractManager mInstance;
     public static ContractManager instance {
         get {
@@ -55,6 +58,11 @@ public class ContractManager : MonoBehaviour
         return unityInstanceLoaded;
     }
 
+    public void printLog(string log)
+    {
+        mContractCommunicator.printLog(log);
+    }
+
     public void reqConnectWallet()
     {
         Debug.Log("reqConnectWallet()");
@@ -72,7 +80,7 @@ public class ContractManager : MonoBehaviour
         Debug.Log("resConnectWallet() json = " + json);
         if (err != 0)
         {
-            loginController.showErrorPopup(err);
+            globalPopupController.showErrorPopup(err);
         }
         else
         {
@@ -112,14 +120,38 @@ public class ContractManager : MonoBehaviour
         int err = int.Parse(values["err"].ToString());
 
         Debug.Log("resLoginInfomation() json = " + json);
-        if (err != 0)
+        if (err == 5)
         {
-            loginController.showErrorPopup(err);
+            long startBlock = long.Parse(values["startBlock"].ToString());
+            long endBlock = long.Parse(values["endBlock"].ToString());
+            string reason = values["reason"].ToString();
+            globalPopupController.showBanPopup(startBlock, endBlock, reason);
+        }
+        else if (err != 0)
+        { 
+            globalPopupController.showErrorPopup(err);
         }
         else
         {
-            object userInfo = values["userInfo"].ToString();
-            loginController.enterLoadingPage();
+            bool hasUserData = bool.Parse(values["hasUserData"].ToString());
+            bool latestTerms = false;
+            bool tokenUsing = false;
+            bool nftUsing = false;
+
+            if (hasUserData)
+            {
+                string nickName = values["nickName"].ToString();
+                int termsVersion = int.Parse(values["termsVersion"].ToString());
+                latestTerms = termsVersion >= Const.TERMS_VERSION;
+                string[] friends = JsonConvert.DeserializeObject<string[]>(values["friends"].ToString());
+
+                tokenUsing = bool.Parse(values["tokenUsing"].ToString());
+                nftUsing = bool.Parse(values["nftUsing"].ToString());
+
+                UserManager.instance.setUserData(nickName, termsVersion, friends, tokenUsing, nftUsing);
+            }
+
+            loginController.enterNextPage(hasUserData, latestTerms, tokenUsing, nftUsing);
             int max = int.Parse(values["characterCount"].ToString());
             CharacterManager.instance.setCharacterCount(max);
         }

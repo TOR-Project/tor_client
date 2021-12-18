@@ -13,6 +13,7 @@ public class AssetsLoadManager : MonoBehaviour
     }
     
     private Dictionary<string, Sprite> spriteMap = new Dictionary<string, Sprite>();
+    private Dictionary<string, bool> downloadPendingMap = new Dictionary<string, bool>();
 
     private AssetsLoadManager()
     {
@@ -25,10 +26,22 @@ public class AssetsLoadManager : MonoBehaviour
         {
             callback(spriteMap[url]);
         }
+        else if (downloadPendingMap.ContainsKey(url))
+        {
+            StartCoroutine(waitSprite(url, callback));
+        }
         else
         {
+            downloadPendingMap[url] = true;
             StartCoroutine(loadSprite(url, callback));
         }
+    }
+
+    private IEnumerator waitSprite(string url, Func<Sprite, bool> callback)
+    {
+        yield return new WaitUntil(() => downloadPendingMap[url] == false);
+
+        callback(spriteMap[url]);
     }
 
     private IEnumerator loadSprite(string url, Func<Sprite, bool> callback)
@@ -40,6 +53,7 @@ public class AssetsLoadManager : MonoBehaviour
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
             Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0.5f, 0.5f));
             spriteMap[url] = sprite;
+            downloadPendingMap[url] = false;
             callback(sprite);
         }
         else
@@ -48,5 +62,4 @@ public class AssetsLoadManager : MonoBehaviour
             callback(null);
         }
     }
-
 }

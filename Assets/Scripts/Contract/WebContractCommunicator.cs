@@ -12,6 +12,11 @@ public class WebContractCommunicator : IContractCommunicator
         mContractManager = cm;
     }
 
+    public void printLog(string log)
+    {
+        Application.ExternalCall("printLog", log);
+    }
+
     public void reqConnectWallet()
     {
         Dictionary<string, object> data = new Dictionary<string, object>();

@@ -21,7 +21,7 @@ public class ImageLoadingComponent : LoadingComponent
         if (sprite == null)
         {
             AssetsLoadManager.instance.requestSprite(url, updateSprite);
-            Debug.Log("sprite invalid");
+            ContractManager.instance.printLog("image invalid : " + url);
             return false;
         }
 
@@ -29,7 +29,7 @@ public class ImageLoadingComponent : LoadingComponent
         if (image.overrideSprite != sprite)
         {
             image.sprite = sprite;
-            Debug.Log("sprite updated");
+            ContractManager.instance.printLog("image updated : " + url);
         }
 
         loadingCompleted = true;

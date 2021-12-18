@@ -14,6 +14,11 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.readyToUnityInstance();
     }
 
+    public void printLog(string log)
+    {
+        Debug.Log(log);
+    }
+
     public void reqConnectWallet()
     {
         mContractManager.StartCoroutine(progConnectWallet());
@@ -25,7 +30,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
         bool serverBlocked = false;
         bool versionMismatched = false;
-        bool networkMismatched = false;
         bool walletConnectFailed = false;
 
         int errCode = 0;
@@ -35,9 +39,6 @@ public class EditorContractCommunicator : IContractCommunicator
         } else if (versionMismatched)
         {
             errCode = 2;
-        } else if (networkMismatched)
-        {
-            errCode = 3;
         } else if (walletConnectFailed)
         {
             errCode = 4;
@@ -80,19 +81,39 @@ public class EditorContractCommunicator : IContractCommunicator
 
         bool userBanned = false;
         bool noCharacter = false;
+        bool hasUserData = false;
+        bool tokenUsing = true;
+        bool nftUsing = true;
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
 
         int errCode = 0;
         if (userBanned)
         {
             errCode = 5;
+            data["startBlock"] = 123456789;
+            data["endBlock"] = 987654321;
+            data["reason"] = "도배";
         }
         else if (noCharacter)
         {
             errCode = 6;
         }
 
-        Dictionary<string, object> data = new Dictionary<string, object>();
-        data["userInfo"] = "null";
+        if (hasUserData)
+        {
+            data["hasUserData"] = true;
+            data["nickName"] = "Crow";
+            data["termsVersion"] = 1;
+            data["friends"] = new string[] {"0x123456789", "0x123456789", "0x123456789", "0x123456789", "0x123456789" };
+
+            data["tokenUsing"] = tokenUsing;
+            data["nftUsing"] = nftUsing;
+        } else
+        {
+            data["hasUserData"] = false;
+        }
+        
         data["err"] = errCode;
         data["characterCount"] = 100;
         var values = JsonConvert.SerializeObject(data);
@@ -116,5 +137,4 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resFoundCharacter(values);
 
     }
-
 }

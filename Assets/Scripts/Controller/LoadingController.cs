@@ -34,6 +34,9 @@ public class LoadingController : MonoBehaviour
             foreach (LoadingComponent lc in loadingComponet)
             {
                 lc.startLoading();
+            }
+            foreach (LoadingComponent lc in loadingComponet)
+            {
                 updateText(lc.getLoadingTextKey());
                 yield return new WaitUntil(lc.isLoadingCompleted);
 

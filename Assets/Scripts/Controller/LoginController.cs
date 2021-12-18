@@ -20,6 +20,8 @@ public class LoginController : MonoBehaviour
     [SerializeField]
     WindowController windowController;
     [SerializeField]
+    GameObject termsWindow;
+    [SerializeField]
     GameObject titleWindow;
 
     private void Awake()
@@ -59,9 +61,15 @@ public class LoginController : MonoBehaviour
         walletConnectPanel.SetActive(false);
     }
 
-    internal void enterLoadingPage()
+    internal void enterNextPage(bool _hasUserData, bool _latestTerms, bool _tokenUsing, bool _nftUsing)
     {
         walletConnectPanel.SetActive(false);
-        windowController.OpenWindow(titleWindow);
+        if (_hasUserData && _latestTerms && _tokenUsing && _nftUsing)
+        {
+            windowController.OpenWindow(titleWindow);
+        } else
+        {
+            windowController.OpenWindow(termsWindow);
+        }
     }
 }

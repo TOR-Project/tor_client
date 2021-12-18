@@ -2,6 +2,31 @@
     [
         {"key":"ID_APP_NAME",               "value":"Tale of Raynor"},
         
+        {"key":"ID_CONNECT_WALLET",         "value":"Connect wallet"},
+        {"key":"ID_LOGIN_INFO",             "value":"* [루그란디스]는 Tor에서 발행한 모험가 NFT를 소유한 자만이 입장 가능합니다."},
+        
+        {"key":"ID_LOADING_INFO",           "value":"정보"},
+        {"key":"ID_LOADING_INFO_DETAIL_0",  "value":"다크엘프는 6차 공의회 \"전쟁의 서막\"이후\n엔필리스를 떠나 오크연합에 합세하여\n오크로 부터 [바르바로스]를 지원받습니다."},
+        {"key":"ID_LOADING_INFO_DETAIL_1",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_2",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_3",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_4",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_5",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_6",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_7",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_8",  "value":""},
+        {"key":"ID_LOADING_INFO_DETAIL_9",  "value":""},
+        
+        {"key":"ID_LOADING_IMAGE",          "value":"루그란디스의 벽화를 그리는 중"},
+        {"key":"ID_FINDING_CHARACTER",      "value":"루그란디스에서 내 캐릭터를 찾는 중"},
+        {"key":"ID_LOADING_CHARACTER",      "value":"내 캐릭터에게 정보를 꼬치꼬치 캐묻는 중"},
+        
+        {"key":"ID_NFT_GALLERY",            "value":"Character Gallery"},
+        {"key":"ID_MAP",                    "value":"Map"},
+        {"key":"ID_NOVEL",                  "value":"Novel"},
+        {"key":"ID_GOVERNANCE",             "value":"Governance"},
+        {"key":"ID_NEWS",                   "value":"News"},
+        
         {"key":"LAST",                      "value":""}
     ]
 }

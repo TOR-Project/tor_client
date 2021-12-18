@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class SpriteLoadingComponent : LoadingComponent
+public class ButtonPressedSpriteLoadingComponent : LoadingComponent
 {
     [SerializeField] internal string url;
     string loadingInfoTextKey = "ID_LOADING_IMAGE";
@@ -21,15 +21,17 @@ public class SpriteLoadingComponent : LoadingComponent
         if (sprite == null)
         {
             AssetsLoadManager.instance.requestSprite(url, updateSprite);
-            ContractManager.instance.printLog("sprite invalid : " + url);
+            ContractManager.instance.printLog("btn sprite invalid : " + url);
             return false;
         }
 
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        if (renderer.sprite != sprite)
+        Button button = GetComponent<Button>();
+        SpriteState spriteState = button.spriteState;
+        if (spriteState.pressedSprite != sprite)
         {
-            renderer.sprite = sprite;
-            ContractManager.instance.printLog("sprite updated : " + url);
+            spriteState.pressedSprite = sprite;
+            button.spriteState = spriteState;
+            ContractManager.instance.printLog("btn sprite updated : " + url);
         }
 
         loadingCompleted = true;

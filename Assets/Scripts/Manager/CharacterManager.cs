@@ -40,7 +40,7 @@ public class CharacterManager : MonoBehaviour
     public void setFoundCharacterCount(int _count)
     {
         foundCharacterCount = _count;
-        // Debug.Log("Chracter found : (" + _count + "/" + maxCharacterCount + ")");
+        // ContractManager.instance.printLog("Chracter found : (" + _count + "/" + maxCharacterCount + ")");
     }
 
     public bool isCharacterFindingCompleted()
@@ -65,9 +65,11 @@ public class CharacterManager : MonoBehaviour
 
     public IEnumerator loadCharacterSingle(int _id)
     {
-        for(int i = 0; i < 10; i++)
+        string url = URL + _id + ".json";
+        // ContractManager.instance.printLog("Character loading start : " + url);
+        for (int i = 0; i < 10; i++)
         {
-            string url = URL + _id + ".json";
+
             WWW www = new WWW(url);
             yield return www;
             if (www.error == null)
@@ -75,12 +77,12 @@ public class CharacterManager : MonoBehaviour
                 CharacterData data = getCharacterData(www.text);
                 data.url = url;
                 characterDataList.Add(data);
-                // Debug.Log("Chracter loaded : " + data.tokenId + " (" + (loadedCharacterCount + 1) + "/" + maxCharacterCount + ")");
+                // ContractManager.instance.printLog("Chracter loaded : " + data.tokenId + " (" + (loadedCharacterCount + 1) + "/" + maxCharacterCount + ")");
                 break;
             }
             else
             {
-                Debug.Log("ERROR: " + www.error);
+                ContractManager.instance.printLog("ERROR: " + www.error);
             }
         }
 
