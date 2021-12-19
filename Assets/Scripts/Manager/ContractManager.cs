@@ -16,9 +16,11 @@ public class ContractManager : MonoBehaviour
     LoginController loginController;
     [SerializeField]
     LoadingController loadingController;
+    [SerializeField]
+    TermsController termsController;
 
     [SerializeField]
-    GlobalPopupController globalPopupController;
+    GlobalUIController globalUIController;
 
     private static ContractManager mInstance;
     public static ContractManager instance {
@@ -65,22 +67,23 @@ public class ContractManager : MonoBehaviour
 
     public void reqConnectWallet()
     {
+        globalUIController.showLoading();
         Debug.Log("reqConnectWallet()");
-        loginController.showingConnectWalletLoading();
         mContractCommunicator.reqConnectWallet();
     }
 
-    public void resConnectWallet(string json)
+    public void resConnectWallet(string _json)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        globalUIController.hideLoading();
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         string addr = values["addr"].ToString();
         int err = int.Parse(values["err"].ToString());
 
-        Debug.Log("resConnectWallet() json = " + json);
-        if (err != 0)
+        Debug.Log("resConnectWallet() json = " + _json);
+        if (err != Const.NO_ERROR)
         {
-            globalPopupController.showErrorPopup(err);
+            globalUIController.showErrorPopup(err);
         }
         else
         {
@@ -94,42 +97,43 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqLatestNotice();
     }
 
-    public void resLatestNotice(string json)
+    public void resLatestNotice(string _json)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         string title = values["title"].ToString();
         long date =  long.Parse(values["date"].ToString());
         string contents = values["contents"].ToString();
 
-        Debug.Log("resLatestNotice() json = " + json);
+        Debug.Log("resLatestNotice() json = " + _json);
         loginController.displayNotice(title, date, contents);
     }
 
     public void reqLoginInfomation(string addr)
     {
+        globalUIController.showLoading();
         Debug.Log("reqLoginInfomation()");
-        loginController.showingConnectWalletLoading();
         mContractCommunicator.reqLoginInfomation(addr);
     }
 
-    public void resLoginInfomation(string json)
+    public void resLoginInfomation(string _json)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        globalUIController.hideLoading();
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         int err = int.Parse(values["err"].ToString());
 
-        Debug.Log("resLoginInfomation() json = " + json);
-        if (err == 5)
+        Debug.Log("resLoginInfomation() json = " + _json);
+        if (err == Const.ERR_USER_BANNED)
         {
             long startBlock = long.Parse(values["startBlock"].ToString());
             long endBlock = long.Parse(values["endBlock"].ToString());
             string reason = values["reason"].ToString();
-            globalPopupController.showBanPopup(startBlock, endBlock, reason);
+            globalUIController.showBanPopup(startBlock, endBlock, reason);
         }
-        else if (err != 0)
-        { 
-            globalPopupController.showErrorPopup(err);
+        else if (err != Const.NO_ERROR)
+        {
+            globalUIController.showErrorPopup(err);
         }
         else
         {
@@ -157,19 +161,107 @@ public class ContractManager : MonoBehaviour
         }
     }
 
-    public void resFindingCharacter(string json)
+    public void resFindingCharacter(string _json)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        // Debug.Log("resFindingCharacter() json = " + _json);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         int progress = int.Parse(values["progress"].ToString());
 
         CharacterManager.instance.setFoundCharacterCount(progress + 1);
     }
 
-    public void resFoundCharacter(string json)
+    public void resFoundCharacter(string _json)
     {
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        globalUIController.hideLoading();
+        Debug.Log("resFoundCharacter() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
         int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
         CharacterManager.instance.loadCharacter(characterIdList);
     }
+
+    public void reqAgreeTerms(int _ver)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqAgreeTerms() ver = " + _ver);
+        mContractCommunicator.reqAgreeTerms(_ver);
+    }
+
+    public void resAgreeTerms()
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resAgreeTerms()");
+        UserManager.instance.setTermsVer(Const.TERMS_VERSION);
+        termsController.resAgreeTerms();
+    }
+
+    public void reqUsingToken()
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqUsingToken()");
+        mContractCommunicator.reqUsingToken();
+    }
+
+    public void resUsingToken()
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resUsingToken()");
+        UserManager.instance.setTokenUsing(true);
+        termsController.resUsingTokenConfirm();
+    }
+
+    public void reqUsingNFT()
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqUsingNFT()");
+        mContractCommunicator.reqUsingNFT();
+    }
+
+    public void resUsingNFT()
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resUsingNFT()");
+        UserManager.instance.setNFTUsing(true);
+        termsController.resUsingNFTConfirm();
+    }
+
+    public void reqCheckRedundancy(string _nickname)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqCheckRedundancy() nickname = " + _nickname);
+        mContractCommunicator.reqCheckRedundancy(_nickname);
+    }
+
+    public void resCheckRedundancy(string _json)
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resCheckRedundancy() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        bool available = bool.Parse(values["available"].ToString());
+
+        termsController.resCheckResundancy(available);
+    }
+
+    public void reqCreateUser(string _nickname)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqCreateUser() nickname = " + _nickname);
+        mContractCommunicator.reqCreateUser(_nickname);
+    }
+
+    public void resCreateUser(string _json)
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resCreateUser() json = " + _json);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        string nickname = values["nickname"].ToString();
+
+        UserManager.instance.setNickname(nickname);
+        termsController.resCreateUser();
+    }
+
 }

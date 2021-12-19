@@ -39,4 +39,29 @@ public class WebContractCommunicator : IContractCommunicator
 
         Application.ExternalCall("reqLoginInfomation", values);
     }
+
+    public void reqAgreeTerms(int _ver)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqUsingToken()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqUsingNFT()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqCheckRedundancy(string _nickname)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqCreateUser(string _nickname)
+    {
+        throw new System.NotImplementedException();
+    }
 }

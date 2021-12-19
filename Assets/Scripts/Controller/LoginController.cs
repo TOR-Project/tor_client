@@ -13,9 +13,8 @@ public class LoginController : MonoBehaviour
     Text noticeText;
     [SerializeField]
     GameObject noticeLoadingIcon;
-
     [SerializeField]
-    GameObject walletConnectPanel;
+    GlobalUIController globalUIController;
 
     [SerializeField]
     WindowController windowController;
@@ -29,6 +28,11 @@ public class LoginController : MonoBehaviour
         StartCoroutine(updateNotice());
     }
 
+    private void OnEnable()
+    {
+        globalUIController.hideInfoPanel();
+    }
+
     private IEnumerator updateNotice()
     {
         noticeLoadingIcon.SetActive(true);
@@ -37,11 +41,6 @@ public class LoginController : MonoBehaviour
 
         ContractManager.instance.reqLatestNotice();
     } 
-
-    public void showingConnectWalletLoading()
-    {
-        walletConnectPanel.SetActive(true);
-    }
 
     internal void connectWallet(string addr)
     {
@@ -56,14 +55,8 @@ public class LoginController : MonoBehaviour
         noticeText.text = contents;
     }
 
-    internal void showErrorPopup(int err)
-    {
-        walletConnectPanel.SetActive(false);
-    }
-
     internal void enterNextPage(bool _hasUserData, bool _latestTerms, bool _tokenUsing, bool _nftUsing)
     {
-        walletConnectPanel.SetActive(false);
         if (_hasUserData && _latestTerms && _tokenUsing && _nftUsing)
         {
             windowController.OpenWindow(titleWindow);

@@ -10,6 +10,9 @@ public class WindowController : MonoBehaviour
 
     private LoadingController loadingController;
 
+    [SerializeField]
+    GlobalUIController globalUIController;
+
     private GameObject _activeWindow;
     private GameObject _windowToOpen;
     private GameObject _targetWindow;
@@ -54,8 +57,16 @@ public class WindowController : MonoBehaviour
             }
         }
 
+        if (_activeWindow == loadingWindow)
+        {
+            globalUIController.hideInfoPanel();
+        }
+        else
+        {
+            globalUIController.showInfoPanel();
+        }
+
         _activeWindow.SetActive(true);
         graphicRaycaster.enabled = false;
-
     }
 }

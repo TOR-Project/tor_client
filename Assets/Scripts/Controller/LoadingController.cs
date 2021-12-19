@@ -10,8 +10,16 @@ public class LoadingController : MonoBehaviour
     Slider slider;
     [SerializeField]
     LanguageTextController textController;
+    [SerializeField]
+    GlobalUIController globalUIController;
 
     LoadingComponentPool loadingComponentPool;
+
+    private void OnEnable()
+    {
+        globalUIController.hideInfoPanel();
+    }
+
     public bool setupLoading(GameObject _targetWindow, Action _callback)
     {
         loadingComponentPool = _targetWindow.GetComponent<LoadingComponentPool>();

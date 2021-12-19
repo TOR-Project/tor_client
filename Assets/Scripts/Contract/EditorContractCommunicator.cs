@@ -14,9 +14,9 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.readyToUnityInstance();
     }
 
-    public void printLog(string log)
+    public void printLog(string _log)
     {
-        Debug.Log(log);
+        Debug.Log(_log);
     }
 
     public void reqConnectWallet()
@@ -26,22 +26,22 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private IEnumerator progConnectWallet()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
         bool serverBlocked = false;
         bool versionMismatched = false;
         bool walletConnectFailed = false;
 
-        int errCode = 0;
+        int errCode = Const.NO_ERROR;
         if (serverBlocked)
         {
-            errCode = 1;
+            errCode = Const.ERR_SERVER_BLOCKED;
         } else if (versionMismatched)
         {
-            errCode = 2;
+            errCode = Const.ERR_VERSION_MISMATCHED;
         } else if (walletConnectFailed)
         {
-            errCode = 4;
+            errCode = Const.ERR_WALLET_CONNECTION_FAILED;
         }
 
         Dictionary<string, object> data = new Dictionary<string, object>();
@@ -59,7 +59,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private IEnumerator progLatestNotice()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["title"] = "Welcome";
@@ -77,7 +77,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private IEnumerator progLoginInfomation(string addr)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
         bool userBanned = false;
         bool noCharacter = false;
@@ -87,17 +87,17 @@ public class EditorContractCommunicator : IContractCommunicator
 
         Dictionary<string, object> data = new Dictionary<string, object>();
 
-        int errCode = 0;
+        int errCode = Const.NO_ERROR;
         if (userBanned)
         {
-            errCode = 5;
+            errCode = Const.ERR_USER_BANNED;
             data["startBlock"] = 123456789;
             data["endBlock"] = 987654321;
             data["reason"] = "도배";
         }
         else if (noCharacter)
         {
-            errCode = 6;
+            errCode = Const.ERR_NO_CHARACTER;
         }
 
         if (hasUserData)
@@ -136,5 +136,75 @@ public class EditorContractCommunicator : IContractCommunicator
         values = JsonConvert.SerializeObject(data);
         mContractManager.resFoundCharacter(values);
 
+    }
+
+    public void reqAgreeTerms(int _ver)
+    {
+        mContractManager.StartCoroutine(progAgreeTerms(_ver));
+    }
+
+    private IEnumerator progAgreeTerms(int _ver)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+         mContractManager.resAgreeTerms();
+    }
+
+    public void reqUsingToken()
+    {
+        mContractManager.StartCoroutine(progUsingToken());
+    }
+
+    private IEnumerator progUsingToken()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        mContractManager.resUsingToken();
+    }
+
+    public void reqUsingNFT()
+    {
+        mContractManager.StartCoroutine(progUsingNFT());
+    }
+
+    private IEnumerator progUsingNFT()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        mContractManager.resUsingNFT();
+    }
+
+    public void reqCheckRedundancy(string _nickname)
+    {
+        mContractManager.StartCoroutine(progqCheckRedundancy(_nickname));
+    }
+
+    private IEnumerator progqCheckRedundancy(string _nickname)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        bool available = true;
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["available"] = available;
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCheckRedundancy(values);
+    }
+
+    public void reqCreateUser(string _nickname)
+    {
+        mContractManager.StartCoroutine(progqCreateUser(_nickname));
+    }
+
+    private IEnumerator progqCreateUser(string _nickname)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["nickname"] = _nickname;
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCreateUser(values);
     }
 }
