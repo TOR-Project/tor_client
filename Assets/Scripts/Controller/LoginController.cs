@@ -44,7 +44,6 @@ public class LoginController : MonoBehaviour
 
     internal void connectWallet(string addr)
     {
-        UserManager.instance.setWalletAddress(addr);
         ContractManager.instance.reqLoginInfomation(addr);
     }
 

@@ -17,6 +17,7 @@ public interface IContractCommunicator
 
     void reqCheckRedundancy(string _nickname);
 
-    void reqCreateUser(string _nickname);
+    void reqCreateUser(string _nickname, int _ver);
 
+    void reqCoinAmount();
 }

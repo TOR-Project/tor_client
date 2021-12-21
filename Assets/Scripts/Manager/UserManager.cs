@@ -10,7 +10,7 @@ public class UserManager : MonoBehaviour
     [SerializeField]
     string walletAddress = "";
     [SerializeField]
-    string nickName = "";
+    string nickname = "";
     [SerializeField]
     int termsVersion = 0;
     [SerializeField]
@@ -20,9 +20,11 @@ public class UserManager : MonoBehaviour
     [SerializeField]
     bool nftUsing = false;
     [SerializeField]
-    BigInteger tokenAmount = BigInteger.Zero;
+    BigInteger coinAmount = BigInteger.Zero;
     [SerializeField]
     List<int> trophyList = new List<int>();
+
+    private ArrayList observerList = new ArrayList();
 
     static UserManager mInstance;
     public static UserManager instance {
@@ -39,6 +41,8 @@ public class UserManager : MonoBehaviour
     public void setWalletAddress(string _addr)
     {
         walletAddress = _addr;
+
+        notifyWalletAddressChanged();
     }
 
     public string getWalletAddress()
@@ -48,7 +52,7 @@ public class UserManager : MonoBehaviour
 
     public void setUserData(string _nickName, int _termsVer, string[] _friends, bool _tokenUsing, bool _nftUsing)
     {
-        nickName = _nickName;
+        nickname = _nickName;
         termsVersion = _termsVer;
 
         foreach(string friend in _friends)
@@ -58,16 +62,20 @@ public class UserManager : MonoBehaviour
 
         tokenUsing = _tokenUsing;
         nftUsing = _nftUsing;
+
+        notifyNicknameChanged();
     }
 
     public void setNickname(string _nickName)
     {
-        nickName = _nickName;
+        nickname = _nickName;
+
+        notifyNicknameChanged();
     }
 
     public string getNickname()
     {
-        return nickName;
+        return nickname;
     }
 
     public void setTermsVer(int _termsVer)
@@ -119,14 +127,16 @@ public class UserManager : MonoBehaviour
         return nftUsing;
     }
 
-    public void setTokenAmount(BigInteger _amount)
+    public void setCoinAmount(BigInteger _amount)
     {
-        tokenAmount = _amount;
+        coinAmount = _amount;
+
+        notifyCoinAmountChanged();
     }
 
-    public BigInteger getTokenAmount()
+    public BigInteger getCoinAmount()
     {
-        return tokenAmount;
+        return coinAmount;
     }
 
     public void setTrophyList(int[] _list)
@@ -135,10 +145,58 @@ public class UserManager : MonoBehaviour
         {
             trophyList.Add(trophy);
         }
+
+        notifyTrophyDataChanged();
     }
 
     public List<int> getTrophyList()
     {
         return trophyList;
+    }
+
+    public void notifyNicknameChanged()
+    {
+        foreach (UserInfoObserever ob in observerList)
+        {
+            ob.onNicknameChanged(nickname);
+        }
+    }
+
+    public void notifyCoinAmountChanged()
+    {
+        foreach (UserInfoObserever ob in observerList)
+        {
+            ob.onCoinAmountChanged(coinAmount);
+        }
+    }
+
+    public void notifyWalletAddressChanged()
+    {
+        foreach (UserInfoObserever ob in observerList)
+        {
+            ob.onWalletAddressChanged(walletAddress);
+        }
+    }
+
+    public void notifyTrophyDataChanged()
+    {
+        foreach (UserInfoObserever ob in observerList)
+        {
+            ob.onTrophyDataChanged(trophyList);
+        }
+    }
+
+    public void addObserver(UserInfoObserever ob)
+    {
+        observerList.Add(ob);
+        ob.onNicknameChanged(nickname);
+        ob.onCoinAmountChanged(coinAmount);
+        ob.onWalletAddressChanged(walletAddress);
+        ob.onTrophyDataChanged(trophyList);
+    }
+
+    public void removeObserver(UserInfoObserever ob)
+    {
+        observerList.Remove(ob);
     }
 }

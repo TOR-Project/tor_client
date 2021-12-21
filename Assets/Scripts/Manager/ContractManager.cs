@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -65,6 +66,12 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.printLog(log);
     }
 
+    public void resTransactionError(string _err)
+    {
+        globalUIController.hideLoading();
+        globalUIController.showPopup(_err, false);
+    }
+
     public void reqConnectWallet()
     {
         globalUIController.showLoading();
@@ -77,7 +84,6 @@ public class ContractManager : MonoBehaviour
         globalUIController.hideLoading();
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
-        string addr = values["addr"].ToString();
         int err = int.Parse(values["err"].ToString());
 
         Debug.Log("resConnectWallet() json = " + _json);
@@ -87,7 +93,10 @@ public class ContractManager : MonoBehaviour
         }
         else
         {
+            string addr = values["addr"].ToString();
+
             loginController.connectWallet(addr);
+            UserManager.instance.setWalletAddress(addr);
         }
     }
 
@@ -188,7 +197,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqAgreeTerms(_ver);
     }
 
-    public void resAgreeTerms()
+    public void resAgreeTerms(string _json)
     {
         globalUIController.hideLoading();
         Debug.Log("resAgreeTerms()");
@@ -203,7 +212,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqUsingToken();
     }
 
-    public void resUsingToken()
+    public void resUsingToken(string _json)
     {
         globalUIController.hideLoading();
         Debug.Log("resUsingToken()");
@@ -218,7 +227,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqUsingNFT();
     }
 
-    public void resUsingNFT()
+    public void resUsingNFT(string _json)
     {
         globalUIController.hideLoading();
         Debug.Log("resUsingNFT()");
@@ -249,7 +258,7 @@ public class ContractManager : MonoBehaviour
     {
         globalUIController.showLoading();
         Debug.Log("reqCreateUser() nickname = " + _nickname);
-        mContractCommunicator.reqCreateUser(_nickname);
+        mContractCommunicator.reqCreateUser(_nickname, Const.TERMS_VERSION);
     }
 
     public void resCreateUser(string _json)
@@ -264,4 +273,20 @@ public class ContractManager : MonoBehaviour
         termsController.resCreateUser();
     }
 
+    public void reqCoinAmount()
+    {
+        Debug.Log("reqCoinAmount()");
+        mContractCommunicator.reqCoinAmount();
+    }
+
+    public void resCoinAmount(string _json)
+    {
+        Debug.Log("resCoinAmount() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        BigInteger amount = BigInteger.Parse(values["amount"].ToString());
+
+        UserManager.instance.setCoinAmount(amount);
+    }
 }

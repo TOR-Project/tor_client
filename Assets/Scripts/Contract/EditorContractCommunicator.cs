@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
+using System.Numerics;
 
 public class EditorContractCommunicator : IContractCommunicator
 {
@@ -81,7 +82,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         bool userBanned = false;
         bool noCharacter = false;
-        bool hasUserData = false;
+        bool hasUserData = true;
         bool tokenUsing = true;
         bool nftUsing = true;
 
@@ -147,7 +148,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-         mContractManager.resAgreeTerms();
+         mContractManager.resAgreeTerms(null);
     }
 
     public void reqUsingToken()
@@ -159,7 +160,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-        mContractManager.resUsingToken();
+        mContractManager.resUsingToken(null);
     }
 
     public void reqUsingNFT()
@@ -171,15 +172,15 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-        mContractManager.resUsingNFT();
+        mContractManager.resUsingNFT(null);
     }
 
     public void reqCheckRedundancy(string _nickname)
     {
-        mContractManager.StartCoroutine(progqCheckRedundancy(_nickname));
+        mContractManager.StartCoroutine(progCheckRedundancy(_nickname));
     }
 
-    private IEnumerator progqCheckRedundancy(string _nickname)
+    private IEnumerator progCheckRedundancy(string _nickname)
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -192,12 +193,12 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resCheckRedundancy(values);
     }
 
-    public void reqCreateUser(string _nickname)
+    public void reqCreateUser(string _nickname, int _ver)
     {
-        mContractManager.StartCoroutine(progqCreateUser(_nickname));
+        mContractManager.StartCoroutine(progCreateUser(_nickname));
     }
 
-    private IEnumerator progqCreateUser(string _nickname)
+    private IEnumerator progCreateUser(string _nickname)
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -206,5 +207,22 @@ public class EditorContractCommunicator : IContractCommunicator
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCreateUser(values);
+    }
+
+    public void reqCoinAmount()
+    {
+        mContractManager.StartCoroutine(progCoinAmount());
+    }
+
+    int coinAdditional = 0;
+    private IEnumerator progCoinAmount()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["amount"] = BigInteger.Add(BigInteger.Parse("1234567800000000000000"), BigInteger.Multiply(BigInteger.Parse((coinAdditional++).ToString()), BigInteger.Parse("1000000000000000000")));
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCoinAmount(values);
     }
 }

@@ -42,26 +42,58 @@ public class WebContractCommunicator : IContractCommunicator
 
     public void reqAgreeTerms(int _ver)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["termsVer"] = _ver;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqAgreeTerms", values);
     }
 
     public void reqUsingToken()
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqUsingToken", values);
     }
 
     public void reqUsingNFT()
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqUsingNFT", values);
     }
 
     public void reqCheckRedundancy(string _nickname)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["nickname"] = _nickname;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCheckRedundancy", values);
     }
 
-    public void reqCreateUser(string _nickname)
+    public void reqCreateUser(string _nickname, int _ver)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["termsVer"] = _ver;
+        data["nickname"] = _nickname;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCreateUser", values);
+    }
+
+    public void reqCoinAmount()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCoinAmount", values);
     }
 }
