@@ -96,4 +96,66 @@ public class WebContractCommunicator : IContractCommunicator
 
         Application.ExternalCall("reqCoinAmount", values);
     }
+
+    public void reqCharacterCount()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCharacterCount", values);
+    }
+
+    public void reqCharacterList(int _characterCount)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["characterCount"] = _characterCount;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCharacterList", values);
+    }
+
+    public void reqNotInitCharacterList()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["version"] = 1;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqNotInitCharacterList", values);
+    }
+
+    public void reqInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["idList"] = _idList;
+        data["characterDataList"] = _characterDataList;
+        data["statusDataList"] = _statusDataList;
+        data["equipDataList"] = _equipDataList;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqInitCharacter", values);
+    }
+
+    public void reqCharacterData(int[] _characterIdList)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["characterIdList"] = _characterIdList;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCharacterData", values);
+    }
+
+    public void reqStakingData(int _count)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["count"] = _count;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqStakingData", values);
+    }
 }

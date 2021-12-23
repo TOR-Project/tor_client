@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Numerics;
+using System;
 
 public class EditorContractCommunicator : IContractCommunicator
 {
@@ -37,10 +38,12 @@ public class EditorContractCommunicator : IContractCommunicator
         if (serverBlocked)
         {
             errCode = Const.ERR_SERVER_BLOCKED;
-        } else if (versionMismatched)
+        }
+        else if (versionMismatched)
         {
             errCode = Const.ERR_VERSION_MISMATCHED;
-        } else if (walletConnectFailed)
+        }
+        else if (walletConnectFailed)
         {
             errCode = Const.ERR_WALLET_CONNECTION_FAILED;
         }
@@ -106,20 +109,23 @@ public class EditorContractCommunicator : IContractCommunicator
             data["hasUserData"] = true;
             data["nickName"] = "Crow";
             data["termsVersion"] = 1;
-            data["friends"] = new string[] {"0x123456789", "0x123456789", "0x123456789", "0x123456789", "0x123456789" };
+            data["friends"] = new string[] { "0x123456789", "0x123456789", "0x123456789", "0x123456789", "0x123456789" };
 
             data["tokenUsing"] = tokenUsing;
             data["nftUsing"] = nftUsing;
-        } else
+        }
+        else
         {
             data["hasUserData"] = false;
         }
-        
+
         data["err"] = errCode;
-        data["characterCount"] = 100;
         var values = JsonConvert.SerializeObject(data);
         Debug.Log("resLoginInfomation() " + values);
         mContractManager.resLoginInfomation(values);
+
+        /*
+        data["characterCount"] = 100;
 
         int[] characterList = new int[100];
         for (int i = 0; i < 100; i++)
@@ -136,7 +142,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["characterIdList"] = characterList;
         values = JsonConvert.SerializeObject(data);
         mContractManager.resFoundCharacter(values);
-
+        */
     }
 
     public void reqAgreeTerms(int _ver)
@@ -148,7 +154,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-         mContractManager.resAgreeTerms(null);
+        mContractManager.resAgreeTerms(null);
     }
 
     public void reqUsingToken()
@@ -224,5 +230,192 @@ public class EditorContractCommunicator : IContractCommunicator
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCoinAmount(values);
+    }
+
+    List<int> characterIdList = new List<int>();
+    List<int> newCharacterIdList = new List<int>();
+    List<int> stakingIdList = new List<int>();
+    public void reqCharacterCount()
+    {
+        mContractManager.StartCoroutine(progCharacterCount());
+    }
+
+    private IEnumerator progCharacterCount()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["characterCount"] = characterIdList.Count;
+        data["stakingCharacterCount"] = stakingIdList.Count;
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCharacterCount(values);
+    }
+
+    public void reqCharacterList(int _characterCount)
+    {
+        mContractManager.StartCoroutine(progCharacterList(_characterCount));
+    }
+
+    private IEnumerator progCharacterList(int _characterCount)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        int[] characterList = new int[characterIdList.Count];
+        for (int i = 0; i < characterList.Length; i++)
+        {
+            yield return new WaitForSeconds(0.02f);
+            characterList[i] = characterIdList[i];
+        }
+
+        int[] stakingCharacterList = new int[stakingIdList.Count];
+        for (int i = 0; i < stakingCharacterList.Length; i++)
+        {
+            yield return new WaitForSeconds(0.02f);
+            stakingCharacterList[i] = stakingIdList[i];
+        }
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["characterIdList"] = characterList;
+        data["stakingCharacterIdList"] = stakingCharacterList;
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCharacterList(values);
+    }
+
+    public void reqNotInitCharacterList()
+    {
+        mContractManager.StartCoroutine(progNotInitCharacterList());
+    }
+
+    private IEnumerator progNotInitCharacterList()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        int randCount = UnityEngine.Random.Range(0, 100);
+        for (int i = 0; i < randCount; i++)
+        {
+            int id = UnityEngine.Random.Range(0, 10000);
+            if (!characterIdList.Contains(id) && !stakingIdList.Contains(id))
+            {
+                newCharacterIdList.Add(id);
+            }
+        }
+
+        int[] characterList = new int[newCharacterIdList.Count];
+        for (int i = 0; i < characterList.Length; i++)
+        {
+            yield return new WaitForSeconds(0.02f);
+            characterList[i] = newCharacterIdList[i];
+        }
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["characterIdList"] = characterList;
+        var values = JsonConvert.SerializeObject(data);
+
+        mContractManager.resNotInitCharacterList(values);
+    }
+
+    public void reqInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
+    {
+        mContractManager.StartCoroutine(progInitCharacter(_idList, _characterDataList, _statusDataList, _equipDataList));
+    }
+
+    private IEnumerator progInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        for (int i = 0; i < newCharacterIdList.Count; i++)
+        {
+            yield return new WaitForSeconds(0.02f);
+
+            int seed = UnityEngine.Random.Range(0, 3);
+
+            if (seed == 0)
+            {
+                characterIdList.Add(newCharacterIdList[i]);
+            } else if (seed == 1)
+            {
+                stakingIdList.Add(newCharacterIdList[i]);
+            }
+        }
+
+        newCharacterIdList.Clear();
+
+        mContractManager.resInitCharacter("");
+
+    }
+    public void reqCharacterData(int[] _characterIdList)
+    {
+        mContractManager.StartCoroutine(progCharacterData(_characterIdList));
+    }
+
+    private IEnumerator progCharacterData(int[] _characterIdList)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        foreach (int id in _characterIdList)
+        {
+            yield return new WaitForSeconds(0.02f);
+
+            Dictionary<string, object> data = new Dictionary<string, object>();
+
+            Dictionary<string, object> characterData = new Dictionary<string, object>();
+            characterData["name"] = "Tale of Raynor #" + id.ToString("0000");
+            characterData["tokenId"] = id;
+            characterData["level"] = UnityEngine.Random.Range(1, 10);
+            characterData["exp"] = 0;
+            characterData["country"] = UnityEngine.Random.Range(0, 5);
+            characterData["race"] = UnityEngine.Random.Range(0, 5);
+            characterData["job"] = UnityEngine.Random.Range(0, 9);
+            characterData["statusBonus"] = 0;
+            characterData["version"] = 1;
+
+            data["characterData"] = JsonConvert.SerializeObject(characterData);
+
+            Dictionary<string, object> statusData = new Dictionary<string, object>();
+            statusData["att"] = UnityEngine.Random.Range(50, 500);
+            statusData["def"] = UnityEngine.Random.Range(50, 500);
+
+            data["statusData"] = JsonConvert.SerializeObject(statusData);
+
+            Dictionary<string, object> equipData = new Dictionary<string, object>();
+            equipData["weapon"] = UnityEngine.Random.Range(0, 4);
+            equipData["armor"] = UnityEngine.Random.Range(0, 4);
+            equipData["pants"] = UnityEngine.Random.Range(0, 4);
+            equipData["head"] = UnityEngine.Random.Range(0, 4);
+            equipData["shoes"] = UnityEngine.Random.Range(0, 4);
+            equipData["accessory"] = UnityEngine.Random.Range(0, 6);
+
+            data["equipData"] = JsonConvert.SerializeObject(equipData);
+
+            var outValue = JsonConvert.SerializeObject(data);
+
+            mContractManager.resCharacterData(outValue);
+        }
+    }
+
+    public void reqStakingData(int _count)
+    {
+        mContractManager.StartCoroutine(progStakingData(_count));
+    }
+
+    private IEnumerator progStakingData(int _count)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        for (int i = 0; i < _count; i++)
+        {
+            yield return new WaitForSeconds(0.03f);
+
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data["id"] = stakingIdList[i];
+            data["startBlock"] = 12345678;
+            data["endBlock"] = 0;
+            data["purpose"] = 4;
+            var outValue = JsonConvert.SerializeObject(data);
+
+            mContractManager.resStakingData(outValue);
+        }
     }
 }

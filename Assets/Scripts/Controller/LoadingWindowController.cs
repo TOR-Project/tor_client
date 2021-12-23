@@ -4,14 +4,14 @@ using System;
 using UnityEngine.UI;
 using System.Collections;
 
-public class LoadingController : MonoBehaviour
+public class LoadingWindowController : MonoBehaviour
 {
     [SerializeField]
     Slider slider;
     [SerializeField]
     LanguageTextController textController;
     [SerializeField]
-    GlobalUIController globalUIController;
+    GlobalUIWindowController globalUIController;
 
     LoadingComponentPool loadingComponentPool;
 

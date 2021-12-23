@@ -2,18 +2,17 @@
 using UnityEditor;
 using System.Collections;
 
-public class CharacterLoadingComponent : LoadingComponent
+public class CharacterCheckingComponent : LoadingComponent
 {
-    string loadingInfoTextKey = "ID_LOADING_CHARACTER";
+    string loadingInfoTextKey = "ID_CHECKING_CHARACTER";
 
     public override void startLoading()
     {
-        CharacterManager.instance.loadCharacter();
     }
 
     public override bool isLoadingCompleted()
     {
-        return CharacterManager.instance.loadingStep >= 2;
+        return CharacterManager.instance.loadingStep >= 4;
     }
 
     public override string getLoadingTextKey()

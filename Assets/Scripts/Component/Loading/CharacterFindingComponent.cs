@@ -9,10 +9,10 @@ public class CharacterFindingComponent : LoadingComponent
     public override void startLoading()
     {
     }
-    
+
     public override bool isLoadingCompleted()
     {
-        return CharacterManager.instance.isCharacterFindingCompleted();
+        return CharacterManager.instance.loadingStep >= 3;
     }
 
     public override string getLoadingTextKey()

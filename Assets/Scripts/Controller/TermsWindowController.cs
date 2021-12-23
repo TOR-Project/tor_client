@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 
-public class TermsController : MonoBehaviour
+public class TermsWindowController : MonoBehaviour
 {
     [SerializeField]
     GameObject termsPanel;
@@ -37,7 +37,7 @@ public class TermsController : MonoBehaviour
     private string dismissingTrigger = "dismissing";
 
     [SerializeField]
-    GlobalUIController globalUIController;
+    GlobalUIWindowController globalUIController;
     [SerializeField]
     WindowController windowController;
     [SerializeField]

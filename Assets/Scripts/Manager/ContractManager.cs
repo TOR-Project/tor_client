@@ -14,14 +14,14 @@ public class ContractManager : MonoBehaviour
     private bool unityInstanceLoaded = false;
 
     [SerializeField]
-    LoginController loginController;
+    LoginWindowController loginController;
     [SerializeField]
-    LoadingController loadingController;
+    LoadingWindowController loadingController;
     [SerializeField]
-    TermsController termsController;
+    TermsWindowController termsController;
 
     [SerializeField]
-    GlobalUIController globalUIController;
+    GlobalUIWindowController globalUIController;
 
     private static ContractManager mInstance;
     public static ContractManager instance {
@@ -69,7 +69,7 @@ public class ContractManager : MonoBehaviour
     public void resTransactionError(string _err)
     {
         globalUIController.hideLoading();
-        globalUIController.showPopup(_err, false);
+        globalUIController.showPopup(_err, null);
     }
 
     public void reqConnectWallet()
@@ -165,29 +165,7 @@ public class ContractManager : MonoBehaviour
             }
 
             loginController.enterNextPage(hasUserData, latestTerms, tokenUsing, nftUsing);
-            int max = int.Parse(values["characterCount"].ToString());
-            CharacterManager.instance.setCharacterCount(max);
         }
-    }
-
-    public void resFindingCharacter(string _json)
-    {
-        // Debug.Log("resFindingCharacter() json = " + _json);
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
-
-        int progress = int.Parse(values["progress"].ToString());
-
-        CharacterManager.instance.setFoundCharacterCount(progress + 1);
-    }
-
-    public void resFoundCharacter(string _json)
-    {
-        globalUIController.hideLoading();
-        Debug.Log("resFoundCharacter() json = " + _json);
-
-        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
-        int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
-        CharacterManager.instance.loadCharacter(characterIdList);
     }
 
     public void reqAgreeTerms(int _ver)
@@ -288,5 +266,105 @@ public class ContractManager : MonoBehaviour
         BigInteger amount = BigInteger.Parse(values["amount"].ToString());
 
         UserManager.instance.setCoinAmount(amount);
+    }
+
+    public void reqCharacterCount()
+    {
+        Debug.Log("reqCharacterCount()");
+        mContractCommunicator.reqCharacterCount();
+    }
+
+    public void resCharacterCount(string _json)
+    {
+        Debug.Log("resCharacterCount() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int count = int.Parse(values["characterCount"].ToString());
+        int stakingCount = int.Parse(values["stakingCharacterCount"].ToString());
+        CharacterManager.instance.setCharacterCount(count, stakingCount);
+    }
+
+    public void reqCharacterList(int _characterCount)
+    {
+        Debug.Log("reqCharacterList()");
+        mContractCommunicator.reqCharacterList(_characterCount);
+    }
+
+    public void resCharacterList(string _json)
+    {
+        Debug.Log("resCharacterList() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+        int[] stakingCharacterIdList = JsonConvert.DeserializeObject<int[]>(values["stakingCharacterIdList"].ToString());
+        CharacterManager.instance.setCharacterIdList(characterIdList, stakingCharacterIdList);
+    }
+
+    public void reqNotInitCharacterList()
+    {
+        Debug.Log("reqNotInitCharacterList()");
+        mContractCommunicator.reqNotInitCharacterList();
+    }
+
+    public void resNotInitCharacterList(string _json)
+    {
+        Debug.Log("resNotInitCharacterList() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int[] characterIdList = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+
+        Debug.Log("resNotInitCharacterList() length = " + characterIdList.Length);
+
+        CharacterManager.instance.setNotInitCharacterIdList(characterIdList);
+    }
+
+    public void reqInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqInitCharacter() size = " + _idList.Length);
+
+        mContractCommunicator.reqInitCharacter(_idList, _characterDataList, _statusDataList, _equipDataList);
+    }
+
+    public void resInitCharacter(string _json)
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resInitCharacter()");
+
+        CharacterManager.instance.initCharacterCompleted();
+    }
+
+    public void reqCharacterData(int[] _characterIdList)
+    {
+        Debug.Log("reqCharacterData() size = " + _characterIdList.Length);
+
+        mContractCommunicator.reqCharacterData(_characterIdList);
+    }
+
+    public void resCharacterData(string _json)
+    {
+        // Debug.Log("resCharacterData() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        var characterData = JsonConvert.DeserializeObject < Dictionary<string, object> > (values["characterData"].ToString());
+        var statusData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["statusData"].ToString());
+        var equipData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["equipData"].ToString());
+
+        CharacterManager.instance.parsingCharacterData(characterData, statusData, equipData);
+    }
+
+    public void reqStakingData(int _count)
+    {
+        Debug.Log("reqStakingData()");
+
+        mContractCommunicator.reqStakingData(_count);
+    }
+
+    public void resStakingData(string _json)
+    {
+        // Debug.Log("resStakingData() json = " + _json);
+
+        CharacterManager.instance.parsingStakingData(JsonConvert.DeserializeObject<Dictionary<string, object>>(_json));
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 
-public class GlobalUIController : MonoBehaviour
+public class GlobalUIWindowController : MonoBehaviour
 {
     [SerializeField]
     GameObject popupPanel;
@@ -22,10 +22,8 @@ public class GlobalUIController : MonoBehaviour
     [SerializeField]
     WindowController windowController;
 
-    [SerializeField]
-    GameObject loginWindow;
+    private Action callback;
 
-    private bool moveToLogin = false;
     private string showingTrigger = "showing";
     private string dismissingTrigger = "dismissing";
 
@@ -53,24 +51,24 @@ public class GlobalUIController : MonoBehaviour
 
                 break;
         }
-        showPopupByTextKey(key, false);
+        showPopupByTextKey(key, null);
     }
 
     public void showBanPopup(long _startBlock, long _endBlock, string _reason)
     {
         string contents = LanguageManager.instance.getText("ID_ERR_USER_BANNED");
         contents += "\n" + _reason + "\n" + "(" + _startBlock + " ~ " + _endBlock + " block )";
-        showPopup(contents, false);
+        showPopup(contents, null);
     }
 
-    public void showPopupByTextKey(string _contentsKey, bool _moveToLogin)
+    public void showPopupByTextKey(string _contentsKey, Action _callback)
     {
-        showPopup(LanguageManager.instance.getText(_contentsKey), _moveToLogin);
+        showPopup(LanguageManager.instance.getText(_contentsKey), _callback);
     }
 
-    public void showPopup(string _contents, bool _moveToLogin)
+    public void showPopup(string _contents, Action _callback)
     {
-        moveToLogin = _moveToLogin;
+        callback = _callback;
         popupContentsText.text = _contents;
 
         popupPanel.SetActive(true);
@@ -84,10 +82,7 @@ public class GlobalUIController : MonoBehaviour
     public void dismissPopup()
     {
         popupPanel.SetActive(false);
-        if (moveToLogin)
-        {
-            windowController.OpenWindow(loginWindow);
-        }
+        callback?.Invoke();
     }
 
     public void showLoading()

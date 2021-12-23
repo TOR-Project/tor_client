@@ -8,10 +8,10 @@ public class WindowController : MonoBehaviour
     public Animator animator;
     public GameObject loadingWindow;
 
-    private LoadingController loadingController;
+    private LoadingWindowController loadingController;
 
     [SerializeField]
-    GlobalUIController globalUIController;
+    GlobalUIWindowController globalUIController;
 
     private GameObject _activeWindow;
     private GameObject _windowToOpen;
@@ -21,7 +21,7 @@ public class WindowController : MonoBehaviour
     private void Awake()
     {
         _activeWindow = initialActiveWindow;
-        loadingController = loadingWindow.GetComponent<LoadingController>();
+        loadingController = loadingWindow.GetComponent<LoadingWindowController>();
     }
 
     public void OpenWindow(GameObject window)

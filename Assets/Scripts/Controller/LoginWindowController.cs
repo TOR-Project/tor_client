@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 
-public class LoginController : MonoBehaviour
+public class LoginWindowController : MonoBehaviour
 {
     [SerializeField]
     Text noticeTitle;
@@ -14,7 +14,7 @@ public class LoginController : MonoBehaviour
     [SerializeField]
     GameObject noticeLoadingIcon;
     [SerializeField]
-    GlobalUIController globalUIController;
+    GlobalUIWindowController globalUIController;
 
     [SerializeField]
     WindowController windowController;
