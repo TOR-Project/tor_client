@@ -19,6 +19,8 @@ public class ContractManager : MonoBehaviour
     LoadingWindowController loadingController;
     [SerializeField]
     TermsWindowController termsController;
+    [SerializeField]
+    MiningWindowController miningController;
 
     [SerializeField]
     GlobalUIWindowController globalUIController;
@@ -344,7 +346,7 @@ public class ContractManager : MonoBehaviour
 
     public void resCharacterData(string _json)
     {
-        // Debug.Log("resCharacterData() json = " + _json);
+        Debug.Log("resCharacterData() json = " + _json);
 
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
         var characterData = JsonConvert.DeserializeObject < Dictionary<string, object> > (values["characterData"].ToString());
@@ -354,11 +356,11 @@ public class ContractManager : MonoBehaviour
         CharacterManager.instance.parsingCharacterData(characterData, statusData, equipData);
     }
 
-    public void reqStakingData(int _count)
+    public void reqStakingData(int[] _idList)
     {
         Debug.Log("reqStakingData()");
 
-        mContractCommunicator.reqStakingData(_count);
+        mContractCommunicator.reqStakingData(_idList);
     }
 
     public void resStakingData(string _json)
@@ -366,5 +368,90 @@ public class ContractManager : MonoBehaviour
         // Debug.Log("resStakingData() json = " + _json);
 
         CharacterManager.instance.parsingStakingData(JsonConvert.DeserializeObject<Dictionary<string, object>>(_json));
+    }
+
+    public void reqAddMiningStaking(int[] _idList)
+    {
+        globalUIController.showLoading();
+
+        Debug.Log("reqAddMiningStaking() size = " + _idList.Length);
+
+        mContractCommunicator.reqAddMiningStaking(_idList);
+    }
+
+    public void resAddMiningStaking(string _json)
+    {
+        globalUIController.hideLoading();
+
+        Debug.Log("resAddMiningStaking()");
+
+        miningController.resAddMiningStaking();
+    }
+
+    public void reqGetBackMiningStaking(int[] _idList)
+    {
+        globalUIController.showLoading();
+
+        Debug.Log("reqGetBackMiningStaking() size = " + _idList.Length);
+
+        mContractCommunicator.reqGetBackMiningStaking(_idList);
+    }
+
+    public void resGetBackMiningStaking(string _json)
+    {
+        globalUIController.hideLoading();
+
+        Debug.Log("resGetBackMiningStaking()");
+
+        miningController.resGetBackMiningStaking();
+    }
+
+    public void reqReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
+    {
+        globalUIController.showLoading();
+
+        Debug.Log("reqReceiveMiningAmount() size = " + _idList.Length);
+
+        mContractCommunicator.reqReceiveMiningAmount(_idList, _countryTax, _finalAmount, _commissionAmount, _password);
+    }
+
+    public void resReceiveMiningAmount(string _json)
+    {
+        globalUIController.hideLoading();
+
+        Debug.Log("resReceiveMiningAmount()");
+
+        miningController.resReceiveMiningAmount();
+    }
+
+    public void reqCalculateMiningAmount(int _id)
+    {
+        // Debug.Log("reqCalculateMiningAmount()");
+
+        mContractCommunicator.reqCalculateMiningAmount(_id);
+    }
+
+    public void resCalculateMiningAmount(string _json)
+    {
+        // Debug.Log("resCalculateMiningAmount() json = " + _json);
+
+        MiningManager.instance.resMiningAmount(JsonConvert.DeserializeObject<Dictionary<string, object>>(_json));
+    }
+
+    public void reqGetPassword()
+    {
+        Debug.Log("reqGetPassword()");
+
+        mContractCommunicator.reqGetPassword();
+    }
+
+    public void resGetPassword(string _json)
+    {
+        Debug.Log("resGetPassword() json = " + _json);
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int password = int.Parse(values["password"].ToString());
+        UserManager.instance.setPassword(password);
     }
 }

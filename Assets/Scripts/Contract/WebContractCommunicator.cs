@@ -149,13 +149,67 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("reqCharacterData", values);
     }
 
-    public void reqStakingData(int _count)
+    public void reqStakingData(int[] _idList)
     {
         Dictionary<string, object> data = new Dictionary<string, object>();
-        data["count"] = _count;
+        data["idList"] = _idList;
         data["address"] = UserManager.instance.getWalletAddress();
         var values = JsonConvert.SerializeObject(data);
 
         Application.ExternalCall("reqStakingData", values);
+    }
+
+    public void reqAddMiningStaking(int[] _idList)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["idList"] = _idList;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqAddMiningStaking", values);
+    }
+
+    public void reqGetBackMiningStaking(int[] _idList)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["idList"] = _idList;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetBackMiningStaking", values);
+    }
+
+    public void reqReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["idList"] = _idList;
+        data["countryTax"] = _countryTax;
+        data["finalAmount"] = _finalAmount;
+        data["commissionAmount"] = _commissionAmount;
+        data["password"] = _password;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Debug.Log(values);
+        Application.ExternalCall("reqReceiveMiningAmount", values);
+    }
+
+    public void reqCalculateMiningAmount(int _id)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["id"] = _id;
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCalculateMiningAmount", values);
+    }
+
+    public void reqGetPassword()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetPassword", values);
     }
 }

@@ -31,5 +31,15 @@ public interface IContractCommunicator
 
     void reqCharacterData(int[] _characterIdList);
 
-    void reqStakingData(int _count);
+    void reqStakingData(int[] _idList);
+
+    void reqAddMiningStaking(int[] _idList);
+
+    void reqGetBackMiningStaking(int[] _idList);
+
+    void reqReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password);
+
+    void reqCalculateMiningAmount(int _id);
+
+    void reqGetPassword();
 }

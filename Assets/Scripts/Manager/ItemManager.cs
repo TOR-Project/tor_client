@@ -4,19 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WatchDogManager : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
-    static WatchDogManager mInstance;
-    public static WatchDogManager instance {
+
+    static ItemManager mInstance;
+    public static ItemManager instance {
         get {
             return mInstance;
         }
     }
 
-    private WatchDogManager()
+    private ItemManager()
     {
         mInstance = this;
     }
-
 
 }

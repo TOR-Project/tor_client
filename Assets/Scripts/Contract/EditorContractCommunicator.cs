@@ -361,7 +361,7 @@ public class EditorContractCommunicator : IContractCommunicator
             Dictionary<string, object> data = new Dictionary<string, object>();
 
             Dictionary<string, object> characterData = new Dictionary<string, object>();
-            characterData["name"] = "Tale of Raynor #" + id.ToString("0000");
+            characterData["name"] = "#" + id.ToString("0000");
             characterData["tokenId"] = id;
             characterData["level"] = UnityEngine.Random.Range(1, 10);
             characterData["exp"] = 0;
@@ -395,16 +395,16 @@ public class EditorContractCommunicator : IContractCommunicator
         }
     }
 
-    public void reqStakingData(int _count)
+    public void reqStakingData(int[] _idList)
     {
-        mContractManager.StartCoroutine(progStakingData(_count));
+        mContractManager.StartCoroutine(progStakingData(_idList));
     }
 
-    private IEnumerator progStakingData(int _count)
+    private IEnumerator progStakingData(int[] _idList)
     {
         yield return new WaitForSeconds(0.3f);
 
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < _idList.Length; i++)
         {
             yield return new WaitForSeconds(0.03f);
 
@@ -417,5 +417,90 @@ public class EditorContractCommunicator : IContractCommunicator
 
             mContractManager.resStakingData(outValue);
         }
+    }
+
+    public void reqAddMiningStaking(int[] _idList)
+    {
+        mContractManager.StartCoroutine(progAddMiningStaking(_idList));
+    }
+
+    private IEnumerator progAddMiningStaking(int[] _idList)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        mContractManager.resAddMiningStaking("");
+    }
+
+    public void reqGetBackMiningStaking(int[] _idList)
+    {
+        mContractManager.StartCoroutine(progGetBackMiningStaking(_idList));
+    }
+
+    private IEnumerator progGetBackMiningStaking(int[] _idList)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        mContractManager.resGetBackMiningStaking("");
+    }
+
+    public void reqReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
+    {
+        mContractManager.StartCoroutine(progReceiveMiningAmount(_idList, _countryTax, _finalAmount, _commissionAmount, _password));
+    }
+
+    private IEnumerator progReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        mContractManager.resReceiveMiningAmount("");
+    }
+
+    public void reqCalculateMiningAmount(int _id)
+    {
+        mContractManager.StartCoroutine(progCalculateMiningAmount(_id));
+    }
+
+    private IEnumerator progCalculateMiningAmount(int _id)
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        BigInteger basicAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(1, 100);
+        BigInteger miningTaxAmount = -BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 10);
+        BigInteger countryAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 10);
+        BigInteger rebellionAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 30);
+        BigInteger earlybirdAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 100);
+        BigInteger accountReceivableAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 100);
+        BigInteger commissionAmount = -(basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount) / 10;
+        BigInteger finalAmount = (basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount + commissionAmount);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["tokenId"] = _id;
+        data["basicAmount"] = basicAmount;
+        data["miningTaxAmount"] = miningTaxAmount;
+        data["countryAmount"] = countryAmount;
+        data["rebellionAmount"] = rebellionAmount;
+        data["earlybirdAmount"] = earlybirdAmount;
+        data["accountReceivableAmount"] = accountReceivableAmount;
+        data["commissionAmount"] = commissionAmount;
+        data["finalAmount"] = finalAmount;
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resCalculateMiningAmount(value);
+    }
+
+    public void reqGetPassword()
+    {
+        mContractManager.StartCoroutine(progGetPassword());
+    }
+
+    private IEnumerator progGetPassword()
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["password"] = 123456;
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resGetPassword(value);
     }
 }

@@ -11,7 +11,7 @@ public class StakingData
     public long endBlock = 0;
     public int purpose = 0;
 
-    internal void parsing(Dictionary<string, object> _stakingData)
+    internal void parse(Dictionary<string, object> _stakingData)
     {
         tokenId = int.Parse(_stakingData["id"].ToString());
         startBlock = long.Parse(_stakingData["startBlock"].ToString());

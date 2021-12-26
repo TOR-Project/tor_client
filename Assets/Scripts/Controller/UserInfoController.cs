@@ -42,11 +42,7 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
 
     public void onCoinAmountChanged(BigInteger _amount)
     {
-        BigInteger remains;
-        BigInteger gold = BigInteger.DivRem(_amount, BigInteger.Parse("1000000000000000000"), out remains);
-        BigInteger silver = BigInteger.Divide(remains, BigInteger.Parse("100000000000000"));
-
-        coinAmountText.text = gold.ToString("#,0") + "." + silver.ToString("0000") + " ToR";
+        coinAmountText.text = Utils.convertPebToTorStr(_amount) + " " + Const.TOR_COIN;
     }
 
     public void onNicknameChanged(string _nickname)

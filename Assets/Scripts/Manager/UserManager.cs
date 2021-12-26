@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
@@ -23,6 +21,8 @@ public class UserManager : MonoBehaviour
     BigInteger coinAmount = BigInteger.Zero;
     [SerializeField]
     List<int> trophyList = new List<int>();
+    [SerializeField]
+    int password = 0;
 
     private ArrayList observerList = new ArrayList();
 
@@ -152,6 +152,16 @@ public class UserManager : MonoBehaviour
     public List<int> getTrophyList()
     {
         return trophyList;
+    }
+
+    public void setPassword(int _password)
+    {
+        password = _password;
+    }
+
+    public int getPassword()
+    {
+        return password;
     }
 
     public void notifyNicknameChanged()

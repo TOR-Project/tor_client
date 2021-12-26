@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class StakingManager : MonoBehaviour
 {
+    public const int PURPOSE_BREAK = 0;
     public const int PURPOSE_MONARCH = 1;
     public const int PURPOSE_GOVERNANCE = 2;
     public const int PURPOSE_REBELLION = 3;
@@ -26,6 +27,11 @@ public class StakingManager : MonoBehaviour
     }
 
     internal string getStakingText(int _purpose)
+    {
+        return LanguageManager.instance.getText(getStakingTextKey(_purpose));
+    }
+
+    internal string getStakingTextKey(int _purpose)
     {
         switch (_purpose)
         {

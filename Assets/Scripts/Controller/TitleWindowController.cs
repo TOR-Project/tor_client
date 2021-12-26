@@ -30,6 +30,7 @@ public class TitleWindowController : MonoBehaviour
     private void OnEnable()
     {
         CharacterManager.instance.reqNotInitCharacterList(showPopup);
+        ContractManager.instance.reqGetPassword();
     }
 
     public bool showPopup(int _part)

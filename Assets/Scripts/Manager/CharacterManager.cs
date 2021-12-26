@@ -15,12 +15,15 @@ public class CharacterManager : MonoBehaviour
     public const int COUNTRY_HELLVESTA = 2;
     public const int COUNTRY_TRIPOLI = 3;
     public const int COUNTRY_BARBAROS = 4;
+    public const int COUNTRY_MAX = 5;
 
     public const int RACE_HUMAN = 0;
     public const int RACE_ELF = 1;
     public const int RACE_OAK = 2;
     public const int RACE_DARKELF = 3;
     public const int RACE_DRAGON = 4;
+    public const int RACE_MAX = 5;
+    public const int RACE_ALL = 99;
 
     public const int JOB_NOVICE = 0;
     public const int JOB_WORRIOR = 1;
@@ -31,33 +34,24 @@ public class CharacterManager : MonoBehaviour
     public const int JOB_WITCH_DOCTOR = 6;
     public const int JOB_ASSASSIN = 7;
     public const int JOB_SORCERER = 8;
+    public const int JOB_MAX = 9;
+    public const int JOB_ALL = 99;
 
     public const int TX_SPLIT_AMOUNT = 200;
 
     [SerializeField]
-    private List<CharacterData> characterDataList = new List<CharacterData>();
-    [SerializeField]
+    private Dictionary<int, CharacterData> characterDataMap = new Dictionary<int, CharacterData>();
     private int characterCount = 0;
-    [SerializeField]
     private int stakingCharacterCount = 0;
-    [SerializeField]
     private int receivedStakingDataCount = 0;
-    [SerializeField]
     private int[] characterIdList = new int[] { };
-    [SerializeField]
     private int[] stakingCharacterIdList = new int[] { };
-    [SerializeField]
     private int[] notInitCharacterIdList = new int[] { };
 
-    [SerializeField]
     private List<CharacterData> notInitedCharacterDataList = new List<CharacterData>();
-    [SerializeField]
     private int[] pendingIdList;
-    [SerializeField]
     private int[] pendingCharacterDataList;
-    [SerializeField]
     private int[] pendingStatusDataList;
-    [SerializeField]
     private int[] pendingEquipDataList;
 
     public int loadingStep = 0;
@@ -81,7 +75,7 @@ public class CharacterManager : MonoBehaviour
 
     public void resetAllData()
     {
-        characterDataList.Clear();
+        characterDataMap.Clear();
         characterCount  = 0;
         characterIdList = new int[] { };
         notInitCharacterIdList = new int[] { };
@@ -90,9 +84,15 @@ public class CharacterManager : MonoBehaviour
 
     public List<CharacterData> getCharacterList()
     {
-        return characterDataList;
-
+        return characterDataMap.Values.ToList();
     }
+
+    public CharacterData getCharacterData(int _id)
+    {
+        return characterDataMap[_id];
+    }
+
+
 
     /**
      *  1. start is there not inited character
@@ -302,7 +302,7 @@ public class CharacterManager : MonoBehaviour
     {
         characterIdList = _idList;
         stakingCharacterIdList = _stakingIdList;
-        characterDataList.Clear();
+        characterDataMap.Clear();
 
         int[] allCharacterIdList = characterIdList.Concat(stakingCharacterIdList).ToArray();
         if (allCharacterIdList.Length == 0)
@@ -349,9 +349,9 @@ public class CharacterManager : MonoBehaviour
         data.equipData.pants = int.Parse(_equipData["pants"].ToString());
         data.equipData.shoes = int.Parse(_equipData["shoes"].ToString());
 
-        characterDataList.Add(data);
+        characterDataMap.Add(data.tokenId, data);
 
-        if (characterDataList.Count >= (characterCount + stakingCharacterCount))
+        if (characterDataMap.Count >= (characterCount + stakingCharacterCount))
         {
             reqStakingData();
         }
@@ -369,7 +369,7 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            ContractManager.instance.reqStakingData(stakingCharacterCount);
+            ContractManager.instance.reqStakingData(stakingCharacterIdList);
             loadingStep = 4;
         }
     }
@@ -381,11 +381,11 @@ public class CharacterManager : MonoBehaviour
     {
         int tokenId = int.Parse(_stakingData["id"].ToString());
 
-        foreach (CharacterData cd in characterDataList)
+        foreach (CharacterData cd in characterDataMap.Values)
         {
             if (cd.tokenId == tokenId)
             {
-                cd.stakingData.parsing(_stakingData);
+                cd.stakingData.parse(_stakingData);
                 break;
             }
         }

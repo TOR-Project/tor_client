@@ -14,4 +14,6 @@ public class Const
     public const bool PRODUCTION = false;
 
     public const int TERMS_VERSION = 1;
+
+    public const string TOR_COIN = "ToR";
 }

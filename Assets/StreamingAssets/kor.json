@@ -23,7 +23,7 @@
         {"key":"ID_CHECKING_CHARACTER",     "value":"내 모험가들에게 정보를 꼬치꼬치 캐 묻는 중"},
         {"key":"ID_STAKING_CHARACTER",      "value":"일하고 있는 모험가들을 불러 세우는 중"},
 
-        {"key":"ID_ERR_SERVER_BLOCKED",     "value":"현재 토르 세계에 세찬 비바람이 몰아치고 있습니다.\n잠시 뒤 다시 입장 해 주세요."},
+        {"key":"ID_ERR_SERVER_BLOCKED",     "value":"현재 토르 세계로 통하는 문이 굳게 닫혀있습니다.\n잠시 뒤 다시 돌아와 주세요."},
         {"key":"ID_ERR_VERSION_MISMATCHED", "value":"이 문은 과거의 토르 세계로 향하고 있습니다.\n업데이트를 통해 새로운 문으로 입장 해 주세요."},
         {"key":"ID_ERR_NETWORK_MISMATCHED", "value":"토르 세계의 입구는 이곳이 아닌 것 같습니다."},
         {"key":"ID_ERR_WALLET_CONNECTION_FAILED", "value":"지갑 연결에 실패했습니다."},
@@ -44,9 +44,10 @@
         {"key":"ID_REDUNDANCY_UNAVAILABLE", "value":"사용이 불가능한 닉네임입니다."},
         
         {"key":"ID_MAIN",                   "value":"Main"},
-        {"key":"ID_ENTER",                  "value":"입장"},
+        {"key":"ID_BACK",                   "value":"Back"},
+        {"key":"ID_ENTER",                  "value":"Enter"},
         {"key":"ID_CHARACTER",              "value":"Character"},
-        {"key":"ID_MINE",                   "value":"Mining"},
+        {"key":"ID_MINING",                 "value":"Mining"},
         {"key":"ID_PUB",                    "value":"Pub"},
         {"key":"ID_MAP",                    "value":"Map"},
         {"key":"ID_NOVEL",                  "value":"Novel"},
@@ -58,6 +59,26 @@
         {"key":"ID_GOVERNANCE_STATE",       "value":"거버넌스 제안 중"},
         {"key":"ID_MINING_STATE",           "value":"채굴 중"},
         {"key":"ID_REBELLION_STATE",        "value":"반란 주동 중"},
+        
+        {"key":"ID_WAITING_ROOM",           "value":"대기실"},
+        {"key":"ID_WORKING_PLACE",          "value":"노역장"},
+        {"key":"ID_UNSTAKING",              "value":"Unstaking"},
+        {"key":"ID_WARNING_SELECT_STAKING", "value":"노역장으로 보낼 모험가를 선택 해 주세요!"},
+        {"key":"ID_WARNING_SELECT_UNSTAKING","value":"대기실로 보낼 모험가를 선택 해 주세요!"},
+        {"key":"ID_WARNING_SELECT_RECEIVE", "value":"채굴 수령을 할 모험가를 선택 해 주세요!"},
+        {"key":"ID_PROCESS_STAKING",        "value":"{0}명의 모험가를 노역장으로 보냅니다."},
+        {"key":"ID_PROCESS_UNSTAKING",      "value":"{0}명의 모험가를 대기실로 보냅니다.\n주의! 수령하지 않은 ToR코인은 사라집니다!"},
+        {"key":"ID_MINING_TOO_MANY_CHARACTER","value":"\n\n모험가가 너무 많아 여러번에 걸쳐 모험가를 보냅니다.\n({0} / {1})"},
+        {"key":"ID_MINING_RECEIPT",         "value":"채굴 영수증"},
+        {"key":"ID_N_CHARACTER",            "value":"({0}명의 모험가)"},
+        {"key":"ID_BASIC_MINING",           "value":"기본 채굴량"},
+        {"key":"ID_COUNTRY_TAX",            "value":"국가 세금"},
+        {"key":"ID_COUNTRY_PROPERTY",       "value":"국가 효과"},
+        {"key":"ID_REBELLION_AMOUNT",       "value":"반란 효과"},
+        {"key":"ID_EARLYBIRD_BONUS",        "value":"얼리버드 보너스"},
+        {"key":"ID_ACCOUNT_RECEIVABLE",     "value":"미수금"},
+        {"key":"ID_COMMISSION",             "value":"수수료"},
+        {"key":"ID_FINAL_AMOUNT",           "value":"최종 채굴량"},
         
         {"key":"ID_MINE_EXP",               "value":"이 곳은 루그란디스의 번영을 위한 채굴장입니다.\n번영의 영광을 위하여 소유하신 모험가들을\n이곳 채굴 노역장에서 일을 시키면\n그에 따른 보상을 얻을 수 있습니다."},
         {"key":"ID_PUB_EXP",                "value":"이 곳은 루그란디스의 화합의 장이자 만남의 장.\n가장 평화로운 선술집 입니다.\n루그란디스의 모든 모험가들이 모이는 곳이며\n이 곳에서 소유하신 모험가들을 확인하실 수 있습니다."},
@@ -78,7 +99,9 @@
         {"key":"ID_TRIPOLI",                "value":"Tripoli"},
         {"key":"ID_BARBAROS",               "value":"Barbaros"},
         
-        {"key":"ID_RECEIVE_ALL",            "value":"Receive All"},
+        {"key":"ID_RECEIVE_ALL",            "value":"전체 받기"},
+        {"key":"ID_RECEIVE",                "value":"받기"},
+        {"key":"ID_CANCEL",                 "value":"취소"},
         
         {"key":"LAST",                      "value":""}
     ]

@@ -16,9 +16,6 @@ public class PubWindowController : MonoBehaviour
     GameObject gridPanel;
 
     [SerializeField]
-    Image nftImage;
-
-    [SerializeField]
     GameObject detailPanel;
 
     [SerializeField]
@@ -36,6 +33,7 @@ public class PubWindowController : MonoBehaviour
     private void OnEnable()
     {
         List<CharacterData> list = CharacterManager.instance.getCharacterList();
+        list.Sort(SortByTokenIdAscending);
 
         for (int idx = 0; idx < list.Count; idx++)
         {
@@ -43,6 +41,7 @@ public class PubWindowController : MonoBehaviour
             if (idx < gridPanel.transform.childCount)
             {
                 characterCard = gridPanel.transform.GetChild(idx).gameObject;
+                characterCard.SetActive(true);
             }
             else
             {
@@ -50,17 +49,25 @@ public class PubWindowController : MonoBehaviour
             }
 
             CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
-            cardController.setCharacterId(list[idx]);
+            cardController.setCharacterId(list[idx], CharacterCardController.STATE_PUB);
+            cardController.setClickCallback(selectCharacterCard);
         }
 
         for (int idx = list.Count; idx < gridPanel.transform.childCount; idx++)
         {
             gridPanel.transform.GetChild(idx).gameObject.SetActive(false);
         }
+
     }
 
-    public void selectCharacterCard(int _idx)
+    public int SortByTokenIdAscending(CharacterData cd1, CharacterData cd2)
+    {
+        return cd1.tokenId - cd2.tokenId;
+    }
+
+    public bool selectCharacterCard(CharacterCardController _cardController)
     {
 
+        return true;
     }
 }
