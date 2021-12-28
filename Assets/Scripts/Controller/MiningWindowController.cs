@@ -23,6 +23,10 @@ public class MiningWindowController : MonoBehaviour
     GameObject waitingGridPanel;
     [SerializeField]
     GameObject workingGridPanel;
+    [SerializeField]
+    GameObject helpPanel;
+    [SerializeField]
+    Animator helpPanelAnimator;
 
     [SerializeField]
     Text[] amountTextList;
@@ -61,6 +65,21 @@ public class MiningWindowController : MonoBehaviour
     private void OnDisable()
     {
         MiningManager.instance.stopMiningAmountSyncronizer();
+    }
+
+    public void showHelpPopup()
+    {
+        helpPanel.SetActive(true);
+    }
+
+    public void closeHelpPopup()
+    {
+        helpPanelAnimator.SetTrigger(dismissingTrigger);
+    }
+
+    public void dismissHelpPopup()
+    {
+        helpPanel.SetActive(false);
     }
 
     public void updateGrid()

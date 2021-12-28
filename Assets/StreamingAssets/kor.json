@@ -36,7 +36,6 @@
         {"key":"ID_USING_TOKEN",            "value":"TOR 세계에서 원활한 시스템 사용을 위해 이용자의 TOR 토큰에 대해 컨트랙트의 접근을 허용할 수 있도록 최초 1회에 한해 Approve 트랜잭션을 실행합니다."},
         {"key":"ID_USING_NFT",              "value":"TOR 세계에서 원활한 시스템 사용을 위해 이용자의 TOR NFT에 대해 컨트랙트의 접근을 허용할 수 있도록 최초 1회에 한해 Approve 트랜잭션을 실행합니다."},
         {"key":"ID_REGIST_TOKEN",           "value":"TOR 세계에서 통용되는 ToR 코인을 손 쉽게 사용할 수 있도록 모험가님의 지갑에 등록합니다."},
-        {"key":"ID_CONFIRM",                "value":"확인"},
         {"key":"ID_CREATE_NICKNAME",        "value":"TOR 세계에서 사용할 닉네임을 정해주세요."},
         {"key":"ID_NICKNAME_HINT",          "value":"2~10글자"},
         {"key":"ID_CHECK_REDUNDANCY",       "value":"중복 확인"},
@@ -54,7 +53,13 @@
         {"key":"ID_NOVEL",                  "value":"Novel"},
         {"key":"ID_GOVERNANCE",             "value":"Governance"},
         {"key":"ID_NEWS",                   "value":"News"},
-        {"key":"ID_STAKING",                "value":"Staking"},
+        
+        {"key":"ID_CANCEL",                 "value":"취소"},
+        {"key":"ID_CLOSE",                  "value":"닫기"},
+        {"key":"ID_HELP",                   "value":"도움말"},
+        {"key":"ID_STAKING",                "value":"스테이킹"},
+        {"key":"ID_UNSTAKING",              "value":"언스테이킹"},
+        {"key":"ID_CONFIRM",                "value":"확인"},
         
         {"key":"ID_MONARCH_STATE",          "value":"군주 출마 중"},
         {"key":"ID_GOVERNANCE_STATE",       "value":"거버넌스 제안 중"},
@@ -63,7 +68,6 @@
         
         {"key":"ID_WAITING_ROOM",           "value":"대기실"},
         {"key":"ID_WORKING_PLACE",          "value":"노역장"},
-        {"key":"ID_UNSTAKING",              "value":"Unstaking"},
         {"key":"ID_WARNING_SELECT_STAKING", "value":"노역장으로 보낼 모험가를 선택 해 주세요!"},
         {"key":"ID_WARNING_SELECT_UNSTAKING","value":"대기실로 보낼 모험가를 선택 해 주세요!"},
         {"key":"ID_WARNING_SELECT_RECEIVE", "value":"채굴 수령을 할 모험가를 선택 해 주세요!"},
@@ -80,6 +84,9 @@
         {"key":"ID_ACCOUNT_RECEIVABLE",     "value":"미수금"},
         {"key":"ID_COMMISSION",             "value":"수수료"},
         {"key":"ID_FINAL_AMOUNT",           "value":"최종 채굴량"},
+        {"key":"ID_RECEIVE_ALL",            "value":"전체 받기"},
+        {"key":"ID_RECEIVE",                "value":"받기"},
+        {"key":"ID_MINING_HELP_CONTENTS",   "value":"이 곳은 [루그란디스]의 다가올 번영을 위한 디딤돌이 될 자원을 생산하는 채굴장입니다. 소유한 모험가를 노역장에 스테이킹하여 모험가에게 채굴임무를 부여할 수 있습니다.\n\n • 스테이킹이란 모험가에게 특정 임무를 부여하는 것으로, 스테이킹 동안 소유하고 계신 모험가 NFT가 ToR 시스템으로 잠시 트랜스퍼됩니다. 따라서 개인 지갑에서는 더 이상 NFT를 확인 하실 수 없습니다.\n\n • 채굴 스테이킹중인 모험가만이 토큰을 생성해 낼 수 있습니다.\n\n • 스테이킹 된 모험가 NFT는 언제든지 언스테이킹 기능을 통해 ToR 시스템에서 개인 지갑으로 트랜스퍼 시킬 수 있으며, 이 즉시 ToR 시스템은 곧바로 소유자의 개인지갑으로 모험가 NFT를 반환합니다.(NFT 거래소에 따라 NFT가 노출되는데에는 일정 시간이 필요할 수도 있습니다)\n\n • 언스테이킹시에 모험가가 수령하지 못한 토큰은 소멸되기 때문에 반드시 토큰 수령 후 언스테이킹 해 주시기 바랍니다.\n\n • 모험가들은 채굴 스테이킹 상태일 경우 여러분이 토르 월드를 떠나있는 동안에도 계속해서 토큰을 채굴합니다. 안심하고 토르 월드를 잠시 떠나계셔도 됩니다. 모험가들은 절대로 꾀를 부리거나 노역이 힘들어 도망가지 않습니다!!\n\n • 스테이킹, 언스테이킹 및 토큰 수령 시 일부 수수료가 발생될 수 있습니다.\n\n • Klaytn 네트워크 및 블럭 상태에 따라 채굴 영수증에 표시 된 토큰의 양과 실제 지갑에 들어온 토큰의 양에 다소 차이가 있을 수 있습니다."},
         
         {"key":"ID_MINE_EXP",               "value":"이 곳은 루그란디스의 번영을 위한 채굴장입니다.\n번영의 영광을 위하여 소유하신 모험가들을\n이곳 채굴 노역장에서 일을 시키면\n그에 따른 보상을 얻을 수 있습니다."},
         {"key":"ID_PUB_EXP",                "value":"이 곳은 루그란디스의 화합의 장이자 만남의 장.\n가장 평화로운 선술집 입니다.\n루그란디스의 모든 모험가들이 모이는 곳이며\n이 곳에서 소유하신 모험가들을 확인하실 수 있습니다."},
@@ -99,10 +106,6 @@
         {"key":"ID_HELLVESTA",              "value":"Hellvesta"},
         {"key":"ID_TRIPOLI",                "value":"Tripoli"},
         {"key":"ID_BARBAROS",               "value":"Barbaros"},
-        
-        {"key":"ID_RECEIVE_ALL",            "value":"전체 받기"},
-        {"key":"ID_RECEIVE",                "value":"받기"},
-        {"key":"ID_CANCEL",                 "value":"취소"},
         
         {"key":"LAST",                      "value":""}
     ]
