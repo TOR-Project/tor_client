@@ -86,6 +86,8 @@ public class LanguageManager : MonoBehaviour
 
     public int getDefaultLanguage()
     {
+        return LANG_KOR;
+        /*
         SystemLanguage locale = Application.systemLanguage;
         switch (locale)
         {
@@ -114,6 +116,7 @@ public class LanguageManager : MonoBehaviour
             case SystemLanguage.Japanese:
                 return LANG_JAP;
         }
+        */
     }
 
     private string getFileName()

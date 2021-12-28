@@ -234,6 +234,21 @@ public class ContractManager : MonoBehaviour
         termsController.resCheckResundancy(available);
     }
 
+    public void reqRegistTokenToWallet()
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqRegistTokenToWallet()");
+        mContractCommunicator.reqRegistTokenToWallet();
+    }
+
+    public void resRegistTokenToWallet(string _json)
+    {
+        globalUIController.hideLoading();
+        Debug.Log("resRegistTokenToWallet()");
+
+        termsController.resRegistTokenToWallet();
+    }
+
     public void reqCreateUser(string _nickname)
     {
         globalUIController.showLoading();
@@ -447,7 +462,7 @@ public class ContractManager : MonoBehaviour
 
     public void resGetPassword(string _json)
     {
-        Debug.Log("resGetPassword() json = " + _json);
+        Debug.Log("resGetPassword()");
 
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 

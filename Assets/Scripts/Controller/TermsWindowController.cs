@@ -72,7 +72,7 @@ public class TermsWindowController : MonoBehaviour
 
         if (UserManager.instance.getNickname().Equals(""))
         {
-            showNicknamePanel();
+            registTokenToWallet();
             return;
         }
     }
@@ -117,7 +117,7 @@ public class TermsWindowController : MonoBehaviour
 
         if (UserManager.instance.getNickname().Equals(""))
         {
-            showNicknamePanel();
+            registTokenToWallet();
             return;
         }
 
@@ -152,7 +152,7 @@ public class TermsWindowController : MonoBehaviour
 
         if (UserManager.instance.getNickname().Equals(""))
         {
-            showNicknamePanel();
+            registTokenToWallet();
             return;
         }
 
@@ -182,11 +182,21 @@ public class TermsWindowController : MonoBehaviour
 
         if (UserManager.instance.getNickname().Equals(""))
         {
-            showNicknamePanel();
+            registTokenToWallet();
             return;
         }
 
         enterNextPage();
+    }
+
+    private void registTokenToWallet()
+    {
+        globalUIController.showPopupByTextKey("ID_REGIST_TOKEN", ContractManager.instance.reqRegistTokenToWallet);
+    }
+
+    public void resRegistTokenToWallet()
+    {
+        showNicknamePanel();
     }
 
 

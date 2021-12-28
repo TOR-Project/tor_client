@@ -77,6 +77,11 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("reqCheckRedundancy", values);
     }
 
+    public void reqRegistTokenToWallet()
+    {
+        Application.ExternalCall("reqRegistTokenToWallet", "");
+    }
+
     public void reqCreateUser(string _nickname, int _ver)
     {
         Dictionary<string, object> data = new Dictionary<string, object>();

@@ -341,16 +341,17 @@ public class MiningWindowController : MonoBehaviour
 
             for (int amountIdx = 0; amountIdx < amountList.Length; amountIdx++)
             {
-                if (amountIdx != MiningManager.IDX_BASIC && amountIdx != MiningManager.IDX_FINAL)
-                {
-                    receiptRowPanelList[amountIdx].SetActive(md.amount[amountIdx] != 0);
-                }
                 amountList[amountIdx] += md.amount[amountIdx];
             }
         }
 
         for (int idx = 0; idx < amountTextList.Length; idx++)
         {
+            if (idx != MiningManager.IDX_BASIC && idx != MiningManager.IDX_FINAL)
+            {
+                receiptRowPanelList[idx].SetActive(amountList[idx] != 0);
+            }
+
             string sign = amountList[idx] > 0 ? "+ " : "";
             amountTextList[idx].text = sign + Utils.convertPebToTorStr(amountList[idx]) + " " + Const.TOR_COIN;
         }
@@ -396,6 +397,7 @@ public class MiningWindowController : MonoBehaviour
     {
         ContractManager.instance.reqGetPassword();
         ContractManager.instance.reqCoinAmount();
+        MiningManager.instance.resetAllMiningData();
         confirmReceiptPopup();
     }
 

@@ -84,6 +84,14 @@ public class MiningManager : MonoBehaviour
         return miningMap[_tokenId];
     }
 
+    public void resetAllMiningData()
+    {
+        foreach (MiningData md in miningMap.Values)
+        {
+            md.resetAmount();
+        }
+    }
+
     private void notifyMiningDataChaged(int _tokenId)
     {
         if (!miningObserverMap.ContainsKey(_tokenId) || !miningMap.ContainsKey(_tokenId))

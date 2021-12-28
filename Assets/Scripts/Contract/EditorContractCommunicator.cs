@@ -68,7 +68,7 @@ public class EditorContractCommunicator : IContractCommunicator
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["title"] = "Welcome";
         data["date"] = 0;
-        data["contents"] = "강인한 오크도, 지혜로운 엘프도,\n강인한 인간도, 용감한 다크엘프도,\n우리의 고향 [루그란디스]에 오신 것을\n진심으로 환영합니다.\n\n이곳은 영광의 땅 [루그란디스]\n\n이 문은 채굴, 통치, 반란, 교류, 탐험을 할 수 있는\n영광의 땅 [루그란디스]로 이어집니다.\n\n다시 돌아온 강인하고, 지혜롭고,\n용감하고, 현명한 모험가여\n레이나의 축복이\n부디 그대들과 함께하기를 바랍니다.";
+        data["contents"] = "강인한 오크도, 지혜로운 엘프도,\n현명한 인간도, 용감한 다크엘프도,\n우리의 고향 [루그란디스]에 오신 것을\n진심으로 환영합니다.\n\n이곳은 영광의 땅 [루그란디스]\n\n이 문은 채굴, 통치, 반란, 교류, 탐험을 할 수 있는\n영광의 땅 [루그란디스]로 이어집니다.\n\n다시 돌아온 강인하고, 지혜롭고,\n용감하고, 현명한 모험가여\n레이나의 축복이\n부디 그대들과 함께하기를 바랍니다.";
         var values = JsonConvert.SerializeObject(data);
         Debug.Log("resLatestNotice() " + values);
         mContractManager.resLatestNotice(values);
@@ -197,6 +197,18 @@ public class EditorContractCommunicator : IContractCommunicator
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCheckRedundancy(values);
+    }
+
+    public void reqRegistTokenToWallet()
+    {
+        mContractManager.StartCoroutine(progRegistTokenToWallet());
+    }
+
+    private IEnumerator progRegistTokenToWallet()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        mContractManager.resRegistTokenToWallet("");
     }
 
     public void reqCreateUser(string _nickname, int _ver)

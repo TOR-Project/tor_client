@@ -38,10 +38,12 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
 
     private void OnDestroy()
     {
-        if (characterData != null)
-        {
-            MiningManager.instance.removeMiningDataObserver(characterData.tokenId, this);
-        }
+        removeListener();
+    }
+
+    private void OnDisable()
+    {
+        removeListener();
     }
 
     public void setClickCallback(Func<CharacterCardController, bool> _callback)
@@ -49,8 +51,23 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         clickCallback = _callback;
     }
 
+    private void removeListener()
+    {
+        if (characterData != null)
+        {
+            MiningManager.instance.removeMiningDataObserver(characterData.tokenId, this);
+        }
+    }
+
     public void setCharacterId(CharacterData _data, int _state)
     {
+        removeListener();
+
+        if (_state == STATE_WORKING_PLACE)
+        {
+            MiningManager.instance.addMiningDataObserver(_data.tokenId, this);
+        }
+
         characterData = _data;
         cardState = _state;
 
@@ -62,11 +79,6 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         setSelected(false);
 
         updateCharacterImage(characterSprite);
-
-        if (_state == STATE_WORKING_PLACE)
-        {
-            MiningManager.instance.addMiningDataObserver(characterData.tokenId, this);
-        }
     }
 
     private void updateStateText()
