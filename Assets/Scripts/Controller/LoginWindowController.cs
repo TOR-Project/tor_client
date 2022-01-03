@@ -54,9 +54,9 @@ public class LoginWindowController : MonoBehaviour
         noticeText.text = contents;
     }
 
-    internal void enterNextPage(bool _hasUserData, bool _latestTerms, bool _tokenUsing, bool _nftUsing)
+    internal void enterNextPage(bool _hasUserData, bool _latestTerms, bool _tokenUsing, bool _nftUsing, bool _needMigration)
     {
-        if (_hasUserData && _latestTerms && _tokenUsing && _nftUsing)
+        if (_hasUserData && _latestTerms && _tokenUsing && _nftUsing && !_needMigration)
         {
             windowController.OpenWindow(titleWindow);
         } else

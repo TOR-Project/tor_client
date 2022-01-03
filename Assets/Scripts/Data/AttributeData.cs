@@ -51,7 +51,7 @@ public class AttributeData
             }
             else if (valueStr.Contains("Orcs"))
             {
-                cd.race = CharacterManager.RACE_OAK;
+                cd.race = CharacterManager.RACE_ORC;
             }
             else if (valueStr.Contains("Darkelf"))
             {
@@ -68,7 +68,7 @@ public class AttributeData
             }
             else if (valueStr.Contains("Warrior"))
             {
-                cd.job = CharacterManager.JOB_WORRIOR;
+                cd.job = CharacterManager.JOB_WARRIOR;
             }
             else if (valueStr.Contains("Wizard"))
             {

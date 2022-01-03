@@ -4,6 +4,7 @@ using System;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
+using TMPro;
 
 public class TermsWindowController : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class TermsWindowController : MonoBehaviour
     [SerializeField]
     GameObject nicknamePanel;
     [SerializeField]
+    LanguageTextController nicknameExpTextController;
+    [SerializeField]
     Animator nicknamePanelAnimator;
     [SerializeField]
     Text redundancyText;
@@ -31,7 +34,7 @@ public class TermsWindowController : MonoBehaviour
     [SerializeField]
     Color redundancySuccessColor;
     [SerializeField]
-    Text nicknameText;
+    TMP_InputField nicknameText;
 
     private string showingTrigger = "showing";
     private string dismissingTrigger = "dismissing";
@@ -73,6 +76,12 @@ public class TermsWindowController : MonoBehaviour
         if (UserManager.instance.getNickname().Equals(""))
         {
             registTokenToWallet();
+            return;
+        }
+
+        if(UserManager.instance.isNeedMigration())
+        {
+            showNicknamePanel();
             return;
         }
     }
@@ -199,9 +208,14 @@ public class TermsWindowController : MonoBehaviour
         showNicknamePanel();
     }
 
-
     private void showNicknamePanel()
     {
+        if (UserManager.instance.isNeedMigration())
+        {
+            nicknameExpTextController.key = "ID_MIGRATION_EXP";
+            nicknameExpTextController.onLanguageChanged();
+            nicknameText.text = UserManager.instance.getNickname();
+        }
         nicknamePanel.SetActive(true);
     }
 

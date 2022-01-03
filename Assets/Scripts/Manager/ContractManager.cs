@@ -149,9 +149,11 @@ public class ContractManager : MonoBehaviour
         else
         {
             bool hasUserData = bool.Parse(values["hasUserData"].ToString());
+            bool hasUserDataLegacy = bool.Parse(values["hasUserDataLegacy"].ToString());
             bool latestTerms = false;
-            bool tokenUsing = false;
-            bool nftUsing = false;
+            bool tokenUsing = bool.Parse(values["tokenUsing"].ToString());
+            bool nftUsing = bool.Parse(values["nftUsing"].ToString());
+            bool needMigration = false;
 
             if (hasUserData)
             {
@@ -160,13 +162,21 @@ public class ContractManager : MonoBehaviour
                 latestTerms = termsVersion >= Const.TERMS_VERSION;
                 string[] friends = JsonConvert.DeserializeObject<string[]>(values["friends"].ToString());
 
-                tokenUsing = bool.Parse(values["tokenUsing"].ToString());
-                nftUsing = bool.Parse(values["nftUsing"].ToString());
-
-                UserManager.instance.setUserData(nickName, termsVersion, friends, tokenUsing, nftUsing);
+                UserManager.instance.setUserData(nickName, termsVersion, friends, tokenUsing, nftUsing, false);
+            } else
+            {
+                string nickName = "";
+                int termsVersion = 0;
+                if (hasUserDataLegacy)
+                {
+                    needMigration = true;
+                    nickName = values["nickNameLegacy"].ToString();
+                    termsVersion = int.Parse(values["termsVersionLegacy"].ToString());
+                }
+                UserManager.instance.setUserData(nickName, termsVersion, new string[] { }, tokenUsing, nftUsing, needMigration);
             }
 
-            loginController.enterNextPage(hasUserData, latestTerms, tokenUsing, nftUsing);
+            loginController.enterNextPage(hasUserData, latestTerms, tokenUsing, nftUsing, needMigration);
         }
     }
 

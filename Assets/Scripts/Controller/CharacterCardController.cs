@@ -13,6 +13,9 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     public const int STATE_WORKING_PLACE = 3;
 
     [SerializeField]
+    GameObject componentsGroup;
+
+    [SerializeField]
     Image characterImage;
     [SerializeField]
     Text nameText;
@@ -20,7 +23,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     Text stateText;
 
     [SerializeField]
-    Image selectFrameImage;
+    GameObject selectFrame;
 
     [SerializeField]
     GameObject loadingObject;
@@ -44,6 +47,11 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     private void OnDisable()
     {
         removeListener();
+    }
+
+    public void setEnableComponents(bool _set)
+    {
+        componentsGroup.SetActive(_set);
     }
 
     public void setClickCallback(Func<CharacterCardController, bool> _callback)
@@ -109,7 +117,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     public void setSelected(bool _set)
     {
         selected = _set;
-        selectFrameImage.enabled = _set;
+        selectFrame.SetActive(_set);
     }
 
     public bool isSelected()

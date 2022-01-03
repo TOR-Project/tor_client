@@ -16,17 +16,18 @@ public class CharacterManager : MonoBehaviour
     public const int COUNTRY_TRIPOLI = 3;
     public const int COUNTRY_BARBAROS = 4;
     public const int COUNTRY_MAX = 5;
+    public const int COUNTRY_ALL = 99;
 
     public const int RACE_HUMAN = 0;
     public const int RACE_ELF = 1;
-    public const int RACE_OAK = 2;
+    public const int RACE_ORC = 2;
     public const int RACE_DARKELF = 3;
     public const int RACE_DRAGON = 4;
     public const int RACE_MAX = 5;
     public const int RACE_ALL = 99;
 
     public const int JOB_NOVICE = 0;
-    public const int JOB_WORRIOR = 1;
+    public const int JOB_WARRIOR = 1;
     public const int JOB_RANGER = 2;
     public const int JOB_BISHOP = 3;
     public const int JOB_WIZARD = 4;
@@ -90,6 +91,99 @@ public class CharacterManager : MonoBehaviour
     public CharacterData getCharacterData(int _id)
     {
         return characterDataMap[_id];
+    }
+
+    public string getCountryText(int _cid)
+    {
+        string key = "";
+        switch(_cid)
+        {
+            case COUNTRY_EVEGENIS:
+                key = "ID_EVEGENIS";
+                break;
+            case COUNTRY_ENFILIIS:
+                key = "ID_ENFILIIS";
+                break;
+            case COUNTRY_HELLVESTA:
+                key = "ID_HELLVESTA";
+                break;
+            case COUNTRY_TRIPOLI:
+                key = "ID_TRIPOLI";
+                break;
+            case COUNTRY_BARBAROS:
+                key = "ID_BARBAROS";
+                break;
+            default:
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
+    }
+
+    public string getRaceText(int _rid)
+    {
+        string key = "";
+        switch (_rid)
+        {
+            case RACE_HUMAN:
+                key = "ID_RACE_HUMAN";
+                break;
+            case RACE_ELF:
+                key = "ID_RACE_ELF";
+                break;
+            case RACE_ORC:
+                key = "ID_RACE_ORC";
+                break;
+            case RACE_DARKELF:
+                key = "ID_RACE_DARKELF";
+                break;
+            case RACE_DRAGON:
+                key = "ID_RACE_DRAGON";
+                break;
+            default:
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
+    }
+
+    public string getJobText(int _jid)
+    {
+        string key = "";
+        switch (_jid)
+        {
+            case JOB_NOVICE:
+                key = "ID_JOB_NOVICE";
+                break;
+            case JOB_WARRIOR:
+                key = "ID_JOB_WARRIOR";
+                break;
+            case JOB_RANGER:
+                key = "ID_JOB_RANGER";
+                break;
+            case JOB_BISHOP:
+                key = "ID_JOB_BISHOP";
+                break;
+            case JOB_WIZARD:
+                key = "ID_JOB_WIZARD";
+                break;
+            case JOB_INFANTRY:
+                key = "ID_JOB_INFANTRY";
+                break;
+            case JOB_WITCH_DOCTOR:
+                key = "ID_JOB_WITCH_DOCTOR";
+                break;
+            case JOB_ASSASSIN:
+                key = "ID_JOB_ASSASSIN";
+                break;
+            case JOB_SORCERER:
+                key = "ID_JOB_SORCERER";
+                break;
+            default:
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
     }
 
 
@@ -349,7 +443,13 @@ public class CharacterManager : MonoBehaviour
         data.equipData.pants = int.Parse(_equipData["pants"].ToString());
         data.equipData.shoes = int.Parse(_equipData["shoes"].ToString());
 
-        characterDataMap.Add(data.tokenId, data);
+        if (!characterDataMap.ContainsKey(data.tokenId))
+        {
+            characterDataMap.Add(data.tokenId, data);
+        } else
+        {
+            characterCount--;
+        }
 
         if (characterDataMap.Count >= (characterCount + stakingCharacterCount))
         {

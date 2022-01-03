@@ -18,6 +18,8 @@ public class UserManager : MonoBehaviour
     [SerializeField]
     bool nftUsing = false;
     [SerializeField]
+    bool needMigration = false;
+    [SerializeField]
     BigInteger coinAmount = BigInteger.Zero;
     [SerializeField]
     List<int> trophyList = new List<int>();
@@ -50,7 +52,7 @@ public class UserManager : MonoBehaviour
         return walletAddress;
     }
 
-    public void setUserData(string _nickName, int _termsVer, string[] _friends, bool _tokenUsing, bool _nftUsing)
+    public void setUserData(string _nickName, int _termsVer, string[] _friends, bool _tokenUsing, bool _nftUsing, bool _needMigration)
     {
         nickname = _nickName;
         termsVersion = _termsVer;
@@ -62,6 +64,7 @@ public class UserManager : MonoBehaviour
 
         tokenUsing = _tokenUsing;
         nftUsing = _nftUsing;
+        needMigration = _needMigration;
 
         notifyNicknameChanged();
     }
@@ -125,6 +128,11 @@ public class UserManager : MonoBehaviour
     public bool isNFTUsing()
     {
         return nftUsing;
+    }
+
+    public bool isNeedMigration()
+    {
+        return needMigration;
     }
 
     public void setCoinAmount(BigInteger _amount)

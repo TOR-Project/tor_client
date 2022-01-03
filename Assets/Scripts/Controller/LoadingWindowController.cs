@@ -9,7 +9,7 @@ public class LoadingWindowController : MonoBehaviour
     [SerializeField]
     Slider slider;
     [SerializeField]
-    LanguageTextController textController;
+    Text loadingText;
     [SerializeField]
     GlobalUIWindowController globalUIController;
 
@@ -38,30 +38,27 @@ public class LoadingWindowController : MonoBehaviour
         LoadingComponent[] loadingComponet = loadingComponentPool.getLoadingComponents();
         if (loadingComponet != null)
         {
-            slider.maxValue = loadingComponet.Length;
+            int max = 0;
             foreach (LoadingComponent lc in loadingComponet)
             {
                 lc.startLoading();
+                max += lc.getProgressMax();
             }
+            slider.maxValue = max;
             foreach (LoadingComponent lc in loadingComponet)
             {
-                updateText(lc.getLoadingTextKey());
-                yield return new WaitUntil(lc.isLoadingCompleted);
-
-                slider.value += 1;
+                float progress = slider.value;
+                while (!lc.isLoadingCompleted())
+                {
+                    loadingText.text = lc.getLoadingText();
+                    slider.value = progress + lc.getProgressCurrent();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                slider.value = progress + lc.getProgressMax();
             }
         }
 
         loadingComponentPool = null;
         _callback();
-    }
-
-    void updateText(string _key)
-    {
-        if (textController.key != _key)
-        {
-            textController.key = _key;
-            textController.onLanguageChanged();
-        }
     }
 }

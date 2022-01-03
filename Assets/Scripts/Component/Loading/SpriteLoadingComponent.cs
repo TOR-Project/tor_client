@@ -36,13 +36,13 @@ public class SpriteLoadingComponent : LoadingComponent
         return true;
     }
 
-    public override bool isLoadingCompleted()
-    {
-        return loadingCompleted;
-    }
-
     public override string getLoadingTextKey()
     {
         return loadingInfoTextKey;
+    }
+
+    public override int getProgressCurrent()
+    {
+        return loadingCompleted ? 1 : 0;
     }
 }

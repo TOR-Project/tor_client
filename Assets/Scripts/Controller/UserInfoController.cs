@@ -30,10 +30,8 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
 
     private IEnumerator requestCoinAmountConstantly()
     {
-        Debug.Log("requestCoinAmountConstantly()");
         while(UserManager.instance.getWalletAddress() != "")
         {
-            Debug.Log("requestCoinAmountConstantly() gogo");
             ContractManager.instance.reqCoinAmount();
 
             yield return new WaitForSeconds(10);
@@ -57,7 +55,7 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
             walletAddressText.text = _address;
         }
 
-        globalUIWindow.StartCoroutine(requestCoinAmountConstantly());
+        // globalUIWindow.StartCoroutine(requestCoinAmountConstantly());
     }
 
     public void onTrophyDataChanged(List<int> _trophyList)

@@ -85,7 +85,8 @@ public class EditorContractCommunicator : IContractCommunicator
 
         bool userBanned = false;
         bool noCharacter = false;
-        bool hasUserData = true;
+        bool hasUserDataLegacy = true;
+        bool hasUserData = false;
         bool tokenUsing = true;
         bool nftUsing = true;
 
@@ -104,20 +105,23 @@ public class EditorContractCommunicator : IContractCommunicator
             errCode = Const.ERR_NO_CHARACTER;
         }
 
+        if (hasUserDataLegacy)
+        {
+            data["nickNameLegacy"] = "Crow";
+            data["termsVersionLegacy"] = 1;
+        }
+
         if (hasUserData)
         {
-            data["hasUserData"] = true;
             data["nickName"] = "Crow";
             data["termsVersion"] = 1;
             data["friends"] = new string[] { "0x123456789", "0x123456789", "0x123456789", "0x123456789", "0x123456789" };
+        }
 
-            data["tokenUsing"] = tokenUsing;
-            data["nftUsing"] = nftUsing;
-        }
-        else
-        {
-            data["hasUserData"] = false;
-        }
+        data["hasUserDataLegacy"] = hasUserDataLegacy;
+        data["hasUserData"] = hasUserData;
+        data["tokenUsing"] = tokenUsing;
+        data["nftUsing"] = nftUsing;
 
         data["err"] = errCode;
         var values = JsonConvert.SerializeObject(data);
@@ -304,7 +308,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-        int randCount = UnityEngine.Random.Range(0, 100);
+        int randCount = UnityEngine.Random.Range(0, 30);
         for (int i = 0; i < randCount; i++)
         {
             int id = UnityEngine.Random.Range(0, 10000);
@@ -379,7 +383,7 @@ public class EditorContractCommunicator : IContractCommunicator
             characterData["exp"] = 0;
             characterData["country"] = UnityEngine.Random.Range(0, 5);
             characterData["race"] = UnityEngine.Random.Range(0, 5);
-            characterData["job"] = UnityEngine.Random.Range(0, 9);
+            characterData["job"] = UnityEngine.Random.Range(1, 9);
             characterData["statusBonus"] = 0;
             characterData["version"] = 1;
 

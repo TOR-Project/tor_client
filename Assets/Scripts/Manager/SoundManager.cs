@@ -5,20 +5,15 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    public const int BGM_NORMAL = 0;
-    public const int BGM_BOSS = 1;
-
-    public const int SE_EAT = 0;
-
-    public bool isSoundOn = false;
-    public int bossPhaseCount = 0;
+    public bool isSoundOn;
     public AudioClip currentBgm;
 
     [SerializeField] AudioSource bgmPlayer;
     [SerializeField] AudioSource sePlayer;
 
-    [SerializeField] AudioClip[] bgmAudio;
-    [SerializeField] AudioClip[] seAudio;
+    Dictionary<string, AudioClip> bgmAudioMap = new Dictionary<string, AudioClip>();
+    Dictionary<string, AudioClip> seAudioMap = new Dictionary<string, AudioClip>();
+    private Dictionary<string, bool> downloadPendingMap = new Dictionary<string, bool>();
 
     private bool isLoadingCompleted = false;
 
@@ -36,82 +31,109 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine(loadSound());
+        // StartCoroutine(loadSound("login", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/bgm/connect+wallet.wav", bgmAudioMap, () => playBgm("login")));
+        StartCoroutine(loadSound("wallet", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/effect/button.wav", seAudioMap, null));
     }
 
-    private void playBgm()
+    public void playBgm(string _key)
     {
-        if (!isSoundOn)
+        if (!bgmAudioMap.ContainsKey(_key))
         {
-            currentBgm = null;
             bgmPlayer.Stop();
             return;
         }
 
-        AudioClip ac;
-        if (bossPhaseCount <= 0)
+        if (currentBgm != bgmAudioMap[_key])
         {
-            ac = bgmAudio[BGM_NORMAL];
+            currentBgm = bgmAudioMap[_key];
+
+            playBgmCurrent();
         }
-        else
+    }
+
+    private void playBgmCurrent()
+    {
+        if (!isSoundOn)
         {
-            ac = bgmAudio[BGM_BOSS];
+            bgmPlayer.Stop();
+            return;
         }
 
-        if (ac != null && currentBgm != ac)
+        if (currentBgm != null)
         {
-            currentBgm = ac;
-            bgmPlayer.clip = ac;
+            bgmPlayer.clip = currentBgm;
             bgmPlayer.Play();
         }
     }
 
-    private IEnumerator loadSound()
+    public void stopSeNow()
     {
-        isSoundOn = true;
-        playBgm();
-
-        isLoadingCompleted = true;
-
-        yield return null;
+        sePlayer.Stop();
     }
 
-    public bool isReady()
+    public void toggleSoundOn()
     {
-        return isLoadingCompleted;
+        isSoundOn = !isSoundOn;
+        playBgmCurrent();
     }
 
-    public void setSound(bool isOn)
+    public void playSoundEffect(string _key)
     {
-        isSoundOn = isOn;
-        playBgm();
-    }
-
-    public AudioClip getSoundEffect(int idx)
-    {
-        if (seAudio == null || seAudio.Length <= idx)
+        if (!isSoundOn)
         {
-            return null;
+            sePlayer.Stop();
+            return;
         }
 
-        return seAudio[idx];
-    }
-
-    public void playSoundEffect(int idx)
-    {
-        if (seAudio == null || seAudio.Length <= idx || !isSoundOn)
+        if (!seAudioMap.ContainsKey(_key))
         {
             return;
         }
 
-        sePlayer.clip = seAudio[idx];
+        sePlayer.clip = seAudioMap[_key];
         sePlayer.Play();
     }
 
-    public void setBossPhase(bool set)
+    public void requestSound(string _key, string _url, bool _isBgm, Action _callback)
     {
-        bossPhaseCount += (set ? 1 : -1);
+        Dictionary<string, AudioClip> map = _isBgm ? bgmAudioMap : seAudioMap;
 
-        playBgm();
+        if (map.ContainsKey(_key))
+        {
+            _callback();
+        }
+        else if (downloadPendingMap.ContainsKey(_url))
+        {
+            StartCoroutine(waitDownloadSound(_url, _callback));
+        }
+        else
+        {
+            downloadPendingMap[_url] = true;
+            StartCoroutine(loadSound(_key, _url, map, _callback));
+        }
+    }
+
+    private IEnumerator waitDownloadSound(string _url, Action _callback)
+    {
+        yield return new WaitUntil(() => downloadPendingMap[_url] == false);
+
+        _callback();
+    }
+
+    private IEnumerator loadSound(string _key, string _url, Dictionary<string, AudioClip> _map, Action _callback)
+    {
+        WWW www = new WWW(_url);
+        yield return www;
+        if (www.error == null)
+        {
+            _map.Add(_key, www.GetAudioClip());
+            downloadPendingMap[_url] = false;
+            _callback?.Invoke();
+        }
+        else
+        {
+            Debug.Log("ERROR: " + www.error);
+            _callback?.Invoke();
+        }
     }
 }

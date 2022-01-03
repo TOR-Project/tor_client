@@ -71,6 +71,7 @@ public class WebContractCommunicator : IContractCommunicator
     public void reqCheckRedundancy(string _nickname)
     {
         Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
         data["nickname"] = _nickname;
         var values = JsonConvert.SerializeObject(data);
 

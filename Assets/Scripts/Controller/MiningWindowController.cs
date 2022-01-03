@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 using System.Numerics;
+using Coffee.UIExtensions;
 
 public class MiningWindowController : MonoBehaviour
 {
@@ -27,6 +28,14 @@ public class MiningWindowController : MonoBehaviour
     GameObject helpPanel;
     [SerializeField]
     Animator helpPanelAnimator;
+    [SerializeField]
+    Scrollbar miningScrollBar;
+    [SerializeField]
+    RectTransform miningScrollViewRT;
+    [SerializeField]
+    GridLayoutGroup miningGridLayoutGroup;
+    [SerializeField]
+    RectTransform miningGridLayoutGroupRT;
 
     [SerializeField]
     Text[] amountTextList;
@@ -55,16 +64,34 @@ public class MiningWindowController : MonoBehaviour
     int txProcess = 0;
     int txMax = 0;
 
+    int lastVisibleStartIdx = 0;
+    int lastVisibleEndIdx = 0;
+
     private void OnEnable()
     {
         updateGrid();
         MiningManager.instance.startMiningAmountSyncronizer();
         ContractManager.instance.reqGetPassword();
+        StartCoroutine(playMiningSound());
     }
 
     private void OnDisable()
     {
+        SoundManager.instance.stopSeNow();
         MiningManager.instance.stopMiningAmountSyncronizer();
+    }
+
+    private IEnumerator playMiningSound()
+    {
+        while(gameObject.activeSelf)
+        {
+            if (workingGridPanel.transform.childCount > 0 && workingGridPanel.transform.GetChild(0).gameObject.activeSelf)
+            {
+                SoundManager.instance.playSoundEffect("mining");
+            }
+
+            yield return new WaitForSeconds(10);
+        }
     }
 
     public void showHelpPopup()
@@ -128,6 +155,7 @@ public class MiningWindowController : MonoBehaviour
             else
             {
                 characterCard = Instantiate(characterCardPrefab, gridPanel.transform, true);
+                characterCard.transform.localScale = UnityEngine.Vector3.one;
             }
 
             CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
@@ -148,6 +176,45 @@ public class MiningWindowController : MonoBehaviour
         stakingButton.interactable = waitingGridIdx > 0;
         receiptButton.interactable = workingGridIdx > 0;
         unstakingButton.interactable = workingGridIdx > 0;
+    }
+
+    public void onMiningScrollValueChanged()
+    {
+        float visibleViewHeight = miningScrollViewRT.rect.height;
+        float contentsViewHeight = miningGridLayoutGroupRT.rect.height - visibleViewHeight;
+        float gridSpaceY = miningGridLayoutGroup.spacing.y;
+        float gridCellY = miningGridLayoutGroup.cellSize.y;
+
+        float contentsViewWidth = miningGridLayoutGroupRT.rect.width;
+        float gridSpaceX = miningGridLayoutGroup.spacing.x;
+        float gridCellX = miningGridLayoutGroup.cellSize.x;
+        int gridMaxCellCol = (int)((contentsViewWidth + gridSpaceX) / (gridCellX + gridSpaceX));
+
+        int top = (int)(contentsViewHeight * (1 - miningScrollBar.value));
+        int bottom = (int)(top + visibleViewHeight);
+
+        int startRow = (int)((top + gridSpaceY) / (gridCellY + gridSpaceY));
+        int endRow = (int)(bottom / (gridCellY + gridSpaceY)) + 1;
+
+        int visibleStartIdx = startRow * gridMaxCellCol;
+        int visibleEndIdx = endRow * gridMaxCellCol;
+
+        Debug.Log("visibleViewHeight = " + visibleViewHeight + ", contentsViewHeight = " + contentsViewHeight + ", gridSpaceY = " + gridSpaceY + ", gridCellY = " + gridCellY);
+        Debug.Log("contentsViewWidth = " + contentsViewWidth + ", gridSpaceX = " + gridSpaceX + ", gridCellX = " + gridCellX + ", gridMaxCellCol = " + gridMaxCellCol);
+        Debug.Log("top = " + top + ", bottom = " + bottom + ", startRow = " + startRow + ", endRow = " + endRow + ", visibleStartIdx = " + visibleStartIdx + ", visibleEndIdx = " + visibleEndIdx);
+
+        if (lastVisibleStartIdx == visibleStartIdx && lastVisibleEndIdx == visibleEndIdx)
+        {
+            return;
+        }
+        lastVisibleStartIdx = visibleStartIdx;
+        lastVisibleEndIdx = visibleEndIdx;
+
+        for (int idx = 0; idx < workingGridPanel.transform.childCount; idx++)
+        {
+            CharacterCardController cardController = workingGridPanel.transform.GetChild(idx).gameObject.GetComponent<CharacterCardController>();
+            cardController.setEnableComponents(visibleStartIdx <= idx && idx <= visibleEndIdx);
+        }
     }
 
     public int SortByTokenIdAscending(CharacterData cd1, CharacterData cd2)
