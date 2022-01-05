@@ -56,6 +56,7 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
         }
 
         // globalUIWindow.StartCoroutine(requestCoinAmountConstantly());
+        ContractManager.instance.reqCoinAmount();
     }
 
     public void onTrophyDataChanged(List<int> _trophyList)

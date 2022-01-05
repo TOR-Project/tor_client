@@ -9,14 +9,18 @@ public class CharacterManager : MonoBehaviour
 {
     private string META_URL = Const.PRODUCTION ? "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/2_metadata/" : "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/1_baobab/2_metadata/";
     private string IMAGE_URL = Const.PRODUCTION ? "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/1_image/" : "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/1_baobab/1_image/";
-
-    public const int COUNTRY_EVEGENIS = 0;
-    public const int COUNTRY_ENFILIIS = 1;
-    public const int COUNTRY_HELLVESTA = 2;
-    public const int COUNTRY_TRIPOLI = 3;
-    public const int COUNTRY_BARBAROS = 4;
-    public const int COUNTRY_MAX = 5;
-    public const int COUNTRY_ALL = 99;
+    private string[] AVATAR_IMAGE_URL_LIST = new string[]
+    {
+        "",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/warrior.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/ranger.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/bishop.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/wizard.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/orc.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/doctor+witch.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/assassin.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/sorcerer.png",
+    };
 
     public const int RACE_HUMAN = 0;
     public const int RACE_ELF = 1;
@@ -40,7 +44,7 @@ public class CharacterManager : MonoBehaviour
 
     public const int TX_SPLIT_AMOUNT = 200;
 
-    [SerializeField]
+    private Dictionary<int, Sprite> avatarSpriteMap = new Dictionary<int, Sprite>();
     private Dictionary<int, CharacterData> characterDataMap = new Dictionary<int, CharacterData>();
     private int characterCount = 0;
     private int stakingCharacterCount = 0;
@@ -91,33 +95,6 @@ public class CharacterManager : MonoBehaviour
     public CharacterData getCharacterData(int _id)
     {
         return characterDataMap[_id];
-    }
-
-    public string getCountryText(int _cid)
-    {
-        string key = "";
-        switch(_cid)
-        {
-            case COUNTRY_EVEGENIS:
-                key = "ID_EVEGENIS";
-                break;
-            case COUNTRY_ENFILIIS:
-                key = "ID_ENFILIIS";
-                break;
-            case COUNTRY_HELLVESTA:
-                key = "ID_HELLVESTA";
-                break;
-            case COUNTRY_TRIPOLI:
-                key = "ID_TRIPOLI";
-                break;
-            case COUNTRY_BARBAROS:
-                key = "ID_BARBAROS";
-                break;
-            default:
-                break;
-        }
-
-        return LanguageManager.instance.getText(key);
     }
 
     public string getRaceText(int _rid)
@@ -186,6 +163,35 @@ public class CharacterManager : MonoBehaviour
         return LanguageManager.instance.getText(key);
     }
 
+    public void startAvatarImageLoading()
+    {
+        for (int i = 0; i < AVATAR_IMAGE_URL_LIST.Length; i++) {
+            if (AVATAR_IMAGE_URL_LIST[i] == "")
+            {
+                continue;
+            }
+
+            int key = i;
+            AssetsLoadManager.instance.requestSprite(AVATAR_IMAGE_URL_LIST[key], (_sprite) =>
+            {
+                if (!avatarSpriteMap.ContainsKey(key))
+                {
+                    avatarSpriteMap.Add(key, _sprite);
+                }
+                return true;
+            }, null);
+        }
+    }
+
+    public bool isAvatarImageLoaded()
+    {
+        return avatarSpriteMap.Count >= 8;
+    }
+
+    public Sprite getAvatarImage(int _jid)
+    {
+        return avatarSpriteMap[_jid];
+    }
 
 
     /**
@@ -316,7 +322,7 @@ public class CharacterManager : MonoBehaviour
             pendingIdList[i] = cd.tokenId;
             pendingCharacterDataList[i] = cd.level + cd.country * 10 + cd.race * 100 + cd.job * 1000;
             pendingStatusDataList[i] = cd.statusData.att + cd.statusData.def * 1000;
-            pendingEquipDataList[i] = cd.equipData.weapon + cd.equipData.armor * 10 + cd.equipData.pants * 100 + cd.equipData.head * 1000 + cd.equipData.shoes * 10000 + cd.equipData.accessory * 100000;
+            pendingEquipDataList[i] = (int) (cd.equipData.weapon + cd.equipData.armor * 10 + cd.equipData.pants * 100 + cd.equipData.head * 1000 + cd.equipData.shoes * 10000 + cd.equipData.accessory * 100000);
         }
 
         splitMax = notInitedCharacterDataList.Count / TX_SPLIT_AMOUNT + (notInitedCharacterDataList.Count % TX_SPLIT_AMOUNT > 0 ? 1 : 0);
@@ -436,12 +442,12 @@ public class CharacterManager : MonoBehaviour
         data.statusData.att = int.Parse(_statusData["att"].ToString());
         data.statusData.def = int.Parse(_statusData["def"].ToString());
 
-        data.equipData.weapon = int.Parse(_equipData["weapon"].ToString());
-        data.equipData.head = int.Parse(_equipData["head"].ToString());
-        data.equipData.accessory = int.Parse(_equipData["accessory"].ToString());
-        data.equipData.armor = int.Parse(_equipData["armor"].ToString());
-        data.equipData.pants = int.Parse(_equipData["pants"].ToString());
-        data.equipData.shoes = int.Parse(_equipData["shoes"].ToString());
+        data.equipData.head = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.HELMET, data, int.Parse(_equipData["head"].ToString()));
+        data.equipData.weapon = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.WEAPON, data, int.Parse(_equipData["weapon"].ToString()));
+        data.equipData.accessory = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.ACCESSORY, data, int.Parse(_equipData["accessory"].ToString()));
+        data.equipData.armor = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.ARMOR, data, int.Parse(_equipData["armor"].ToString()));
+        data.equipData.pants = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.PANTS, data, int.Parse(_equipData["pants"].ToString()));
+        data.equipData.shoes = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.SHOES, data, int.Parse(_equipData["shoes"].ToString()));
 
         if (!characterDataMap.ContainsKey(data.tokenId))
         {

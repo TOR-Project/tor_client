@@ -6,6 +6,18 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
+    private string[] GEM_IMAGE_URL_LIST = new string[]
+    {
+        "",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/stone/normal.png",
+        "",
+        "",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/stone/rare.png",
+        "",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/stone/legend.png",
+    };
+
+    Dictionary<int, Sprite> gemSpriteMap = new Dictionary<int, Sprite>();
     Dictionary<long, EquipItemData> equipItemDataMap = new Dictionary<long, EquipItemData>();
     int equipItemLoadedCount = 0;
 
@@ -25,8 +37,8 @@ public class ItemManager : MonoBehaviour
         addEquipItemData(3, "ID_EQUIP_NAME_LEGEND_ASSASSIN_DAGGER", EquipItemCategory.WEAPON, ItemGrade.LEGEND, EquipItemJobLimit.ASSASSIN, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Legend+Assassin+Dagger.png");
 
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_SORCERER_ORB", EquipItemCategory.WEAPON, ItemGrade.NORMAL, EquipItemJobLimit.SORCERER, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_sorcerer/3.+weapon/Normal+Sorcerer+Orb.png");
-        addEquipItemData(2, "ID_EQUIP_NAME_RARE_SORCERER_ORB", EquipItemCategory.WEAPON, ItemGrade.RARE, EquipItemJobLimit.SORCERER, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Rare+Sorcerer+Orb.png");
-        addEquipItemData(3, "ID_EQUIP_NAME_LEGEND_SORCERER_ORB", EquipItemCategory.WEAPON, ItemGrade.LEGEND, EquipItemJobLimit.SORCERER, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Legend+Sorcerer+Orb.png");
+        addEquipItemData(2, "ID_EQUIP_NAME_RARE_SORCERER_ORB", EquipItemCategory.WEAPON, ItemGrade.RARE, EquipItemJobLimit.SORCERER, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_sorcerer/3.+weapon/Rare+Sorcerer+Orb.png");
+        addEquipItemData(3, "ID_EQUIP_NAME_LEGEND_SORCERER_ORB", EquipItemCategory.WEAPON, ItemGrade.LEGEND, EquipItemJobLimit.SORCERER, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_sorcerer/3.+weapon/Legend+Sorcerer+Orb.png");
 
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_ELF_ORB", EquipItemCategory.WEAPON, ItemGrade.NORMAL, EquipItemJobLimit.BISHOP, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/3.+weapon/Normal+Elf+Orb.png");
         addEquipItemData(2, "ID_EQUIP_NAME_RARE_ELF_ORB", EquipItemCategory.WEAPON, ItemGrade.RARE, EquipItemJobLimit.BISHOP, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/3.+weapon/Rare+Elf+Orb.png");
@@ -129,15 +141,45 @@ public class ItemManager : MonoBehaviour
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_WITCH_SHOES", EquipItemCategory.SHOES, ItemGrade.NORMAL, EquipItemJobLimit.SORCERER | EquipItemJobLimit.ASSASSIN | EquipItemJobLimit.WITCH_DOCTOR, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/orcs_witchdoctor/8.+shoes/Normal+Witch+Boots.png");
         addEquipItemData(2, "ID_EQUIP_NAME_RARE_DARKELF_SHOES", EquipItemCategory.SHOES, ItemGrade.RARE, EquipItemJobLimit.SORCERER | EquipItemJobLimit.ASSASSIN | EquipItemJobLimit.WITCH_DOCTOR, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/orcs_witchdoctor/8.+shoes/Rare+Darkelf+Boots.png");
         addEquipItemData(3, "ID_EQUIP_NAME_LEGEND_QUEEN_SHOES", EquipItemCategory.SHOES, ItemGrade.LEGEND, EquipItemJobLimit.SORCERER | EquipItemJobLimit.ASSASSIN | EquipItemJobLimit.WITCH_DOCTOR, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/orcs_witchdoctor/8.+shoes/Legend+Queen+Boots.png");
-
     }
 
     public void startEquipItemSpriteLoading()
     {
         foreach (EquipItemData data in equipItemDataMap.Values)
         {
-            AssetsLoadManager.instance.requestSprite(data.imageUrl, (sprite) => setImageSprite(data, sprite));
+            AssetsLoadManager.instance.requestSprite(data.imageUrl, (sprite) => setImageSprite(data, sprite), null);
         }
+    }
+
+    public void startGemImageLoading()
+    {
+        for (int i = 0; i < GEM_IMAGE_URL_LIST.Length; i++)
+        {
+            if (GEM_IMAGE_URL_LIST[i] == "")
+            {
+                continue;
+            }
+
+            int key = i;
+            AssetsLoadManager.instance.requestSprite(GEM_IMAGE_URL_LIST[key], (_sprite) =>
+            {
+                if (!gemSpriteMap.ContainsKey(key))
+                {
+                    gemSpriteMap.Add(key, _sprite);
+                }
+                return true;
+            }, null);
+        }
+    }
+
+    public bool isGemImageLoaded()
+    {
+        return gemSpriteMap.Count >= 3;
+    }
+
+    public Sprite getGemImage(ItemGrade _grade)
+    {
+        return gemSpriteMap[(int)_grade];
     }
 
     private bool setImageSprite(EquipItemData _data, Sprite _sprite)
@@ -196,9 +238,10 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public EquipItemData getEquipItem(EquipItemCategory _category, CharacterData _data)
+    public long getEquipItemKeyV1(EquipItemCategory _category, CharacterData _data, long _id)
     {
-        long id = 0;
+        long id = _id;
+        /*
         switch (_category)
         {
             case EquipItemCategory.HELMET:
@@ -222,18 +265,19 @@ public class ItemManager : MonoBehaviour
             default:
                 break;
         }
+        */
         if (id == 0)
         {
-            return null;
+            return 0;
         }
 
         long raceLimit = 0;
         long jobLimit = 0;
         long grade = 0;
-        switch(id)
+        switch (id)
         {
             case 1:
-                grade = (int) ItemGrade.NORMAL;
+                grade = (int)ItemGrade.NORMAL;
                 break;
             case 2:
                 grade = (int)ItemGrade.RARE;
@@ -283,12 +327,14 @@ public class ItemManager : MonoBehaviour
                 default:
                     break;
             }
-        } else if (_category == EquipItemCategory.ACCESSORY)
+        }
+        else if (_category == EquipItemCategory.ACCESSORY)
         {
             if (_data.race == CharacterManager.RACE_ELF || _data.race == CharacterManager.RACE_HUMAN)
             {
                 raceLimit = EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN;
-            } else
+            }
+            else
             {
                 raceLimit = EquipItemRaceLimit.ORC | EquipItemRaceLimit.DARKELF;
             }
@@ -302,12 +348,14 @@ public class ItemManager : MonoBehaviour
             if (id == 2)
             {
                 id = 3;
-            } else if (id > 2)
+            }
+            else if (id > 2)
             {
                 id += 2;
             }
             jobLimit = EquipItemJobLimit.ALL;
-        } else
+        }
+        else
         {
             raceLimit = EquipItemRaceLimit.ALL;
 
@@ -335,13 +383,16 @@ public class ItemManager : MonoBehaviour
         }
 
         long key = raceLimit * 1000000000 + jobLimit * 1000000 + (int)grade * 100000 + (int)category * 1000 + id;
-        Debug.Log("tokenId = " + _data.tokenId + ", category = " + _category + ", key = " + key);
-        Debug.Log("raceLimit = " + raceLimit + ", jobLimit = " + jobLimit + ", grade = " + grade + ", category = " + category + ", id = " + id);
-        if (!equipItemDataMap.ContainsKey(key))
+        return key;
+    }
+
+    public EquipItemData getEquipItem(long _key)
+    {
+        if (!equipItemDataMap.ContainsKey(_key))
         {
             return null;
         }
-        return equipItemDataMap[key];
+        return equipItemDataMap[_key];
     }
 
 }

@@ -20,23 +20,23 @@ public class AttributeData
         {
             if ("Hellvesta".Equals(valueStr))
             {
-                cd.country = CharacterManager.COUNTRY_HELLVESTA;
+                cd.country = CountryManager.COUNTRY_HELLVESTA;
             }
             else if ("Evegenis".Equals(valueStr))
             {
-                cd.country = CharacterManager.COUNTRY_EVEGENIS;
+                cd.country = CountryManager.COUNTRY_EVEGENIS;
             }
             else if ("Barbaros".Equals(valueStr))
             {
-                cd.country = CharacterManager.COUNTRY_BARBAROS;
+                cd.country = CountryManager.COUNTRY_BARBAROS;
             }
             else if ("Enfiliis".Equals(valueStr))
             {
-                cd.country = CharacterManager.COUNTRY_ENFILIIS;
+                cd.country = CountryManager.COUNTRY_ENFILIIS;
             }
             else if ("Tripoli".Equals(valueStr))
             {
-                cd.country = CharacterManager.COUNTRY_TRIPOLI;
+                cd.country = CountryManager.COUNTRY_TRIPOLI;
             }
         }
         else if ("Race".Equals(traitType))

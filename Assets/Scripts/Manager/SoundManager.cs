@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class SoundManager : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         // StartCoroutine(loadSound("login", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/bgm/connect+wallet.wav", bgmAudioMap, () => playBgm("login")));
-        StartCoroutine(loadSound("wallet", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/effect/button.wav", seAudioMap, null));
+        StartCoroutine(loadSound("wallet", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/effect/button.wav", seAudioMap, null, null));
     }
 
     public void playBgm(string _key)
@@ -94,35 +95,41 @@ public class SoundManager : MonoBehaviour
         sePlayer.Play();
     }
 
-    public void requestSound(string _key, string _url, bool _isBgm, Action _callback)
+    public void requestSound(string _key, string _url, bool _isBgm, Action _callback, Func<float, bool> _progressCallback)
     {
         Dictionary<string, AudioClip> map = _isBgm ? bgmAudioMap : seAudioMap;
 
         if (map.ContainsKey(_key))
         {
             _callback();
+            _progressCallback(1);
         }
         else if (downloadPendingMap.ContainsKey(_url))
         {
-            StartCoroutine(waitDownloadSound(_url, _callback));
+            StartCoroutine(waitDownloadSound(_url, _callback, _progressCallback));
         }
         else
         {
             downloadPendingMap[_url] = true;
-            StartCoroutine(loadSound(_key, _url, map, _callback));
+            StartCoroutine(loadSound(_key, _url, map, _callback, _progressCallback));
         }
     }
 
-    private IEnumerator waitDownloadSound(string _url, Action _callback)
+    private IEnumerator waitDownloadSound(string _url, Action _callback, Func<float, bool> _progressCallback)
     {
         yield return new WaitUntil(() => downloadPendingMap[_url] == false);
 
         _callback();
+        _progressCallback(1);
     }
 
-    private IEnumerator loadSound(string _key, string _url, Dictionary<string, AudioClip> _map, Action _callback)
+    private IEnumerator loadSound(string _key, string _url, Dictionary<string, AudioClip> _map, Action _callback, Func<float, bool> _progressCallback)
     {
         WWW www = new WWW(_url);
+        if (_progressCallback != null)
+        {
+            StartCoroutine(DownloadProgress(www, _progressCallback));
+        }
         yield return www;
         if (www.error == null)
         {
@@ -135,5 +142,15 @@ public class SoundManager : MonoBehaviour
             Debug.Log("ERROR: " + www.error);
             _callback?.Invoke();
         }
+    }
+
+    IEnumerator DownloadProgress(WWW _www, Func<float, bool> _progressCallback)
+    {
+        while (!_www.isDone)
+        {
+            _progressCallback(_www.progress);
+            yield return new WaitForSeconds(0.1f);
+        }
+        _progressCallback(1);
     }
 }

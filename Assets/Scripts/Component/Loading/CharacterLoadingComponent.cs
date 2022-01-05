@@ -13,15 +13,15 @@ public class CharacterLoadingComponent : LoadingComponent
 
     public override string getLoadingTextKey()
     {
-        return loadingInfoTextKey[getProgressCurrent()];
+        return loadingInfoTextKey[(int)(getProgressCurrent())];
     }
 
-    public override int getProgressMax()
+    public override float getProgressMax()
     {
         return 5;
     }
 
-    public override int getProgressCurrent()
+    public override float getProgressCurrent()
     {
         return CharacterManager.instance.loadingStep;
     }

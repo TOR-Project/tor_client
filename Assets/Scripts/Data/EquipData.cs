@@ -5,11 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class EquipData
 {
-    public int weapon = 0;
-    public int armor = 0;
-    public int pants = 0;
-    public int head = 0;
-    public int shoes = 0;
-    public int accessory = 0;
+    public long weapon = 0;
+    public long armor = 0;
+    public long pants = 0;
+    public long head = 0;
+    public long shoes = 0;
+    public long accessory = 0;
 
 }

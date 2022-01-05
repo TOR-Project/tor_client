@@ -23,12 +23,12 @@ public class EquipItemSpriteLoadingComponent : LoadingComponent
         return string.Format(LanguageManager.instance.getText(loadingInfoTextKey), getProgressCurrent(), getProgressMax());
     }
 
-    public override int getProgressMax()
+    public override float getProgressMax()
     {
         return ItemManager.instance.getEquipItemSpriteLoadedMax();
     }
 
-    public override int getProgressCurrent()
+    public override float getProgressCurrent()
     {
         return ItemManager.instance.getEquipItemSpriteLoadedCount();
     }

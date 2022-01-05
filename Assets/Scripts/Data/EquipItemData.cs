@@ -46,7 +46,7 @@ public class EquipItemData
     public void loadItemImage(Action _postAction)
     {
         loadImagePostAction = _postAction;
-        AssetsLoadManager.instance.requestSprite(imageUrl, setItemImageSprite);
+        AssetsLoadManager.instance.requestSprite(imageUrl, setItemImageSprite, null);
     }
 
     public bool setItemImageSprite(Sprite _sprite)

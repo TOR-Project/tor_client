@@ -5,9 +5,13 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 using System.Numerics;
+using Coffee.UIExtensions;
 
 public class CharacterCardController : MonoBehaviour, MiningDataObserever
 {
+    public const string BACKGROUND_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/background/background.png";
+    public const string MIRROR_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/frame/frame.png";
+
     public const int STATE_PUB = 1;
     public const int STATE_WAITING_ROOM = 2;
     public const int STATE_WORKING_PLACE = 3;
@@ -16,7 +20,17 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     GameObject componentsGroup;
 
     [SerializeField]
-    Image characterImage;
+    Image backgroundImage;
+    [SerializeField]
+    Image mirrorImage;
+    [SerializeField]
+    Image flagImage;
+    [SerializeField]
+    Image avatarImage;
+    [SerializeField]
+    Image[] gemImageList;
+    [SerializeField]
+    GameObject[] gemParticleList;
     [SerializeField]
     Text nameText;
     [SerializeField]
@@ -34,10 +48,6 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     bool selected = false;
     int cardState = 0;
     Func<CharacterCardController, bool> clickCallback;
-
-    // TEMP
-    [SerializeField]
-    Sprite characterSprite;
 
     private void OnDestroy()
     {
@@ -82,11 +92,10 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         nameText.text = _data.name;
         updateStateText();
 
-        characterImage.enabled = false;
         loadingObject.SetActive(true);
         setSelected(false);
 
-        updateCharacterImage(characterSprite);
+        updateCharacterImage();
     }
 
     private void updateStateText()
@@ -105,11 +114,50 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         }
     }
 
-    private bool updateCharacterImage(Sprite _sprite)
+    private bool updateCharacterImage()
     {
-        loadingObject.SetActive(false);
-        characterImage.sprite = _sprite;
-        characterImage.enabled = true;
+        AssetsLoadManager.instance.requestSprite(BACKGROUND_IMAGE_URL, (_sprite) =>
+        {
+            backgroundImage.sprite = _sprite;
+            backgroundImage.enabled = true;
+            return true;
+        }, null);
+        AssetsLoadManager.instance.requestSprite(MIRROR_IMAGE_URL, (_sprite) =>
+        {
+            mirrorImage.sprite = _sprite;
+            mirrorImage.enabled = true;
+            loadingObject.SetActive(false);
+            return true;
+        }, null);
+        flagImage.sprite = CountryManager.instance.getFlagImage(characterData.country);
+        avatarImage.sprite = CharacterManager.instance.getAvatarImage(characterData.job);
+        flagImage.enabled = true;
+        avatarImage.enabled = true;
+
+        EquipItemData[] equipItemDataList = new EquipItemData[]
+        {
+            ItemManager.instance.getEquipItem(characterData.equipData.head),
+            ItemManager.instance.getEquipItem(characterData.equipData.weapon),
+            ItemManager.instance.getEquipItem(characterData.equipData.accessory),
+            ItemManager.instance.getEquipItem(characterData.equipData.armor),
+            ItemManager.instance.getEquipItem(characterData.equipData.pants),
+            ItemManager.instance.getEquipItem(characterData.equipData.shoes),
+        };
+
+        for (int i = 0; i < equipItemDataList.Length; i++)
+        {
+            EquipItemData ed = equipItemDataList[i];
+            if (ed == null)
+            {
+                gemImageList[i].enabled = false;
+                gemParticleList[i].SetActive(false);
+            } else
+            {
+                gemImageList[i].enabled = true;
+                gemImageList[i].sprite = ItemManager.instance.getGemImage(ed.grade);
+                gemParticleList[i].SetActive(ed.grade == ItemGrade.LEGEND);
+            }
+        }
 
         return true;
     }

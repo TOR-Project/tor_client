@@ -9,19 +9,19 @@ public class SpriteLoadingComponent : LoadingComponent
     [SerializeField] internal string url;
     string loadingInfoTextKey = "ID_LOADING_IMAGE";
 
-    bool loadingCompleted = false;
+    float progress = 0;
 
     public override void startLoading()
     {
-        AssetsLoadManager.instance.requestSprite(url, updateSprite);
+        AssetsLoadManager.instance.requestSprite(url, updateSprite, updateProgress);
     }
 
     public bool updateSprite(Sprite sprite)
     {
         if (sprite == null)
         {
-            AssetsLoadManager.instance.requestSprite(url, updateSprite);
-            ContractManager.instance.printLog("sprite invalid : " + url);
+            AssetsLoadManager.instance.requestSprite(url, updateSprite, updateProgress);
+            Debug.Log("sprite invalid : " + url);
             return false;
         }
 
@@ -29,10 +29,16 @@ public class SpriteLoadingComponent : LoadingComponent
         if (renderer.sprite != sprite)
         {
             renderer.sprite = sprite;
-            ContractManager.instance.printLog("sprite updated : " + url);
+            Debug.Log("sprite updated : " + url);
         }
 
-        loadingCompleted = true;
+        updateProgress(getProgressMax());
+        return true;
+    }
+
+    public bool updateProgress(float _progress)
+    {
+        progress = _progress;
         return true;
     }
 
@@ -41,8 +47,8 @@ public class SpriteLoadingComponent : LoadingComponent
         return loadingInfoTextKey;
     }
 
-    public override int getProgressCurrent()
+    public override float getProgressCurrent()
     {
-        return loadingCompleted ? 1 : 0;
+        return progress;
     }
 }

@@ -5,12 +5,12 @@ public abstract class LoadingComponent : MonoBehaviour
 {
     public abstract void startLoading();
     public abstract string getLoadingTextKey();
-    public virtual int getProgressMax()
+    public virtual float getProgressMax()
     {
         return 1;
     }
 
-    public abstract int getProgressCurrent();
+    public abstract float getProgressCurrent();
 
     public bool isLoadingCompleted()
     {

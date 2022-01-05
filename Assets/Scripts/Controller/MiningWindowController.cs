@@ -451,8 +451,8 @@ public class MiningWindowController : MonoBehaviour
         }
         else
         {
-            BigInteger[] countryTax = new BigInteger[CharacterManager.COUNTRY_MAX];
-            for (int i = 0; i < CharacterManager.COUNTRY_MAX; i++)
+            BigInteger[] countryTax = new BigInteger[CountryManager.COUNTRY_MAX];
+            for (int i = 0; i < CountryManager.COUNTRY_MAX; i++)
             {
                 countryTax[i] = new BigInteger(0);
             }
@@ -460,8 +460,8 @@ public class MiningWindowController : MonoBehaviour
             BigInteger commissionAmount = new BigInteger(0);
             int password = Utils.GetTransactionHash(UserManager.instance.getPassword());
 
-            string[] countryTaxStr = new string[CharacterManager.COUNTRY_MAX];
-            for (int i = 0; i < CharacterManager.COUNTRY_MAX; i++)
+            string[] countryTaxStr = new string[CountryManager.COUNTRY_MAX];
+            for (int i = 0; i < CountryManager.COUNTRY_MAX; i++)
             {
                 countryTaxStr[i] = countryTax[i].ToString();
             }

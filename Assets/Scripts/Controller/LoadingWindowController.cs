@@ -38,7 +38,7 @@ public class LoadingWindowController : MonoBehaviour
         LoadingComponent[] loadingComponet = loadingComponentPool.getLoadingComponents();
         if (loadingComponet != null)
         {
-            int max = 0;
+            float max = 0;
             foreach (LoadingComponent lc in loadingComponet)
             {
                 lc.startLoading();

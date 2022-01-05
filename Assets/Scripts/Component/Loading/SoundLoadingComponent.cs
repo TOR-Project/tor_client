@@ -11,16 +11,22 @@ public class SoundLoadingComponent : LoadingComponent
     [SerializeField] internal bool isBgm;
     string loadingInfoTextKey = "ID_LOADING_SOUND";
 
-    bool loadingCompleted = false;
+    float progress = 0;
 
     public override void startLoading()
     {
-        SoundManager.instance.requestSound(key, url, isBgm, onLoadingCompleted);
+        SoundManager.instance.requestSound(key, url, isBgm, onLoadingCompleted, updateProgress);
     }
 
     public void onLoadingCompleted()
     {
-        loadingCompleted = true;
+        updateProgress(getProgressMax());
+    }
+
+    public bool updateProgress(float _progress)
+    {
+        progress = _progress;
+        return true;
     }
 
     public override string getLoadingTextKey()
@@ -28,8 +34,8 @@ public class SoundLoadingComponent : LoadingComponent
         return loadingInfoTextKey;
     }
 
-    public override int getProgressCurrent()
+    public override float getProgressCurrent()
     {
-        return loadingCompleted ? 1 : 0;
+        return progress;
     }
 }

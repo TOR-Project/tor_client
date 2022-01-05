@@ -18,7 +18,7 @@ public class PubWindowController : MonoBehaviour
     [SerializeField]
     GameObject infoPanel;
     [SerializeField]
-    Image characterImage;
+    Image avatarImage;
     [SerializeField]
     EquipItemCardController[] equipItemCardControllerList;
 
@@ -73,7 +73,7 @@ public class PubWindowController : MonoBehaviour
         int filter = _regionFilter;
         if (filter == 5)
         {
-            filter = CharacterManager.COUNTRY_ALL;
+            filter = CountryManager.COUNTRY_ALL;
         }
         updateGrid(filter);
     }
@@ -117,7 +117,7 @@ public class PubWindowController : MonoBehaviour
     private List<CharacterData> getFilteredCharacterList(int _regionFilter)
     {
         List<CharacterData> allList = CharacterManager.instance.getCharacterList();
-        if (_regionFilter == CharacterManager.COUNTRY_ALL)
+        if (_regionFilter == CountryManager.COUNTRY_ALL)
         {
             return allList;
         }
@@ -178,21 +178,23 @@ public class PubWindowController : MonoBehaviour
         CharacterData data = _cardController.getCharacterData();
 
         nameText.text = data.name;
-        regionText.text = CharacterManager.instance.getCountryText(data.country);
+        regionText.text = CountryManager.instance.getCountryText(data.country);
         raceText.text = CharacterManager.instance.getRaceText(data.race);
         classText.text = CharacterManager.instance.getJobText(data.job);
         levelValueText.text = data.level.ToString();
         attValueText.text = data.statusData.att.ToString();
         defValueText.text = data.statusData.def.ToString();
 
+        avatarImage.sprite = CharacterManager.instance.getAvatarImage(data.job);
+
         EquipItemData[] equipItemDataList = new EquipItemData[]
         {
-            ItemManager.instance.getEquipItem(EquipItemCategory.HELMET, data),
-            ItemManager.instance.getEquipItem(EquipItemCategory.WEAPON, data),
-            ItemManager.instance.getEquipItem(EquipItemCategory.ACCESSORY, data),
-            ItemManager.instance.getEquipItem(EquipItemCategory.ARMOR, data),
-            ItemManager.instance.getEquipItem(EquipItemCategory.PANTS, data),
-            ItemManager.instance.getEquipItem(EquipItemCategory.SHOES, data),
+            ItemManager.instance.getEquipItem(data.equipData.head),
+            ItemManager.instance.getEquipItem(data.equipData.weapon),
+            ItemManager.instance.getEquipItem(data.equipData.accessory),
+            ItemManager.instance.getEquipItem(data.equipData.armor),
+            ItemManager.instance.getEquipItem(data.equipData.pants),
+            ItemManager.instance.getEquipItem(data.equipData.shoes),
         };
 
         int attBoost = 0;

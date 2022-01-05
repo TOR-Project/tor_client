@@ -11,7 +11,7 @@ public class Const
     public const int ERR_USER_BANNED = 5;
     public const int ERR_NO_CHARACTER = 6;
 
-    public const bool PRODUCTION = false;
+    public const bool PRODUCTION = true;
 
     public const int TERMS_VERSION = 1;
 

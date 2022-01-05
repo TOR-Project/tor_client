@@ -24,6 +24,8 @@
         {"key":"ID_STAKING_CHARACTER",      "value":"일하고 있는 모험가들을 불러 세우는 중"},
         {"key":"ID_EQUIP_ITEM_LOADING",     "value":"장비 사전을 뒤적거리는 중 ({0} / {1})"},
         {"key":"ID_LOADING_SOUND",          "value":"루그란디스의 음유시인들에게 연주를 부탁하는 중"},
+        {"key":"ID_CHARACTER_CARD_IMAGE_LOADING", "value":"모험가들이 옷을 갈아입는 중"},
+        {"key":"ID_FONT_LOADING",           "value":"루그란디스 언어를 해석하는 중"},
 
         {"key":"ID_ERR_SERVER_BLOCKED",     "value":"현재 토르 세계로 통하는 문이 굳게 닫혀있습니다.\n잠시 뒤 다시 돌아와 주세요."},
         {"key":"ID_ERR_VERSION_MISMATCHED", "value":"이 문은 과거의 토르 세계로 향하고 있습니다.\n업데이트를 통해 새로운 문으로 입장 해 주세요."},

@@ -8,6 +8,10 @@ using System.Numerics;
 
 public class EquipItemCardController : MonoBehaviour
 {
+    public const string BACGROUND_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/frame/item_frame.jpg";
+
+    [SerializeField]
+    Image backgroundImage;
     [SerializeField]
     Image itemImage;
     [SerializeField]
@@ -16,6 +20,16 @@ public class EquipItemCardController : MonoBehaviour
     GameObject borderEffect;
 
     EquipItemData data;
+
+    private void OnEnable()
+    {
+        AssetsLoadManager.instance.requestSprite(BACGROUND_IMAGE_URL, (_sprite) =>
+        {
+            backgroundImage.sprite = _sprite;
+            backgroundImage.gameObject.SetActive(true);
+            return true;
+        }, null);
+    }
 
     public void setEquipItem(EquipItemData _data)
     {
