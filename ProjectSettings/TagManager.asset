@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BackgroundEffect
+    uniqueID: 983721539
+    locked: 0
+  - name: UI
+    uniqueID: 3673525585
+    locked: 0
   - name: ViewEffect
     uniqueID: 1347777715
     locked: 0

@@ -14,6 +14,16 @@ public class PubWindowController : MonoBehaviour
     GameObject characterCardPrefab;
     [SerializeField]
     GameObject gridPanel;
+    [SerializeField]
+    GridLayoutGroup gridLayoutGroup;
+    [SerializeField]
+    RectTransform gridLayoutGroupRT;
+    [SerializeField]
+    Button prevButton;
+    [SerializeField]
+    Button nextButton;
+    [SerializeField]
+    Text pageText;
 
     [SerializeField]
     GameObject infoPanel;
@@ -56,11 +66,85 @@ public class PubWindowController : MonoBehaviour
     [SerializeField]
     GameObject equipStatusPrefab;
 
-    CharacterCardController lastSelectedCharacterCard;
+    CharacterCardController selectedCharacterController = null;
 
-    private void OnEnable()
+    List<CharacterData> filteredCharacterDataList = new List<CharacterData>();
+    List<CharacterCardController> characterCardControllerList = new List<CharacterCardController>();
+
+    int pageNum = 0;
+    int maxPageNum = 1;
+    float contentsViewWidth = 0;
+    float contentsViewHeight = 0;
+
+    private void updateAllLayout()
     {
-        onFilterButtonClicked(5);
+        init();
+        fillGrid();
+        updateCharacterData(CountryManager.COUNTRY_ALL);
+        updateArrowButton();
+        updateGrid(0);
+    }
+
+    private void init()
+    {
+        filteredCharacterDataList.Clear();
+    }
+
+    private void fillGrid()
+    {
+        if (characterCardControllerList.Count == 0)
+        {
+            contentsViewWidth = gridLayoutGroupRT.rect.width;
+            float gridSpaceX = gridLayoutGroup.spacing.x;
+            float gridCellX = gridLayoutGroup.cellSize.x;
+            int gridMaxCellCol = (int)(contentsViewWidth / (gridCellX + gridSpaceX));
+            if (gridMaxCellCol <= 0)
+            {
+                gridMaxCellCol = 1;
+            }
+
+            contentsViewHeight = gridLayoutGroupRT.rect.height;
+            float gridSpaceY = gridLayoutGroup.spacing.y;
+            float gridCellY = gridLayoutGroup.cellSize.y;
+            int gridMaxCellRow = (int)((contentsViewHeight + gridSpaceY) / (gridCellY + gridSpaceY));
+            if (gridMaxCellRow <= 0)
+            {
+                gridMaxCellRow = 1;
+            }
+
+            int maxCellCount = gridMaxCellCol * gridMaxCellRow;
+            for (int i = 0; i < maxCellCount; i++)
+            {
+                GameObject characterCard = Instantiate(characterCardPrefab, gridPanel.transform, true);
+                characterCard.transform.localScale = UnityEngine.Vector3.one;
+                characterCard.SetActive(false);
+                CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
+                cardController.setClickCallback(selectCharacterCard);
+                characterCardControllerList.Add(cardController);
+            }
+
+            Debug.Log("fillGrid() wait " + characterCardControllerList.Count);
+        }
+    }
+
+    private void Update()
+    {
+        float newContentsViewWidth = gridLayoutGroupRT.rect.width;
+        float newContentsViewHeight = gridLayoutGroupRT.rect.height;
+        if (newContentsViewWidth != contentsViewWidth || newContentsViewHeight != contentsViewHeight)
+        {
+            clearAllCharacterCard();
+            updateAllLayout();
+        }
+    }
+
+    private void clearAllCharacterCard()
+    {
+        for (int i = gridLayoutGroupRT.childCount - 1; i >= 0; i--)
+        {
+            Destroy(gridLayoutGroupRT.GetChild(i).gameObject);
+            characterCardControllerList.Clear();
+        }
     }
 
     public void onFilterButtonClicked(int _regionFilter)
@@ -75,40 +159,71 @@ public class PubWindowController : MonoBehaviour
         {
             filter = CountryManager.COUNTRY_ALL;
         }
-        updateGrid(filter);
+
+        updateCharacterData(filter);
+        updateArrowButton();
+        updateGrid(0);
     }
 
-    private void updateGrid(int _regionFilter) {
-        List<CharacterData> list = getFilteredCharacterList(_regionFilter);
-        list.Sort(SortByTokenIdAscending);
+    private void updateCharacterData(int _regionFilter)
+    {
+        filteredCharacterDataList = getFilteredCharacterList(_regionFilter);
+        filteredCharacterDataList.Sort(SortByTokenIdAscending);
 
-        for (int idx = 0; idx < list.Count; idx++)
+        pageNum = 0;
+        if (filteredCharacterDataList.Count > 0)
         {
-            GameObject characterCard;
-            if (idx < gridPanel.transform.childCount)
+            maxPageNum = filteredCharacterDataList.Count / characterCardControllerList.Count + (filteredCharacterDataList.Count % characterCardControllerList.Count == 0 ? 0 : 1);
+        }
+        else
+        {
+            maxPageNum = 0;
+        }
+        Debug.Log("updateCharacterData() count = " + filteredCharacterDataList.Count + ", maxPageNum = " + maxPageNum);
+
+    }
+
+    private void updateArrowButton()
+    {
+        prevButton.interactable = pageNum > 0;
+        nextButton.interactable = pageNum < maxPageNum - 1;
+    }
+
+    private void updateGrid(int _page)
+    {
+        Debug.Log("updateGrid _page = " + _page);
+        for (int i = 0; i < characterCardControllerList.Count; i++)
+        {
+            CharacterCardController controller = characterCardControllerList[i];
+
+            int characterDataIdx = _page * characterCardControllerList.Count + i;
+            Debug.Log("updateGrid idx = " + characterDataIdx);
+            if (characterDataIdx < filteredCharacterDataList.Count)
             {
-                characterCard = gridPanel.transform.GetChild(idx).gameObject;
-                characterCard.SetActive(true);
+                CharacterData data = filteredCharacterDataList[characterDataIdx];
+                controller.gameObject.SetActive(true);
+                controller.setCharacterId(data, CharacterCardController.STATE_WAITING_ROOM);
+                bool select = selectedCharacterController != null && selectedCharacterController.getCharacterData().tokenId == data.tokenId;
+                controller.setSelected(select);
+                if (select)
+                {
+                    selectedCharacterController = controller;
+                }
             }
             else
             {
-                characterCard = Instantiate(characterCardPrefab, gridPanel.transform);
+                controller.gameObject.SetActive(false);
             }
-
-            CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
-            cardController.setCharacterId(list[idx], CharacterCardController.STATE_PUB);
-            cardController.setClickCallback(selectCharacterCard);
         }
 
-        for (int idx = list.Count; idx < gridPanel.transform.childCount; idx++)
-        {
-            gridPanel.transform.GetChild(idx).gameObject.SetActive(false);
-        }
+        pageText.text = (maxPageNum == 0 ? 0 : (_page + 1)) + "/" + maxPageNum;
 
-        if (list.Count > 0)
+
+        if (filteredCharacterDataList.Count > 0)
         {
-            selectCharacterCard(gridPanel.transform.GetChild(0).GetComponent<CharacterCardController>(), true);
-        } else
+            selectCharacterCard(characterCardControllerList[0], true);
+        }
+        else
         {
             selectCharacterCard(null);
         }
@@ -138,6 +253,32 @@ public class PubWindowController : MonoBehaviour
         return cd1.tokenId - cd2.tokenId;
     }
 
+    public void onPagePrevButtonClicked()
+    {
+        if (pageNum <= 0)
+        {
+            return;
+        }
+
+        pageNum--;
+        updateGrid(pageNum);
+
+        updateArrowButton();
+    }
+
+    public void onPageNextButtonClicked()
+    {
+        if (pageNum >= maxPageNum - 1)
+        {
+            return;
+        }
+
+        pageNum++;
+        updateGrid(pageNum);
+
+        updateArrowButton();
+    }
+
     public bool selectCharacterCard(CharacterCardController _cardController)
     {
         return selectCharacterCard(_cardController, false);
@@ -145,14 +286,14 @@ public class PubWindowController : MonoBehaviour
 
     public bool selectCharacterCard(CharacterCardController _cardController, bool _forced)
     {
-        if (!_forced && lastSelectedCharacterCard == _cardController)
+        if (!_forced && selectedCharacterController == _cardController)
         {
             return false;
         }
 
-        if (lastSelectedCharacterCard != null)
+        if (selectedCharacterController != null)
         {
-            lastSelectedCharacterCard.setSelected(false);
+            selectedCharacterController.setSelected(false);
         }
 
         if (_cardController != null)
@@ -160,7 +301,7 @@ public class PubWindowController : MonoBehaviour
             _cardController.setSelected(true);
         }
 
-        lastSelectedCharacterCard = _cardController;
+        selectedCharacterController = _cardController;
 
         updateInfoPanel(_cardController);
         return true;
@@ -168,7 +309,7 @@ public class PubWindowController : MonoBehaviour
 
     private void updateInfoPanel(CharacterCardController _cardController)
     {
-        if (_cardController == null)
+        if (_cardController == null || _cardController.getCharacterData() == null)
         {
             infoPanel.SetActive(false);
             return;

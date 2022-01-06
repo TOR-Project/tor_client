@@ -14,11 +14,38 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         mContractManager = cm;
         mContractManager.readyToUnityInstance();
+        mContractManager.readyToContract("notice");
     }
 
     public void printLog(string _log)
     {
         Debug.Log(_log);
+    }
+
+    long blockNumber = 79621981;
+    public void reqBlockNumber()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["block"] = blockNumber;
+        blockNumber += 60;
+        var values = JsonConvert.SerializeObject(data);
+        mContractManager.resBlockNumber(values);
+    }
+
+    public void reqConnectedWalletAddr()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = "0x0000000000000000";
+        var values = JsonConvert.SerializeObject(data);
+        mContractManager.resConnectedWalletAddr(values);
+    }
+
+    public void reqServerState()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["available"] = true;
+        var values = JsonConvert.SerializeObject(data);
+        mContractManager.resServerState(values);
     }
 
     public void reqConnectWallet()
@@ -86,7 +113,7 @@ public class EditorContractCommunicator : IContractCommunicator
         bool userBanned = false;
         bool noCharacter = false;
         bool hasUserDataLegacy = true;
-        bool hasUserData = false;
+        bool hasUserData = true;
         bool tokenUsing = true;
         bool nftUsing = true;
 
@@ -280,14 +307,12 @@ public class EditorContractCommunicator : IContractCommunicator
         int[] characterList = new int[characterIdList.Count];
         for (int i = 0; i < characterList.Length; i++)
         {
-            yield return new WaitForSeconds(0.02f);
             characterList[i] = characterIdList[i];
         }
 
         int[] stakingCharacterList = new int[stakingIdList.Count];
         for (int i = 0; i < stakingCharacterList.Length; i++)
         {
-            yield return new WaitForSeconds(0.02f);
             stakingCharacterList[i] = stakingIdList[i];
         }
 
@@ -308,7 +333,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         yield return new WaitForSeconds(0.5f);
 
-        int randCount = UnityEngine.Random.Range(0, 30);
+        int randCount = UnityEngine.Random.Range(300, 500);
         for (int i = 0; i < randCount; i++)
         {
             int id = UnityEngine.Random.Range(0, 10000);
@@ -321,7 +346,6 @@ public class EditorContractCommunicator : IContractCommunicator
         int[] characterList = new int[newCharacterIdList.Count];
         for (int i = 0; i < characterList.Length; i++)
         {
-            yield return new WaitForSeconds(0.02f);
             characterList[i] = newCharacterIdList[i];
         }
 
@@ -343,8 +367,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
         for (int i = 0; i < newCharacterIdList.Count; i++)
         {
-            yield return new WaitForSeconds(0.02f);
-
             int seed = UnityEngine.Random.Range(0, 3);
 
             if (seed == 0)
@@ -372,8 +394,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
         foreach (int id in _characterIdList)
         {
-            yield return new WaitForSeconds(0.02f);
-
             Dictionary<string, object> data = new Dictionary<string, object>();
 
             Dictionary<string, object> characterData = new Dictionary<string, object>();
@@ -422,8 +442,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
         for (int i = 0; i < _idList.Length; i++)
         {
-            yield return new WaitForSeconds(0.03f);
-
             Dictionary<string, object> data = new Dictionary<string, object>();
             data["id"] = stakingIdList[i];
             data["startBlock"] = 12345678;
@@ -478,14 +496,14 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private IEnumerator progCalculateMiningAmount(int _id)
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
 
-        BigInteger basicAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(1, 100);
-        BigInteger miningTaxAmount = -BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 10);
-        BigInteger countryAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 10);
-        BigInteger rebellionAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 30);
-        BigInteger earlybirdAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 100);
-        BigInteger accountReceivableAmount = BigInteger.Parse("100000000000000000") * UnityEngine.Random.Range(0, 100);
+        BigInteger basicAmount = BigInteger.Parse("1000000000000000000") * 10;
+        BigInteger miningTaxAmount = -BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger countryAmount = BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger rebellionAmount = BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger earlybirdAmount = BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger accountReceivableAmount = BigInteger.Parse("1000000000000000000") * 0;
         BigInteger commissionAmount = -(basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount) / 10;
         BigInteger finalAmount = (basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount + commissionAmount);
 

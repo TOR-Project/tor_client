@@ -102,7 +102,6 @@ public class SoundManager : MonoBehaviour
         if (map.ContainsKey(_key))
         {
             _callback();
-            _progressCallback(1);
         }
         else if (downloadPendingMap.ContainsKey(_url))
         {
@@ -120,7 +119,6 @@ public class SoundManager : MonoBehaviour
         yield return new WaitUntil(() => downloadPendingMap[_url] == false);
 
         _callback();
-        _progressCallback(1);
     }
 
     private IEnumerator loadSound(string _key, string _url, Dictionary<string, AudioClip> _map, Action _callback, Func<float, bool> _progressCallback)
@@ -151,6 +149,5 @@ public class SoundManager : MonoBehaviour
             _progressCallback(_www.progress);
             yield return new WaitForSeconds(0.1f);
         }
-        _progressCallback(1);
     }
 }

@@ -31,6 +31,9 @@ public class TitleWindowController : MonoBehaviour
     {
         CharacterManager.instance.reqNotInitCharacterList(showPopup);
         ContractManager.instance.reqGetPassword();
+        SystemInfoManager.instance.startWalletAddressChecker(UserManager.instance.getWalletAddress());
+        SystemInfoManager.instance.startServerStateChecker(true);
+        SystemInfoManager.instance.startBlockNumberChecker();
     }
 
     public bool showPopup(int _part)

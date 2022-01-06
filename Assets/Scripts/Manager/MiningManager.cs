@@ -20,6 +20,7 @@ public class MiningManager : MonoBehaviour
     public Dictionary<int, MiningData> miningMap = new Dictionary<int, MiningData>();
     public Dictionary<int, List<MiningDataObserever>> miningObserverMap = new Dictionary<int, List<MiningDataObserever>>();
     int syncronizerSeq = 0;
+    List<int> miningDataCheckingList = new List<int>();
 
     static MiningManager mInstance;
     public static MiningManager instance {
@@ -44,27 +45,52 @@ public class MiningManager : MonoBehaviour
         syncronizerSeq++;
     }
 
+    public void requestMiningData(int[] _reqIdList, Action _callback)
+    {
+        miningDataCheckingList.Clear();
+        StartCoroutine(reqMiningData(_reqIdList, _callback));
+    }
+
+    private IEnumerator reqMiningData(int[] _reqIdList, Action _callback)
+    {
+        foreach (int tokenId in _reqIdList)
+        {
+            ContractManager.instance.reqCalculateMiningAmount(tokenId);
+        }
+
+        yield return new WaitUntil(() => miningDataCheckingList.Count == _reqIdList.Length);
+
+        _callback();
+    }
+
     private IEnumerator updateMiningData(int _seq)
     {
         while(_seq == syncronizerSeq)
         {
-            foreach (CharacterData cd in CharacterManager.instance.getCharacterList())
+            int maxCount = miningObserverMap.Count;
+            int requestCount = 0;
+
+            foreach (int tokenId in miningObserverMap.Keys)
             {
-                if (cd.stakingData.purpose != StakingManager.PURPOSE_MINING)
+                if (miningObserverMap[tokenId].Count > 0)
                 {
-                    continue;
+                    ContractManager.instance.reqCalculateMiningAmount(tokenId);
+                    requestCount++;
                 }
-
-                ContractManager.instance.reqCalculateMiningAmount(cd.tokenId);
             }
+            Debug.Log("request count = " + requestCount);
 
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(maxCount / 100 + 1);
         }
     }
 
     public void resMiningAmount(Dictionary<string, object> _miningData)
     {
         int tokenId = int.Parse(_miningData["tokenId"].ToString());
+        if (!miningDataCheckingList.Contains(tokenId))
+        {
+            miningDataCheckingList.Add(tokenId);
+        }
         if (!miningMap.ContainsKey(tokenId))
         {
             miningMap.Add(tokenId, new MiningData());

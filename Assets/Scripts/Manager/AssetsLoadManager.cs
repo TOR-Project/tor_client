@@ -29,7 +29,6 @@ public class AssetsLoadManager : MonoBehaviour
         if (spriteMap.ContainsKey(_url))
         {
             _callback(spriteMap[_url]);
-            _progressCallback(1);
         }
         else if (downloadPendingMap.ContainsKey(_url))
         {
@@ -47,7 +46,6 @@ public class AssetsLoadManager : MonoBehaviour
         yield return new WaitUntil(() => downloadPendingMap[_url] == false);
 
         _callback(spriteMap[_url]);
-        _progressCallback(1);
     }
 
     private IEnumerator loadSprite(string _url, Func<Sprite, bool> _callback, Func<float, bool> _progressCallback)
@@ -75,54 +73,61 @@ public class AssetsLoadManager : MonoBehaviour
         }
     }
 
-    public void requestAssets(string _url, string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
+    public void requestAssets(string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
     {
-        if (assetBundleMap.ContainsKey(_url))
+        if (assetBundleMap.ContainsKey(_fileName))
         {
-            _callback(assetBundleMap[_url]);
-            _progressCallback(1);
+            _callback(assetBundleMap[_fileName]);
         }
-        else if (downloadPendingMap.ContainsKey(_url))
+        else if (downloadPendingMap.ContainsKey(_fileName))
         {
-            StartCoroutine(waitAsset(_url, _callback, _progressCallback));
-        }
-        else if (File.Exists(Path.Combine(Application.streamingAssetsPath, _fileName)))
-        {
-            downloadPendingMap[_url] = true;
-            StartCoroutine(loadAssetBundleFromStreamingFolder(_url, _fileName, _callback, _progressCallback));
-        } else
-        {
-            downloadPendingMap[_url] = true;
-            StartCoroutine(loadAsset(_url, _fileName, _callback, _progressCallback));
-        }
-    }
-
-    private IEnumerator waitAsset(string _url, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
-    {
-        yield return new WaitUntil(() => downloadPendingMap[_url] == false);
-
-        _callback(assetBundleMap[_url]);
-        _progressCallback(1);
-    }
-
-    IEnumerator loadAsset(string _url, string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
-    {
-        WWW www = new WWW(_url);
-        if (_progressCallback != null)
-        {
-            StartCoroutine(DownloadProgress(www, _progressCallback));
-        }
-        yield return www;
-        if (www.error == null)
-        {
-            File.WriteAllBytes(Path.Combine(Application.streamingAssetsPath, _fileName), www.bytes);
-            StartCoroutine(loadAssetBundleFromStreamingFolder(_url, _fileName, _callback, _progressCallback));
+            StartCoroutine(waitAsset(_fileName, _callback, _progressCallback));
         }
         else
         {
-            Debug.Log("ERROR: " + www.error);
+            downloadPendingMap[_fileName] = true;
+            StartCoroutine(loadAsset(_fileName, _callback, _progressCallback));
+        }
+    }
+
+    private IEnumerator waitAsset(string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
+    {
+        yield return new WaitUntil(() => downloadPendingMap[_fileName] == false);
+
+        _callback(assetBundleMap[_fileName]);
+    }
+
+    IEnumerator loadAsset(string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
+    {
+        AssetBundle myLoadedAssetBundle = null;
+
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            UnityWebRequest unityWebRequest = UnityWebRequestAssetBundle.GetAssetBundle(Path.Combine(Application.streamingAssetsPath, _fileName));
+            yield return unityWebRequest.SendWebRequest();
+            Debug.Log("responseCode:" + unityWebRequest.responseCode);
+            if (unityWebRequest.isDone)
+            {
+                myLoadedAssetBundle = (unityWebRequest.downloadHandler as DownloadHandlerAssetBundle).assetBundle;
+            }
+        }
+        else
+        {
+            myLoadedAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, _fileName));
+        }
+
+        if (myLoadedAssetBundle != null)
+        {
+            assetBundleMap[_fileName] = myLoadedAssetBundle;
+            downloadPendingMap[_fileName] = false;
+            _callback(myLoadedAssetBundle);
+        }
+        else
+        {
             _callback(null);
         }
+
+        yield return null;
     }
 
     IEnumerator DownloadProgress(WWW _www, Func<float, bool> _progressCallback)
@@ -132,19 +137,5 @@ public class AssetsLoadManager : MonoBehaviour
             _progressCallback(_www.progress);
             yield return new WaitForSeconds(0.1f);
         }
-        _progressCallback(1);
-    }
-
-    IEnumerator loadAssetBundleFromStreamingFolder(string _url, string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)
-    {
-        var fileStream = new FileStream(Path.Combine(Application.streamingAssetsPath, _fileName), FileMode.Open, FileAccess.Read);
-        var bundleLoadRequest = AssetBundle.LoadFromStreamAsync(fileStream);
-        yield return bundleLoadRequest;
-        AssetBundle myLoadedAssetBundle = bundleLoadRequest.assetBundle;
-
-        _progressCallback(1);
-        assetBundleMap[_url] = myLoadedAssetBundle;
-        downloadPendingMap[_url] = false;
-        _callback(myLoadedAssetBundle);
     }
 }

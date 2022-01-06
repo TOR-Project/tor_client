@@ -17,6 +17,21 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("printLog", log);
     }
 
+    public void reqBlockNumber()
+    {
+        Application.ExternalCall("reqBlockNumber", null);
+    }
+
+    public void reqConnectedWalletAddr()
+    {
+        Application.ExternalCall("reqConnectedWalletAddr", null);
+    }
+
+    public void reqServerState()
+    {
+        Application.ExternalCall("reqServerState", null);
+    }
+
     public void reqConnectWallet()
     {
         Dictionary<string, object> data = new Dictionary<string, object>();

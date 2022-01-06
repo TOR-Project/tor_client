@@ -736,7 +736,6 @@ GameObject:
   - component: {fileID: 6001003758850906279}
   - component: {fileID: 6001003758850906280}
   - component: {fileID: 1814151302724468150}
-  - component: {fileID: 7953439282351357168}
   m_Layer: 0
   m_Name: Frame 5_3
   m_TagString: Untagged
@@ -997,7 +996,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.2
       minScalar: 2
       maxCurve:
         serializedVersion: 2
@@ -1032,7 +1031,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.25
       minScalar: 2
       maxCurve:
         serializedVersion: 2
@@ -1296,7 +1295,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     maxNumParticles: 2
-    size3D: 0
+    size3D: 1
     rotation3D: 0
     gravityModifier:
       serializedVersion: 2
@@ -5605,36 +5604,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6001003758850906282}
   m_CullTransparentMesh: 1
---- !u!114 &7953439282351357168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6001003758850906282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16f0b0b6d0b7542bfbd20a3e05b04ff1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
-  m_Scale3D: {x: 21, y: 28, z: 1}
-  m_AnimatableProperties:
-  - m_Name: _MainTex_ST
-    m_Type: 1
-  m_Particles:
-  - {fileID: 6001003758850906278}
-  m_ShrinkByMaterial: 0
 --- !u!1 &6113687616607530515
 GameObject:
   m_ObjectHideFlags: 0
@@ -6580,7 +6549,8 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!224 &5578994076667119143 stripped
 RectTransform:
@@ -6951,7 +6921,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!224 &7413346569571780159 stripped
 RectTransform:
@@ -7456,7 +7427,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!1 &2011652054334458984 stripped
 GameObject:
@@ -7827,7 +7799,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!224 &1480058610201020265 stripped
 RectTransform:
@@ -8198,7 +8171,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!224 &2738735406108270918 stripped
 RectTransform:
@@ -8683,7 +8657,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65809807724179757, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e517a67df86a4eb429f1db565962de2d, type: 3}
 --- !u!224 &3631305183866371073 stripped
 RectTransform:

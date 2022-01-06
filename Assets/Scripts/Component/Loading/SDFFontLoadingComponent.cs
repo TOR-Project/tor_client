@@ -8,17 +8,14 @@ using UnityEngine.UI;
 public class SDFFontLoadingComponent : LoadingComponent
 {
     [SerializeField]
-    string fontUrl;
-    [SerializeField]
     string fileName;
     string loadingInfoTextKey = "ID_FONT_LOADING";
 
-    bool loadingCompleted = false;
     float progress = 0;
 
     public override void startLoading()
     {
-        AssetsLoadManager.instance.requestAssets(fontUrl, fileName, updateFont, updateProgress);
+        AssetsLoadManager.instance.requestAssets(fileName, updateFont, updateProgress);
     }
 
     public bool updateFont(AssetBundle _bundle)
@@ -26,8 +23,8 @@ public class SDFFontLoadingComponent : LoadingComponent
         TMP_FontAsset font = _bundle.LoadAsset<TMP_FontAsset>("ON_L SDF");
         if (font == null)
         {
-            AssetsLoadManager.instance.requestAssets(fontUrl, fileName, updateFont, updateProgress);
-            Debug.Log("font invalid : " + fontUrl);
+            AssetsLoadManager.instance.requestAssets(fileName, updateFont, updateProgress);
+            Debug.Log("font invalid : " + fileName);
             return false;
         }
 
@@ -35,11 +32,10 @@ public class SDFFontLoadingComponent : LoadingComponent
         if (text.font != font)
         {
             text.font = font;
-            Debug.Log("font updated : " + fontUrl);
+            Debug.Log("font updated : " + fileName);
         }
 
         updateProgress(getProgressMax());
-        loadingCompleted = true;
         return true;
     }
 
@@ -47,11 +43,6 @@ public class SDFFontLoadingComponent : LoadingComponent
     {
         progress = _progress;
         return true;
-    }
-
-    public void onLoadingCompleted()
-    {
-        loadingCompleted = true;
     }
 
     public override string getLoadingTextKey()

@@ -12,6 +12,7 @@ public class ContractManager : MonoBehaviour
     private IContractCommunicator mContractCommunicator;
 
     private bool unityInstanceLoaded = false;
+    private Dictionary<string, bool> contractLoadedMap = new Dictionary<string, bool>();
 
     [SerializeField]
     LoginWindowController loginController;
@@ -63,6 +64,25 @@ public class ContractManager : MonoBehaviour
         return unityInstanceLoaded;
     }
 
+    public void readyToContract(string _name)
+    {
+        Debug.Log("readyToContract() " + _name);
+
+        if (!contractLoadedMap.ContainsKey(_name))
+        {
+            contractLoadedMap[_name] = true;
+        }
+    }
+
+    public bool isContractLoaded(string _name)
+    {
+        if (contractLoadedMap.ContainsKey(_name))
+        {
+            return contractLoadedMap[_name];
+        }
+        return false;
+    }
+
     public void printLog(string log)
     {
         mContractCommunicator.printLog(log);
@@ -72,6 +92,45 @@ public class ContractManager : MonoBehaviour
     {
         globalUIController.hideLoading();
         globalUIController.showPopup(_err, null);
+    }
+
+    public void reqBlockNumber()
+    {
+        mContractCommunicator.reqBlockNumber();
+    }
+
+    public void resBlockNumber(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        long number = long.Parse(values["block"].ToString());
+        SystemInfoManager.instance.setBlockNumber(number);
+    }
+
+    public void reqConnectedWalletAddr()
+    {
+        mContractCommunicator.reqConnectedWalletAddr();
+    }
+
+    public void resConnectedWalletAddr(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        string addr = values["address"].ToString();
+        SystemInfoManager.instance.setConnectedWalletAddress(addr);
+    }
+
+    public void reqServerState()
+    {
+        mContractCommunicator.reqServerState();
+    }
+
+    public void resServerState(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        bool available = bool.Parse(values["available"].ToString());
+        SystemInfoManager.instance.setServerState(available);
     }
 
     public void reqConnectWallet()

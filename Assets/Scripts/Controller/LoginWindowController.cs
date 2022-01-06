@@ -30,6 +30,9 @@ public class LoginWindowController : MonoBehaviour
 
     private void OnEnable()
     {
+        SystemInfoManager.instance.stopWalletAddressChecker();
+        SystemInfoManager.instance.stopServerStateChecker();
+        SystemInfoManager.instance.stopBlockNumberChecker();
         globalUIController.hideInfoPanel();
     }
 
@@ -37,10 +40,14 @@ public class LoginWindowController : MonoBehaviour
     {
         noticeLoadingIcon.SetActive(true);
 
+        Debug.Log("updateNotice() 1111 ");
         yield return new WaitUntil(ContractManager.instance.isUnityInstanceLoaded);
+        Debug.Log("updateNotice() 2222 ");
+        yield return new WaitUntil(() => ContractManager.instance.isContractLoaded("notice"));
+        Debug.Log("updateNotice() 3333 ");
 
         ContractManager.instance.reqLatestNotice();
-    } 
+    }
 
     internal void connectWallet(string addr)
     {

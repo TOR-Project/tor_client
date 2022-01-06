@@ -90,6 +90,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         cardState = _state;
 
         nameText.text = _data.name;
+        stateText.text = "";
         updateStateText();
 
         loadingObject.SetActive(true);
@@ -114,6 +115,22 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         }
     }
 
+    public void setAllParticleEnabled(bool _set)
+    {
+        if (_set)
+        {
+            updateGemImageAndParticle();
+            selectFrame.SetActive(selected);
+        } else
+        {
+            for (int i = 0; i < gemParticleList.Length; i++)
+            {
+                gemParticleList[i].SetActive(false);
+            }
+            selectFrame.SetActive(false);
+        }
+    }
+
     private bool updateCharacterImage()
     {
         AssetsLoadManager.instance.requestSprite(BACKGROUND_IMAGE_URL, (_sprite) =>
@@ -134,6 +151,18 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         flagImage.enabled = true;
         avatarImage.enabled = true;
 
+        updateGemImageAndParticle();
+
+        return true;
+    }
+
+    private void updateGemImageAndParticle()
+    {
+        if (characterData == null)
+        {
+            return;
+        }
+
         EquipItemData[] equipItemDataList = new EquipItemData[]
         {
             ItemManager.instance.getEquipItem(characterData.equipData.head),
@@ -151,15 +180,14 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
             {
                 gemImageList[i].enabled = false;
                 gemParticleList[i].SetActive(false);
-            } else
+            }
+            else
             {
                 gemImageList[i].enabled = true;
                 gemImageList[i].sprite = ItemManager.instance.getGemImage(ed.grade);
                 gemParticleList[i].SetActive(ed.grade == ItemGrade.LEGEND);
             }
         }
-
-        return true;
     }
 
     public void setSelected(bool _set)

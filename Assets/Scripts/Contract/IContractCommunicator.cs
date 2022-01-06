@@ -3,6 +3,12 @@ public interface IContractCommunicator
 {
     void printLog(string _log);
 
+    void reqBlockNumber();
+
+    void reqConnectedWalletAddr();
+
+    void reqServerState();
+
     void reqConnectWallet();
 
     void reqLatestNotice();

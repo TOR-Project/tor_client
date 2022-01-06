@@ -20,22 +20,37 @@ public class MiningWindowController : MonoBehaviour
     Animator receiptPanelAnimator;
     [SerializeField]
     GameObject characterCardPrefab;
-    [SerializeField]
-    GameObject waitingGridPanel;
-    [SerializeField]
-    GameObject workingGridPanel;
+
     [SerializeField]
     GameObject helpPanel;
     [SerializeField]
     Animator helpPanelAnimator;
+
     [SerializeField]
-    Scrollbar miningScrollBar;
+    GameObject waitingGridPanel;
     [SerializeField]
-    RectTransform miningScrollViewRT;
+    GridLayoutGroup waitingGridLayoutGroup;
     [SerializeField]
-    GridLayoutGroup miningGridLayoutGroup;
+    RectTransform waitingGridLayoutGroupRT;
     [SerializeField]
-    RectTransform miningGridLayoutGroupRT;
+    Button waitingPrevButton;
+    [SerializeField]
+    Button waitingNextButton;
+    [SerializeField]
+    Text waitingPageText;
+
+    [SerializeField]
+    GameObject workingGridPanel;
+    [SerializeField]
+    GridLayoutGroup workingGridLayoutGroup;
+    [SerializeField]
+    RectTransform workingGridLayoutGroupRT;
+    [SerializeField]
+    Button workingPrevButton;
+    [SerializeField]
+    Button workingNextButton;
+    [SerializeField]
+    Text workingPageText;
 
     [SerializeField]
     Text[] amountTextList;
@@ -50,12 +65,28 @@ public class MiningWindowController : MonoBehaviour
     [SerializeField]
     Button unstakingButton;
     [SerializeField]
-    Button receiptButton;
+    GameObject receiptLoading;
+    [SerializeField]
+    Button receiptAllButton;
 
     [SerializeField]
-    List<CharacterCardController> selectedWaitingCardControllerList = new List<CharacterCardController>();
+    List<int> selectedWaitingCharacterIdList = new List<int>();
     [SerializeField]
-    List<CharacterCardController> selectedWorkingCardControllerList = new List<CharacterCardController>();
+    List<int> selectedWorkingCharacterIdList = new List<int>();
+
+    List<CharacterData> waitingAllCharacterDataList = new List<CharacterData>();
+    List<CharacterData> workingAllCharacterDataList = new List<CharacterData>();
+
+    List<CharacterCardController> waitingCharacterCardControllerList = new List<CharacterCardController>();
+    List<CharacterCardController> workingCharacterCardControllerList = new List<CharacterCardController>();
+
+    int waitingPageNum = 0;
+    int workingPageNum = 0;
+    int waitingMaxPageNum = 1;
+    int workingMaxPageNum = 1;
+
+    float waitingContentsViewWidth = 0;
+    float waitingContentsViewHeight = 0;
 
     private string dismissingTrigger = "dismissing";
     [SerializeField]
@@ -64,21 +95,178 @@ public class MiningWindowController : MonoBehaviour
     int txProcess = 0;
     int txMax = 0;
 
-    int lastVisibleStartIdx = 0;
-    int lastVisibleEndIdx = 0;
-
     private void OnEnable()
     {
-        updateGrid();
-        MiningManager.instance.startMiningAmountSyncronizer();
         ContractManager.instance.reqGetPassword();
         StartCoroutine(playMiningSound());
+        MiningManager.instance.startMiningAmountSyncronizer();
     }
 
     private void OnDisable()
     {
         SoundManager.instance.stopSeNow();
         MiningManager.instance.stopMiningAmountSyncronizer();
+    }
+
+    private void updateAllLayout()
+    {
+        init();
+        fillGrid();
+        updateCharacterData();
+        updateArrowButton();
+        updateWaitingGrid(0);
+        updateWorkingGrid(0);
+    }
+
+    private void init()
+    {
+        waitingAllCharacterDataList.Clear();
+        workingAllCharacterDataList.Clear();
+        selectedWaitingCharacterIdList.Clear();
+        selectedWorkingCharacterIdList.Clear();
+    }
+
+    private void updateCharacterData()
+    {
+        List<CharacterData> list = CharacterManager.instance.getCharacterList();
+        list.Sort(SortByTokenIdAscending);
+
+
+        for (int idx = 0; idx < list.Count; idx++)
+        {
+            CharacterData cd = list[idx];
+            
+            if (cd.stakingData.purpose == StakingManager.PURPOSE_BREAK)
+            {
+                waitingAllCharacterDataList.Add(cd);
+            }
+            else if (cd.stakingData.purpose == StakingManager.PURPOSE_MINING)
+            {
+                workingAllCharacterDataList.Add(cd);
+            }
+        }
+
+        Debug.Log("updateCharacterData() " + list.Count + " wait " + waitingAllCharacterDataList.Count + " work " + workingAllCharacterDataList.Count);
+        waitingPageNum = workingPageNum = 0;
+        if (waitingCharacterCardControllerList.Count > 0)
+        {
+            waitingMaxPageNum = waitingAllCharacterDataList.Count / waitingCharacterCardControllerList.Count + (waitingAllCharacterDataList.Count % waitingCharacterCardControllerList.Count == 0 ? 0 : 1);
+        } else
+        {
+            waitingMaxPageNum = 0;
+        }
+        if (workingCharacterCardControllerList.Count > 0)
+        {
+            workingMaxPageNum = workingAllCharacterDataList.Count / workingCharacterCardControllerList.Count + (workingAllCharacterDataList.Count % workingCharacterCardControllerList.Count == 0 ? 0 : 1);
+        } else
+        {
+            workingMaxPageNum = 0;
+        }
+    }
+
+    private void updateArrowButton()
+    {
+        waitingPrevButton.interactable = waitingPageNum > 0;
+        waitingNextButton.interactable = waitingPageNum < waitingMaxPageNum - 1;
+        workingPrevButton.interactable = workingPageNum > 0;
+        workingNextButton.interactable = workingPageNum < workingMaxPageNum - 1;
+    }
+
+    private void fillGrid()
+    {
+        if (waitingCharacterCardControllerList.Count == 0)
+        {
+            waitingContentsViewWidth = waitingGridLayoutGroupRT.rect.width;
+            float waitingGridSpaceX = waitingGridLayoutGroup.spacing.x;
+            float waitingGridCellX = waitingGridLayoutGroup.cellSize.x;
+            int waitingGridMaxCellCol = (int)((waitingContentsViewWidth + waitingGridSpaceX) / (waitingGridCellX + waitingGridSpaceX));
+            if (waitingGridMaxCellCol <= 0)
+            {
+                waitingGridMaxCellCol = 1;
+            }
+
+            waitingContentsViewHeight = waitingGridLayoutGroupRT.rect.height;
+            float waitingGridSpaceY = waitingGridLayoutGroup.spacing.y;
+            float waitingGridCellY = waitingGridLayoutGroup.cellSize.y;
+            int waitingGridMaxCellRow = (int)((waitingContentsViewHeight + waitingGridSpaceY) / (waitingGridCellY + waitingGridSpaceY));
+            if (waitingGridMaxCellRow <= 0)
+            {
+                waitingGridMaxCellRow = 1;
+            }
+
+            int maxCellCount = waitingGridMaxCellCol * waitingGridMaxCellRow;
+            for (int i = 0; i < maxCellCount; i++)
+            {
+                GameObject characterCard = Instantiate(characterCardPrefab, waitingGridPanel.transform, true);
+                characterCard.transform.localScale = UnityEngine.Vector3.one;
+                characterCard.SetActive(false);
+                CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
+                cardController.setClickCallback(selectWatingCharacterCard);
+                waitingCharacterCardControllerList.Add(cardController);
+            }
+
+            Debug.Log("fillGrid() wait " + waitingCharacterCardControllerList.Count);
+        }
+
+        if (workingCharacterCardControllerList.Count == 0)
+        {
+            float workingContentsViewWidth = workingGridLayoutGroupRT.rect.width;
+            float workingGridSpaceX = workingGridLayoutGroup.spacing.x;
+            float workingGridCellX = workingGridLayoutGroup.cellSize.x;
+            int workingGridMaxCellCol = (int)((workingContentsViewWidth + workingGridSpaceX) / (workingGridCellX + workingGridSpaceX));
+            if (workingGridMaxCellCol <= 0)
+            {
+                workingGridMaxCellCol = 1;
+            }
+
+            float workingContentsViewHeight = workingGridLayoutGroupRT.rect.height;
+            float workingGridSpaceY = workingGridLayoutGroup.spacing.y;
+            float workingGridCellY = workingGridLayoutGroup.cellSize.y;
+            int workingGridMaxCellRow = (int)((workingContentsViewHeight + workingGridSpaceY) / (workingGridCellY + workingGridSpaceY));
+            if (workingGridMaxCellRow <= 0)
+            {
+                workingGridMaxCellRow = 1;
+            }
+
+            int maxCellCount = workingGridMaxCellCol * workingGridMaxCellRow;
+            for (int i = 0; i < maxCellCount; i++)
+            {
+                GameObject characterCard = Instantiate(characterCardPrefab, workingGridPanel.transform, true);
+                characterCard.transform.localScale = UnityEngine.Vector3.one;
+                characterCard.SetActive(false);
+                CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
+                cardController.setClickCallback(selectWorkingCharacterCard);
+                workingCharacterCardControllerList.Add(cardController);
+            }
+
+            Debug.Log("fillGrid() work " + workingCharacterCardControllerList.Count);
+        }
+    }
+
+    private void Update()
+    {
+        float newContentsViewWidth = waitingGridLayoutGroupRT.rect.width;
+        float newContentsViewHeight = waitingGridLayoutGroupRT.rect.height;
+        if (newContentsViewWidth != waitingContentsViewWidth || newContentsViewHeight != waitingContentsViewHeight)
+        {
+            clearAllCharacterCard();
+            updateAllLayout();
+        }
+    }
+
+    private void clearAllCharacterCard()
+    {
+        for (int i = waitingGridLayoutGroupRT.childCount - 1; i >= 0; i--)
+        {
+            Destroy(waitingGridLayoutGroupRT.GetChild(i).gameObject);
+            waitingCharacterCardControllerList.Clear();
+        }
+
+        for (int i = workingGridLayoutGroupRT.childCount - 1; i >= 0; i--)
+        {
+            Destroy(workingGridLayoutGroupRT.GetChild(i).gameObject);
+            workingCharacterCardControllerList.Clear();
+        }
     }
 
     private IEnumerator playMiningSound()
@@ -97,6 +285,7 @@ public class MiningWindowController : MonoBehaviour
     public void showHelpPopup()
     {
         helpPanel.SetActive(true);
+        setAllParticleEnabled(false);
     }
 
     public void closeHelpPopup()
@@ -107,114 +296,103 @@ public class MiningWindowController : MonoBehaviour
     public void dismissHelpPopup()
     {
         helpPanel.SetActive(false);
+        setAllParticleEnabled(true);
     }
 
-    public void updateGrid()
+    public void onWaitingPagePrevButtonClicked()
     {
-        selectedWaitingCardControllerList.Clear();
-        selectedWorkingCardControllerList.Clear();
-
-        List<CharacterData> list = CharacterManager.instance.getCharacterList();
-        list.Sort(SortByTokenIdAscending);
-
-        int waitingGridIdx = 0;
-        int workingGridIdx = 0;
-
-        for (int idx = 0; idx < list.Count; idx++)
-        {
-            CharacterData cd = list[idx];
-            GameObject gridPanel;
-            int gridIdx;
-            int state;
-            Func<CharacterCardController, bool> callback;
-            if (cd.stakingData.purpose == StakingManager.PURPOSE_BREAK)
-            {
-                gridPanel = waitingGridPanel;
-                gridIdx = waitingGridIdx++;
-                state = CharacterCardController.STATE_WAITING_ROOM;
-                callback = selectWatingCharacterCard;
-            }
-            else if (cd.stakingData.purpose == StakingManager.PURPOSE_MINING)
-            {
-                gridPanel = workingGridPanel;
-                gridIdx = workingGridIdx++;
-                state = CharacterCardController.STATE_WORKING_PLACE;
-                callback = selectWorkingCharacterCard;
-            }
-            else
-            {
-                continue;
-            }
-
-            GameObject characterCard;
-            if (gridIdx < gridPanel.transform.childCount)
-            {
-                characterCard = gridPanel.transform.GetChild(gridIdx).gameObject;
-                characterCard.SetActive(true);
-            }
-            else
-            {
-                characterCard = Instantiate(characterCardPrefab, gridPanel.transform, true);
-                characterCard.transform.localScale = UnityEngine.Vector3.one;
-            }
-
-            CharacterCardController cardController = characterCard.GetComponent<CharacterCardController>();
-            cardController.setCharacterId(cd, state);
-            cardController.setClickCallback(callback);
-        }
-
-        for (int idx = waitingGridIdx; idx < waitingGridPanel.transform.childCount; idx++)
-        {
-            waitingGridPanel.transform.GetChild(idx).gameObject.SetActive(false);
-        }
-
-        for (int idx = workingGridIdx; idx < workingGridPanel.transform.childCount; idx++)
-        {
-            workingGridPanel.transform.GetChild(idx).gameObject.SetActive(false);
-        }
-
-        stakingButton.interactable = waitingGridIdx > 0;
-        receiptButton.interactable = workingGridIdx > 0;
-        unstakingButton.interactable = workingGridIdx > 0;
-    }
-
-    public void onMiningScrollValueChanged()
-    {
-        float visibleViewHeight = miningScrollViewRT.rect.height;
-        float contentsViewHeight = miningGridLayoutGroupRT.rect.height - visibleViewHeight;
-        float gridSpaceY = miningGridLayoutGroup.spacing.y;
-        float gridCellY = miningGridLayoutGroup.cellSize.y;
-
-        float contentsViewWidth = miningGridLayoutGroupRT.rect.width;
-        float gridSpaceX = miningGridLayoutGroup.spacing.x;
-        float gridCellX = miningGridLayoutGroup.cellSize.x;
-        int gridMaxCellCol = (int)((contentsViewWidth + gridSpaceX) / (gridCellX + gridSpaceX));
-
-        int top = (int)(contentsViewHeight * (1 - miningScrollBar.value));
-        int bottom = (int)(top + visibleViewHeight);
-
-        int startRow = (int)((top + gridSpaceY) / (gridCellY + gridSpaceY));
-        int endRow = (int)(bottom / (gridCellY + gridSpaceY)) + 1;
-
-        int visibleStartIdx = startRow * gridMaxCellCol;
-        int visibleEndIdx = endRow * gridMaxCellCol;
-
-        Debug.Log("visibleViewHeight = " + visibleViewHeight + ", contentsViewHeight = " + contentsViewHeight + ", gridSpaceY = " + gridSpaceY + ", gridCellY = " + gridCellY);
-        Debug.Log("contentsViewWidth = " + contentsViewWidth + ", gridSpaceX = " + gridSpaceX + ", gridCellX = " + gridCellX + ", gridMaxCellCol = " + gridMaxCellCol);
-        Debug.Log("top = " + top + ", bottom = " + bottom + ", startRow = " + startRow + ", endRow = " + endRow + ", visibleStartIdx = " + visibleStartIdx + ", visibleEndIdx = " + visibleEndIdx);
-
-        if (lastVisibleStartIdx == visibleStartIdx && lastVisibleEndIdx == visibleEndIdx)
+        if (waitingPageNum <= 0)
         {
             return;
         }
-        lastVisibleStartIdx = visibleStartIdx;
-        lastVisibleEndIdx = visibleEndIdx;
 
-        for (int idx = 0; idx < workingGridPanel.transform.childCount; idx++)
+        waitingPageNum--;
+        updateWaitingGrid(waitingPageNum);
+
+        updateArrowButton();
+    }
+
+    public void onWaitingPageNextButtonClicked()
+    {
+        if (waitingPageNum >= waitingMaxPageNum - 1)
         {
-            CharacterCardController cardController = workingGridPanel.transform.GetChild(idx).gameObject.GetComponent<CharacterCardController>();
-            cardController.setEnableComponents(visibleStartIdx <= idx && idx <= visibleEndIdx);
+            return;
         }
+
+        waitingPageNum++;
+        updateWaitingGrid(waitingPageNum);
+
+        updateArrowButton();
+    }
+
+    public void onWorkingPagePrevButtonClicked()
+    {
+        if (workingPageNum <= 0)
+        {
+            return;
+        }
+
+        workingPageNum--;
+        updateWorkingGrid(workingPageNum);
+
+        updateArrowButton();
+    }
+
+    public void onWorkingPageNextButtonClicked()
+    {
+        if (workingPageNum >= workingMaxPageNum - 1)
+        {
+            return;
+        }
+
+        workingPageNum++;
+        updateWorkingGrid(workingPageNum);
+
+        updateArrowButton();
+    }
+
+    public void updateWaitingGrid(int _page)
+    {
+        for (int i = 0; i < waitingCharacterCardControllerList.Count; i++)
+        {
+            CharacterCardController controller = waitingCharacterCardControllerList[i];
+
+            int characterDataIdx = _page * waitingCharacterCardControllerList.Count + i;
+            if (characterDataIdx < waitingAllCharacterDataList.Count)
+            {
+                CharacterData data = waitingAllCharacterDataList[characterDataIdx];
+                controller.gameObject.SetActive(true);
+                controller.setCharacterId(data, CharacterCardController.STATE_WAITING_ROOM);
+                controller.setSelected(selectedWaitingCharacterIdList.Contains(data.tokenId));
+            } else
+            {
+                controller.gameObject.SetActive(false);
+            }
+        }
+
+        waitingPageText.text = (waitingMaxPageNum == 0 ? 0 : (_page + 1)) + "/" + waitingMaxPageNum;
+    }
+
+    public void updateWorkingGrid(int _page)
+    {
+        for (int i = 0; i < workingCharacterCardControllerList.Count; i++)
+        {
+            CharacterCardController controller = workingCharacterCardControllerList[i];
+
+            int characterDataIdx = _page * workingCharacterCardControllerList.Count + i;
+            if (characterDataIdx < workingAllCharacterDataList.Count)
+            {
+                CharacterData data = workingAllCharacterDataList[characterDataIdx];
+                controller.gameObject.SetActive(true);
+                controller.setCharacterId(data, CharacterCardController.STATE_WORKING_PLACE);
+                controller.setSelected(selectedWorkingCharacterIdList.Contains(data.tokenId));
+            } else
+            {
+                controller.gameObject.SetActive(false);
+            }
+        }
+
+        workingPageText.text = (workingMaxPageNum == 0 ? 0 : (_page + 1)) + "/" + workingMaxPageNum;
     }
 
     public int SortByTokenIdAscending(CharacterData cd1, CharacterData cd2)
@@ -226,11 +404,11 @@ public class MiningWindowController : MonoBehaviour
     {
         if (_cardController.isSelected())
         {
-            selectedWaitingCardControllerList.Remove(_cardController);
+            selectedWaitingCharacterIdList.Remove(_cardController.getCharacterData().tokenId);
             _cardController.setSelected(false);
         } else
         {
-            selectedWaitingCardControllerList.Add(_cardController);
+            selectedWaitingCharacterIdList.Add(_cardController.getCharacterData().tokenId);
             _cardController.setSelected(true);
         }
         return true;
@@ -240,12 +418,12 @@ public class MiningWindowController : MonoBehaviour
     {
         if (_cardController.isSelected())
         {
-            selectedWorkingCardControllerList.Remove(_cardController);
+            selectedWorkingCharacterIdList.Remove(_cardController.getCharacterData().tokenId);
             _cardController.setSelected(false);
         }
         else
         {
-            selectedWorkingCardControllerList.Add(_cardController);
+            selectedWorkingCharacterIdList.Add(_cardController.getCharacterData().tokenId);
             _cardController.setSelected(true);
         }
         return true;
@@ -253,16 +431,16 @@ public class MiningWindowController : MonoBehaviour
 
     public void onStakingButtonClicked()
     {
-        if (selectedWaitingCardControllerList.Count == 0)
+        if (selectedWaitingCharacterIdList.Count == 0)
         {
             globalUIWindowController.showPopupByTextKey("ID_WARNING_SELECT_STAKING", null);
             return;
         }
 
-        txMax = selectedWaitingCardControllerList.Count / MAX_TX_CHARACTER_SIZE + (selectedWaitingCardControllerList.Count % MAX_TX_CHARACTER_SIZE == 0 ? 0 : 1);
+        txMax = selectedWaitingCharacterIdList.Count / MAX_TX_CHARACTER_SIZE + (selectedWaitingCharacterIdList.Count % MAX_TX_CHARACTER_SIZE == 0 ? 0 : 1);
         txProcess = 0;
 
-        string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_STAKING"), selectedWaitingCardControllerList.Count);
+        string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_STAKING"), selectedWaitingCharacterIdList.Count);
         if (txMax > 1)
         {
             msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
@@ -273,11 +451,11 @@ public class MiningWindowController : MonoBehaviour
     public void reqAddMiningStaking()
     {
         int startIdx = txProcess * MAX_TX_CHARACTER_SIZE;
-        int endIdx = Math.Min((txProcess + 1) * MAX_TX_CHARACTER_SIZE, selectedWaitingCardControllerList.Count);
+        int endIdx = Math.Min((txProcess + 1) * MAX_TX_CHARACTER_SIZE, selectedWaitingCharacterIdList.Count);
         int[] idList = new int[endIdx - startIdx];
         for (int idx = startIdx; idx < endIdx; idx++)
         {
-            idList[idx - startIdx] = selectedWaitingCardControllerList[idx].getCharacterData().tokenId;
+            idList[idx - startIdx] = selectedWaitingCharacterIdList[idx];
         }
 
         ContractManager.instance.reqAddMiningStaking(idList);
@@ -288,7 +466,7 @@ public class MiningWindowController : MonoBehaviour
         txProcess++;
         if (txProcess < txMax)
         {
-            string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_STAKING"), selectedWaitingCardControllerList.Count);
+            string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_STAKING"), selectedWaitingCharacterIdList.Count);
             if (txMax > 1)
             {
                 msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
@@ -297,28 +475,30 @@ public class MiningWindowController : MonoBehaviour
             return;
         }
 
-        for (int idx = 0; idx < selectedWaitingCardControllerList.Count; idx++)
+        for (int idx = 0; idx < selectedWaitingCharacterIdList.Count; idx++)
         {
-            selectedWaitingCardControllerList[idx].getCharacterData().stakingData.purpose = StakingManager.PURPOSE_MINING;
-            selectedWaitingCardControllerList[idx].getCharacterData().stakingData.startBlock = SystemInfoManager.instance.blockNumber;
+            int tokenId = selectedWaitingCharacterIdList[idx];
+            CharacterData data = CharacterManager.instance.getCharacterData(tokenId);
+            data.stakingData.purpose = StakingManager.PURPOSE_MINING;
+            data.stakingData.startBlock = SystemInfoManager.instance.blockNumber;
         }
-        
-        updateGrid();
+
+        updateAllLayout();
     }
 
     public void onUnstakingButtonClicked()
     {
-        if (selectedWorkingCardControllerList.Count == 0)
+        if (selectedWorkingCharacterIdList.Count == 0)
         {
             globalUIWindowController.showPopupByTextKey("ID_WARNING_SELECT_UNSTAKING", null);
             return;
         }
 
-        txMax = selectedWorkingCardControllerList.Count / MAX_TX_CHARACTER_SIZE + (selectedWorkingCardControllerList.Count % MAX_TX_CHARACTER_SIZE == 0 ? 0 : 1);
+        txMax = selectedWorkingCharacterIdList.Count / MAX_TX_CHARACTER_SIZE + (selectedWorkingCharacterIdList.Count % MAX_TX_CHARACTER_SIZE == 0 ? 0 : 1);
         txProcess = 0;
 
 
-        string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_UNSTAKING"), selectedWorkingCardControllerList.Count);
+        string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_UNSTAKING"), selectedWorkingCharacterIdList.Count);
         if (txMax > 1)
         {
             msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
@@ -329,11 +509,11 @@ public class MiningWindowController : MonoBehaviour
     public void reqGetBackMiningStaking()
     {
         int startIdx = txProcess * MAX_TX_CHARACTER_SIZE;
-        int endIdx = Math.Min((txProcess + 1) * MAX_TX_CHARACTER_SIZE, selectedWorkingCardControllerList.Count);
+        int endIdx = Math.Min((txProcess + 1) * MAX_TX_CHARACTER_SIZE, selectedWorkingCharacterIdList.Count);
         int[] idList = new int[endIdx - startIdx];
         for (int idx = startIdx; idx < endIdx; idx++)
         {
-            idList[idx - startIdx] = selectedWorkingCardControllerList[idx].getCharacterData().tokenId;
+            idList[idx - startIdx] = selectedWorkingCharacterIdList[idx];
         }
 
         ContractManager.instance.reqGetBackMiningStaking(idList);
@@ -345,7 +525,7 @@ public class MiningWindowController : MonoBehaviour
         txProcess++;
         if (txProcess < txMax)
         {
-            string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_UNSTAKING"), selectedWorkingCardControllerList.Count);
+            string msg = string.Format(LanguageManager.instance.getText("ID_PROCESS_UNSTAKING"), selectedWorkingCharacterIdList.Count);
             if (txMax > 1)
             {
                 msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
@@ -354,14 +534,14 @@ public class MiningWindowController : MonoBehaviour
             return;
         }
 
-        for (int idx = 0; idx < selectedWorkingCardControllerList.Count; idx++)
+        for (int idx = 0; idx < selectedWorkingCharacterIdList.Count; idx++)
         {
-            CharacterData data = selectedWorkingCardControllerList[idx].getCharacterData();
+            CharacterData data = CharacterManager.instance.getCharacterData(selectedWorkingCharacterIdList[idx]);
             data.stakingData.purpose = StakingManager.PURPOSE_BREAK;
             MiningManager.instance.getMiningData(data.tokenId).resetAmount();
         }
 
-        updateGrid();
+        updateAllLayout();
     }
 
     public void onAllReceivedButtonClicked()
@@ -370,58 +550,73 @@ public class MiningWindowController : MonoBehaviour
         showPopup(true);
     }
 
-    public int[] getSelectedWorkingCharacterIdList()
+    public int[] getAllWorkingCharacterIdList()
     {
-        int[] idList = new int[selectedWorkingCardControllerList.Count];
-        for (int idx = 0; idx < selectedWorkingCardControllerList.Count; idx++)
+        int[] idList = new int[workingAllCharacterDataList.Count];
+        for (int idx = 0; idx < idList.Length; idx++)
         {
-            idList[idx] = selectedWorkingCardControllerList[idx].getCharacterData().tokenId;
+            idList[idx] = workingAllCharacterDataList[idx].tokenId;
         }
 
         return idList;
     }
 
-    public int[] getAllWorkingCharacterIdList()
+    private void setAllParticleEnabled(bool _set)
     {
-        int idx;
-        for (idx = workingGridPanel.transform.childCount - 1; idx >= 0 ; idx--)
+        foreach (CharacterCardController controller in waitingCharacterCardControllerList)
         {
-            if (workingGridPanel.transform.GetChild(idx).gameObject.activeSelf)
-            {
-                break;
-            }
-        }
-        int[] idList = new int[idx + 1];
-        for (idx = 0; idx < idList.Length; idx++)
-        {
-            CharacterCardController cardController = workingGridPanel.transform.GetChild(idx).GetComponent<CharacterCardController>();
-            idList[idx] = cardController.getCharacterData().tokenId;
+            controller.setAllParticleEnabled(_set);
         }
 
-        return idList;
+        foreach (CharacterCardController controller in workingCharacterCardControllerList)
+        {
+            controller.setAllParticleEnabled(_set);
+        }
     }
 
     public void showPopup(bool _allWorkingCharacter)
     {
+        setAllParticleEnabled(false);
         receiptPanel.SetActive(true);
 
         receiptTitleText.text = LanguageManager.instance.getText("ID_MINING_RECEIPT");
         if (_allWorkingCharacter)
         {
-            receiptSubText.text = string.Format(LanguageManager.instance.getText("ID_N_CHARACTER"), workingGridPanel.transform.childCount);
+            receiptSubText.text = string.Format(LanguageManager.instance.getText("ID_N_CHARACTER"), workingAllCharacterDataList.Count);
             receiptIdList = getAllWorkingCharacterIdList();
             unstakingReceipt = false;
         }
         else
         {
             receiptTitleText.text = LanguageManager.instance.getText("ID_MINING_RECEIPT") + " (" + LanguageManager.instance.getText("ID_UNSTAKING") + ")";
-            receiptSubText.text = string.Format(LanguageManager.instance.getText("ID_N_CHARACTER"), selectedWorkingCardControllerList.Count);
-            receiptIdList = getSelectedWorkingCharacterIdList();
+            receiptSubText.text = string.Format(LanguageManager.instance.getText("ID_N_CHARACTER"), selectedWorkingCharacterIdList.Count);
+            receiptIdList = selectedWorkingCharacterIdList.ToArray();
             unstakingReceipt = true;
         }
 
+        amountTextList[MiningManager.IDX_BASIC].text = LanguageManager.instance.getText("ID_CALCULATING");
+        amountTextList[MiningManager.IDX_FINAL].text = LanguageManager.instance.getText("ID_CALCULATING");
+        receiptLoading.SetActive(true);
+        receiptAllButton.interactable = false;
+
+        for (int idx = 0; idx < amountTextList.Length; idx++)
+        {
+            if (idx != MiningManager.IDX_BASIC && idx != MiningManager.IDX_FINAL)
+            {
+                receiptRowPanelList[idx].SetActive(false);
+            }
+        }
+
+        MiningManager.instance.requestMiningData(receiptIdList, resMiningData);
+    }
+
+    private void resMiningData()
+    {
+        receiptLoading.SetActive(false);
+        receiptAllButton.interactable = true;
+
         BigInteger[] amountList = new BigInteger[MiningManager.IDX_MAX];
-        for(int idx = 0; idx < receiptIdList.Length; idx++)
+        for (int idx = 0; idx < receiptIdList.Length; idx++)
         {
             MiningData md = MiningManager.instance.getMiningData(receiptIdList[idx]);
 
@@ -497,47 +692,55 @@ public class MiningWindowController : MonoBehaviour
         receiptIdList = null;
         receiptPanel.SetActive(false);
         MiningManager.instance.startMiningAmountSyncronizer();
+        setAllParticleEnabled(true);
     }
 
     public void selectAllWaitingCharacter()
     {
-        selectCharacter(waitingGridPanel, true, selectWatingCharacterCard);
+        selectedWaitingCharacterIdList.Clear();
+        foreach (CharacterData data in waitingAllCharacterDataList) {
+            selectedWaitingCharacterIdList.Add(data.tokenId);
+        }
+
+        foreach (CharacterCardController controller in waitingCharacterCardControllerList)
+        {
+            controller.setSelected(true);
+        }
     }
 
     public void deselectAllWaitingCharacter()
     {
-        selectCharacter(waitingGridPanel, false, selectWatingCharacterCard);
+        selectedWaitingCharacterIdList.Clear();
+
+        foreach (CharacterCardController controller in waitingCharacterCardControllerList)
+        {
+            controller.setSelected(false);
+        }
     }
 
     public void selectAllWorkingCharacter()
     {
-        selectCharacter(workingGridPanel, true, selectWorkingCharacterCard);
+        selectedWorkingCharacterIdList.Clear();
+        foreach (CharacterData data in workingAllCharacterDataList)
+        {
+            selectedWorkingCharacterIdList.Add(data.tokenId);
+        }
+
+        foreach (CharacterCardController controller in workingCharacterCardControllerList)
+        {
+            controller.setSelected(true);
+        }
     }
 
     public void deselectAllWorkingCharacter()
     {
-        selectCharacter(workingGridPanel, false, selectWorkingCharacterCard);
-    }
+        selectedWorkingCharacterIdList.Clear();
 
-    public void selectCharacter(GameObject _gridPanel, bool _isSelect, Func<CharacterCardController, bool> _selectFunc)
-    {
-        int idx;
-        for (idx = _gridPanel.transform.childCount - 1; idx >= 0; idx--)
-        {
-            if (_gridPanel.transform.GetChild(idx).gameObject.activeSelf)
-            {
-                break;
-            }
-        }
+        updateWorkingGrid(workingPageNum);
 
-        int max = idx + 1;
-        for (idx = 0; idx < max; idx++)
+        foreach (CharacterCardController controller in workingCharacterCardControllerList)
         {
-            CharacterCardController cardController = _gridPanel.transform.GetChild(idx).GetComponent<CharacterCardController>();
-            if (cardController.isSelected() != _isSelect)
-            {
-                _selectFunc(cardController);
-            }
+            controller.setSelected(false);
         }
     }
 }
