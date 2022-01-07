@@ -54,6 +54,21 @@ public class ContractManager : MonoBehaviour
         }
     }
 
+    internal void reqIsSubscribed(int i)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void reqGetStorySummery(int i)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void reqGetStoryCount()
+    {
+        throw new NotImplementedException();
+    }
+
     public void readyToUnityInstance()
     {
         unityInstanceLoaded = true;
@@ -88,10 +103,20 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.printLog(log);
     }
 
+    internal void reqSubscribeStory(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public void resTransactionError(string _err)
     {
         globalUIController.hideLoading();
-        globalUIController.showPopup(_err, null);
+        globalUIController.showAlertPopup(_err, null);
+    }
+
+    internal void reqGetStoryDataFull(int id)
+    {
+        throw new NotImplementedException();
     }
 
     public void reqBlockNumber()

@@ -18,6 +18,8 @@ public class GlobalUIWindowController : MonoBehaviour
     Text popupContentsText;
     [SerializeField]
     Animator popupPanelAnimator;
+    [SerializeField]
+    GameObject cancelButton;
 
     [SerializeField]
     WindowController windowController;
@@ -58,24 +60,40 @@ public class GlobalUIWindowController : MonoBehaviour
     {
         string contents = LanguageManager.instance.getText("ID_ERR_USER_BANNED");
         contents += "\n" + _reason + "\n" + "(" + _startBlock + " ~ " + _endBlock + " block )";
-        showPopup(contents, null);
+        showAlertPopup(contents, null);
     }
 
     public void showPopupByTextKey(string _contentsKey, Action _callback)
     {
-        showPopup(LanguageManager.instance.getText(_contentsKey), _callback);
+        showAlertPopup(LanguageManager.instance.getText(_contentsKey), _callback);
     }
 
-    public void showPopup(string _contents, Action _callback)
+    public void showAlertPopup(string _contents, Action _callback)
     {
         callback = _callback;
         popupContentsText.text = _contents;
+        cancelButton.SetActive(false);
+
+        popupPanel.SetActive(true);
+    }
+
+    public void showConfirmPopup(string _contents, Action _callback)
+    {
+        callback = _callback;
+        popupContentsText.text = _contents;
+        cancelButton.SetActive(true);
 
         popupPanel.SetActive(true);
     }
 
     public void confirmPopup()
     {
+        popupPanelAnimator.SetTrigger(dismissingTrigger);
+    }
+
+    public void cancelPopup()
+    {
+        callback = null;
         popupPanelAnimator.SetTrigger(dismissingTrigger);
     }
 

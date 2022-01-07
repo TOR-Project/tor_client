@@ -95,6 +95,11 @@
         {"key":"ID_GOVERNANCE_STATE",                       "value":"거버넌스 제안 중"},
         {"key":"ID_MINING_STATE",                           "value":"채굴 중"},
         {"key":"ID_REBELLION_STATE",                        "value":"반란 주동 중"},
+        
+        {"key":"ID_NOVEL_STATE_FREE",                       "value":"(무료)"},
+        {"key":"ID_NOVEL_STATE_PAID",                       "value":"(유료)"},
+        {"key":"ID_NOVEL_STATE_SUBSCRRIBE",                 "value":"(구독)"},
+        {"key":"ID_NOVEL_SUBSCRIBE_POPUP_MESSAGE",          "value":"[{0}]\n유료 회차입니다. 확인을 누르면 {1} TRT가 소모됩니다."},
                         
         {"key":"ID_WAITING_ROOM",                           "value":"대기실"},
         {"key":"ID_WORKING_PLACE",                          "value":"노역장"},

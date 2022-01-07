@@ -445,7 +445,7 @@ public class MiningWindowController : MonoBehaviour
         {
             msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
         }
-        globalUIWindowController.showPopup(msg, reqAddMiningStaking);
+        globalUIWindowController.showAlertPopup(msg, reqAddMiningStaking);
     }
 
     public void reqAddMiningStaking()
@@ -471,7 +471,7 @@ public class MiningWindowController : MonoBehaviour
             {
                 msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
             }
-            globalUIWindowController.showPopup(msg, reqAddMiningStaking);
+            globalUIWindowController.showAlertPopup(msg, reqAddMiningStaking);
             return;
         }
 
@@ -503,7 +503,7 @@ public class MiningWindowController : MonoBehaviour
         {
             msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
         }
-        globalUIWindowController.showPopup(msg, reqGetBackMiningStaking);
+        globalUIWindowController.showAlertPopup(msg, reqGetBackMiningStaking);
     }
 
     public void reqGetBackMiningStaking()
@@ -530,7 +530,7 @@ public class MiningWindowController : MonoBehaviour
             {
                 msg += string.Format(LanguageManager.instance.getText("ID_MINING_TOO_MANY_CHARACTER"), txProcess + 1, txMax);
             }
-            globalUIWindowController.showPopup(msg, reqGetBackMiningStaking);
+            globalUIWindowController.showAlertPopup(msg, reqGetBackMiningStaking);
             return;
         }
 

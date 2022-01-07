@@ -16,4 +16,5 @@ public class Const
     public const int TERMS_VERSION = 1;
 
     public const string TOR_COIN = "TRT";
+    public const int SUBSCRIBE_FEE = 2;
 }
