@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[ExecuteInEditMode]
 public class LanguageManager : MonoBehaviour
 {
     public const int LANG_ENG = 0;
@@ -36,6 +37,11 @@ public class LanguageManager : MonoBehaviour
     private LanguageManager()
     {
         mInstance = this;
+    }
+
+    public void cleanAll()
+    {
+        currentLanguageMap.Clear();
     }
 
     public IEnumerator loadLanguagePack()

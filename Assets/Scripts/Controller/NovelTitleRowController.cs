@@ -12,6 +12,7 @@ public class NovelTitleRowController : MonoBehaviour
     Text titleText;
     [SerializeField]
     Text stateText;
+    Color32 stateTextColor;
     bool selected;
     Func<NovelTitleRowController, bool> onClickCallback;
     NovelData novelData;
@@ -23,20 +24,23 @@ public class NovelTitleRowController : MonoBehaviour
 
         if (_nd.freeBlock == 0) // free
         {
-            stateText.text = LanguageManager.instance.getText("ID_NOVEL_STATE_FREE");
-            stateText.color = new Color32(0, 200, 0, 255);
-        } else // paid
+            stateText.text = "";
+            stateTextColor = new Color32(0, 200, 0, 255);
+        }
+        else // paid
         {
             if (_nd.isSubscribed)
             {
                 stateText.text = LanguageManager.instance.getText("ID_NOVEL_STATE_SUBSCRRIBE");
-                stateText.color = new Color32(0, 200, 0, 255);
-            } else
+                stateTextColor = new Color32(0, 200, 0, 255);
+            }
+            else
             {
                 stateText.text = LanguageManager.instance.getText("ID_NOVEL_STATE_PAID");
-                stateText.color = new Color32(200, 200, 0, 255);
+                stateTextColor = new Color32(200, 200, 0, 255);
             }
         }
+        stateText.color = stateTextColor;
     }
 
     public NovelData getNovelData()
@@ -81,6 +85,6 @@ public class NovelTitleRowController : MonoBehaviour
             return;
         }
         titleText.color = new Color32(255, 255, 255, 255);
-        stateText.color = new Color32(255, 255, 255, 255);
+        stateText.color = stateTextColor;
     }
 }

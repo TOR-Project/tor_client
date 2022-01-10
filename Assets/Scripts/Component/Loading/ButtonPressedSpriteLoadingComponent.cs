@@ -4,12 +4,21 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+[ExecuteInEditMode]
 public class ButtonPressedSpriteLoadingComponent : LoadingComponent
 {
     [SerializeField] internal string url;
     string loadingInfoTextKey = "ID_LOADING_IMAGE";
 
     float progress = 0;
+
+    private void Awake()
+    {
+        if (Application.isEditor)
+        {
+            startLoading();
+        }
+    }
 
     public override void startLoading()
     {
@@ -36,6 +45,14 @@ public class ButtonPressedSpriteLoadingComponent : LoadingComponent
 
         updateProgress(getProgressMax());
         return true;
+    }
+
+    public void resetAll()
+    {
+        Button button = GetComponent<Button>();
+        SpriteState spriteState = button.spriteState;
+        spriteState.pressedSprite = null;
+        button.spriteState = spriteState;
     }
 
     public bool updateProgress(float _progress)

@@ -4,12 +4,21 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+[ExecuteInEditMode]
 public class ImageLoadingComponent : LoadingComponent
 {
     [SerializeField] internal string url;
     string loadingInfoTextKey = "ID_LOADING_IMAGE";
 
     float progress = 0;
+
+    private void Awake()
+    {
+        if (Application.isEditor)
+        {
+            startLoading();
+        }
+    }
 
     public override void startLoading()
     {
@@ -36,11 +45,21 @@ public class ImageLoadingComponent : LoadingComponent
         return true;
     }
 
+    public void resetAll()
+    {
+        Image image = GetComponent<Image>();
+        if (image != null)
+        {
+            image.sprite = null;
+        }
+    }
+
     public bool updateProgress(float _progress)
     {
         progress = _progress;
         return true;
     }
+
 
     public override string getLoadingTextKey()
     {

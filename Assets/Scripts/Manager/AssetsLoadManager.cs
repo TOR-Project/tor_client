@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[ExecuteInEditMode]
 public class AssetsLoadManager : MonoBehaviour
 {
     static AssetsLoadManager mInstance;
@@ -22,6 +23,13 @@ public class AssetsLoadManager : MonoBehaviour
     private AssetsLoadManager()
     {
         mInstance = this;
+    }
+
+    public void cleanAll()
+    {
+        spriteMap.Clear();
+        assetBundleMap.Clear();
+        downloadPendingMap.Clear();
     }
 
     public void requestSprite(string _url, Func<Sprite, bool> _callback, Func<float, bool> _progressCallback)

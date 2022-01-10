@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ExecuteInEditMode]
 public class LanguageTextController : MonoBehaviour, LanguageObserever
 {
     [SerializeField] internal string key;
@@ -21,5 +22,11 @@ public class LanguageTextController : MonoBehaviour, LanguageObserever
     private void OnDestroy()
     {
         LanguageManager.instance.removeObserver(this);
+    }
+
+    public void resetAll()
+    {
+        Text text = GetComponent<Text>();
+        text.text = "";
     }
 }

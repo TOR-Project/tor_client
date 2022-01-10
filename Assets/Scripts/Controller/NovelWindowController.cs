@@ -5,18 +5,23 @@ using UnityEngine.UI;
 
 public class NovelWindowController : MonoBehaviour
 {
+    private const int PREV = 0;
+    private const int LEFT = 1;
+    private const int RIGHT = 2;
+    private const int NEXT = 3;
+
+    public int defaultFontSize = 18;
+
     [SerializeField]
     RectTransform titleContainerRT;
     [SerializeField]
     GameObject titleRowPrefab;
     [SerializeField]
-    Text prevText;
+    Text[] contentsText;
     [SerializeField]
-    Text nextText;
+    Text[] pageText;
     [SerializeField]
-    Text leftText;
-    [SerializeField]
-    Text rightText;
+    Text cacheText;
     [SerializeField]
     GameObject titleContainerLoading;
     [SerializeField]
@@ -37,7 +42,7 @@ public class NovelWindowController : MonoBehaviour
 
     int maxStoryCount = 0;
     List<NovelData> novelList = new List<NovelData>();
-    int subscribingLoadedCount = 0;
+    List<NovelFragmentsData> novelFregmentData = new List<NovelFragmentsData>();
     NovelTitleRowController currentNovelTitleRowController;
     int pageNum = 0;
     int maxPageNum = 0;
@@ -45,6 +50,7 @@ public class NovelWindowController : MonoBehaviour
     private void OnEnable()
     {
         loadTitleData();
+        cacheText.fontSize = defaultFontSize;
     }
 
     private void loadTitleData()
@@ -64,7 +70,6 @@ public class NovelWindowController : MonoBehaviour
 
         maxStoryCount = _count;
         novelList.Clear();
-        subscribingLoadedCount = 0;
         for (int i = 0; i < _count; i++)
         {
             ContractManager.instance.reqGetStorySummery(i);
@@ -86,21 +91,6 @@ public class NovelWindowController : MonoBehaviour
         if (novelList.Count >= maxStoryCount)
         {
             novelList.Sort(SortByIdAscending);
-
-            for (int i = 0; i < maxStoryCount; i++)
-            {
-                ContractManager.instance.reqIsSubscribed(i);
-            }
-        }
-    }
-
-    public void setSubscribingData(int _id, bool _subscribing)
-    {
-        subscribingLoadedCount++;
-        novelList[_id].isSubscribed = _subscribing;
-
-        if (subscribingLoadedCount >= maxStoryCount)
-        {
             configureTitleContainer();
         }
     }
@@ -172,10 +162,17 @@ public class NovelWindowController : MonoBehaviour
         ContractManager.instance.reqSubscribeStory(_nd.id);
     }
 
-    public void successSubscribing(int _id)
+    public void onSubscribingCompleted(int _id, bool _success)
     {
-        novelList[_id].isSubscribed = true;
-        loadFullData(novelList[_id]);
+        if (_success)
+        {
+            novelList[_id].isSubscribed = true;
+            loadFullData(novelList[_id]);
+        }
+        else
+        {
+            globalUIWindowController.showPopupByTextKey("ID_NOVEL_SUBSCRIBE_FAILED", null);
+        }
     }
 
     public void loadFullData(NovelData _nd)
@@ -190,73 +187,181 @@ public class NovelWindowController : MonoBehaviour
         }
     }
 
-    public void successFullDataLoaded(int _id, string _contents, string _illustrationUrl)
+    public void onFullDataLoaded(bool _success, int _id, string _contents, string _illustrationUrl)
     {
-        novelList[_id].contents = _contents;
-        novelList[_id].illustrationUrl = _illustrationUrl;
-        novelList[_id].isFullDataLoaded = true;
         bookLoading.SetActive(false);
-        showStoryData(novelList[_id]);
-    }
 
-    public void failFullDataLoaded(int _id)
-    {
-        bookLoading.SetActive(false);
+        if (_success)
+        {
+            novelList[_id].setFullContents(_contents, _illustrationUrl);
+            showStoryData(novelList[_id]);
+        }
+        else
+        {
+            globalUIWindowController.showPopupByTextKey("ID_NOVEL_FULL_DOWNLOAD_FAILED", null);
+        }
     }
 
     private void showStoryData(NovelData _nd)
     {
-        pageNum = 0;
+        pageNum = 2;
 
+        makeNovelFregmentData(_nd.contents);
 
+        showPage(pageNum, null);
 
-        showPage(pageNum);
+        updatePagingButton();
     }
 
-    private void showPage(int _page)
+    private void makeNovelFregmentData(string _contents)
     {
+        int page = 0;
+        novelFregmentData.Clear();
+        novelFregmentData.Add(new NovelFragmentsData(page++, "", NovelFragmentsType.CONTENTS)); // not use 0 page
+        novelFregmentData.Add(new NovelFragmentsData(page++, "", NovelFragmentsType.CONTENTS)); // not use 1 page
 
+        string contents = _contents;
+
+        int titleStartIdx = contents.IndexOf(NovelData.TITLE_TAG) + NovelData.TITLE_TAG.Length;
+        int titleEndIdx = contents.IndexOf(NovelData.TITLE_END_TAG);
+        int length = titleEndIdx - titleStartIdx;
+        novelFregmentData.Add(new NovelFragmentsData(page++, contents.Substring(titleStartIdx, length), NovelFragmentsType.TITLE));
+        contents = contents.Remove(titleStartIdx - NovelData.TITLE_TAG.Length, length + NovelData.TITLE_TAG.Length + NovelData.TITLE_END_TAG.Length);
+
+        while(contents.Length > 0)
+        {
+            int bestIndex = getBestContentsPosition(contents);
+            novelFregmentData.Add(new NovelFragmentsData(page++, contents.Substring(0, bestIndex), NovelFragmentsType.CONTENTS));
+            contents = contents.Remove(0, bestIndex).Trim();
+        }
+
+        maxPageNum = novelFregmentData.Count;
+
+    }
+
+    private int getBestContentsPosition(string _contents)
+    {
+        var extents = cacheText.cachedTextGenerator.rectExtents.size;
+        RectTransform rectTransform = cacheText.gameObject.GetComponent<RectTransform>();
+        float height = rectTransform.rect.height;
+
+        int lastIndex = -1;
+        int index;
+        while (true)
+        {
+            index = _contents.IndexOf('\n', lastIndex + 1);
+            if (index == -1)
+            {
+                index = _contents.Length;
+                break;
+            }
+
+            float textHeight = cacheText.cachedTextGeneratorForLayout.GetPreferredHeight(_contents.Substring(0, index), cacheText.GetGenerationSettings(extents));
+            if (textHeight > height)
+            {
+                index = lastIndex;
+                break;
+            }
+            lastIndex = index;
+        }
+
+        return index;
+    }
+
+    private void showPage(int _page, string _animationTrigger)
+    {
+        if (_animationTrigger == null)
+        {
+            updatePage(contentsText[LEFT], pageText[LEFT], _page < novelFregmentData.Count ? novelFregmentData[_page] : null);
+            updatePage(contentsText[RIGHT], pageText[RIGHT], _page + 1 < novelFregmentData.Count ? novelFregmentData[_page + 1] : null);
+        } else
+        {
+            pageAnimator.SetTrigger(_animationTrigger);
+        }
+    }
+
+    private void updatePage(Text _contentsText, Text _pageText, NovelFragmentsData _data)
+    {
+        if (_data == null)
+        {
+            _contentsText.text = "";
+            _pageText.text = "";
+            return;
+        }
+
+        _contentsText.text = _data.contents;
+        _pageText.text = _data.page.ToString();
+
+        switch (_data.type) {
+            case NovelFragmentsType.TITLE:
+                _contentsText.fontSize = defaultFontSize + 5;
+                _contentsText.fontStyle = FontStyle.Bold;
+                _contentsText.alignment = TextAnchor.MiddleCenter;
+                break;
+            case NovelFragmentsType.CONTENTS:
+            default:
+                _contentsText.fontSize = defaultFontSize;
+                _contentsText.fontStyle = FontStyle.Normal;
+                _contentsText.alignment = TextAnchor.UpperLeft;
+                break;
+        }
     }
 
     public void onPrevPageClicked()
     {
-        if (pageNum <= 0)
+        if (pageNum <= 2)
         {
             return;
         }
 
-        pageNum--;
-        showPage(pageNum);
+        pageNum -= 2;
+        showPage(pageNum, prevTrigger);
 
         updatePagingButton();
     }
 
     public void onNextPageClicked()
     {
-        if (pageNum >= maxPageNum - 1)
+        if (pageNum >= maxPageNum - 2)
         {
             return;
         }
 
-        pageNum++;
-        showPage(pageNum);
+        pageNum += 2;
+        showPage(pageNum, nextTrigger);
 
         updatePagingButton();
     }
 
+    public void onStartOfNextAnimation()
+    {
+        updatePage(contentsText[PREV], pageText[PREV], pageNum - 2 < novelFregmentData.Count ? novelFregmentData[pageNum - 2] : null);
+        updatePage(contentsText[LEFT], pageText[LEFT], pageNum < novelFregmentData.Count ? novelFregmentData[pageNum] : null);
+        updatePage(contentsText[RIGHT], pageText[RIGHT], pageNum - 1 < novelFregmentData.Count ? novelFregmentData[pageNum - 1] : null);
+        updatePage(contentsText[NEXT], pageText[NEXT], pageNum + 1 < novelFregmentData.Count ? novelFregmentData[pageNum + 1] : null);
+    }
+
+    public void onStartOfPrevAnimation()
+    {
+        updatePage(contentsText[PREV], pageText[PREV], pageNum < novelFregmentData.Count ? novelFregmentData[pageNum] : null);
+        updatePage(contentsText[LEFT], pageText[LEFT], pageNum + 2< novelFregmentData.Count ? novelFregmentData[pageNum + 2] : null);
+        updatePage(contentsText[RIGHT], pageText[RIGHT], pageNum + 1 < novelFregmentData.Count ? novelFregmentData[pageNum + 1] : null);
+        updatePage(contentsText[NEXT], pageText[NEXT], pageNum + 3 < novelFregmentData.Count ? novelFregmentData[pageNum + 3] : null);
+    }
+
     public void onMiddleOfNextAnimation()
     {
-
+        updatePage(contentsText[RIGHT], pageText[RIGHT], pageNum + 1 < novelFregmentData.Count ? novelFregmentData[pageNum + 1] : null);
     }
 
     public void onMiddleOfPrevAnimation()
     {
-
+        updatePage(contentsText[LEFT], pageText[LEFT], pageNum < novelFregmentData.Count ? novelFregmentData[pageNum] : null);
     }
 
     public void updatePagingButton()
     {
-        prevButton.SetActive(pageNum > 0);
-        nextButton.SetActive(pageNum < maxPageNum - 1);
+        prevButton.SetActive(pageNum > 2);
+        nextButton.SetActive(pageNum < maxPageNum - 2);
     }
 }

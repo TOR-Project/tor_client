@@ -233,4 +233,24 @@ public class WebContractCommunicator : IContractCommunicator
 
         Application.ExternalCall("reqGetPassword", values);
     }
+
+    public void reqGetStorySummery(int _id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqGetStoryCount()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqSubscribeStory(int _id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqGetStoryDataFull(int _id)
+    {
+        throw new System.NotImplementedException();
+    }
 }

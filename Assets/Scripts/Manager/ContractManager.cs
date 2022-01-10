@@ -22,6 +22,8 @@ public class ContractManager : MonoBehaviour
     TermsWindowController termsController;
     [SerializeField]
     MiningWindowController miningController;
+    [SerializeField]
+    NovelWindowController novelController;
 
     [SerializeField]
     GlobalUIWindowController globalUIController;
@@ -52,21 +54,6 @@ public class ContractManager : MonoBehaviour
             mContractCommunicator = new EditorContractCommunicator(this);
             Debug.Log("Create EditorContractCommunicator");
         }
-    }
-
-    internal void reqIsSubscribed(int i)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal void reqGetStorySummery(int i)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal void reqGetStoryCount()
-    {
-        throw new NotImplementedException();
     }
 
     public void readyToUnityInstance()
@@ -103,20 +90,10 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.printLog(log);
     }
 
-    internal void reqSubscribeStory(int id)
-    {
-        throw new NotImplementedException();
-    }
-
     public void resTransactionError(string _err)
     {
         globalUIController.hideLoading();
         globalUIController.showAlertPopup(_err, null);
-    }
-
-    internal void reqGetStoryDataFull(int id)
-    {
-        throw new NotImplementedException();
     }
 
     public void reqBlockNumber()
@@ -549,18 +526,89 @@ public class ContractManager : MonoBehaviour
 
     public void reqGetPassword()
     {
-        Debug.Log("reqGetPassword()");
-
         mContractCommunicator.reqGetPassword();
     }
 
     public void resGetPassword(string _json)
-    {
-        Debug.Log("resGetPassword()");
-
+    { 
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         int password = int.Parse(values["password"].ToString());
         UserManager.instance.setPassword(password);
+    }
+
+    public void reqGetStorySummery(int _id)
+    {
+        Debug.Log("reqGetStorySummery()");
+
+        mContractCommunicator.reqGetStorySummery(_id);
+    }
+
+    public void resGetStorySummery(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        novelController.setNovelData(new NovelData(values));
+    }
+
+    public void reqGetStoryCount()
+    {
+        Debug.Log("reqGetStoryCount()");
+
+        mContractCommunicator.reqGetStoryCount();
+    }
+
+    public void resGetStoryCount(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int count = int.Parse(values["count"].ToString());
+        novelController.setStoryCount(count);
+    }
+
+    public void reqSubscribeStory(int _id)
+    {
+        globalUIController.showLoading();
+
+        Debug.Log("reqSubscribeStory()");
+
+        mContractCommunicator.reqSubscribeStory(_id);
+    }
+
+    public void resSubscribeStory(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int id = int.Parse(values["id"].ToString());
+        bool success = bool.Parse(values["success"].ToString());
+        novelController.onSubscribingCompleted(id, success);
+    }
+
+    public void reqGetStoryDataFull(int _id)
+    {
+        Debug.Log("reqGetStoryDataFull()");
+
+        mContractCommunicator.reqGetStoryDataFull(_id);
+    }
+
+    public void resGetStoryDataFull(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        bool success = bool.Parse(values["success"].ToString());
+        
+        int id = int.Parse(values["id"].ToString());
+        string cotents = null;
+        string illustrationUrl = null;
+
+        if (success)
+        {
+            cotents = values["contents"].ToString();
+            illustrationUrl = values["illustrationUrl"].ToString();
+        }
+
+        novelController.onFullDataLoaded(success, id, cotents, illustrationUrl);
     }
 }

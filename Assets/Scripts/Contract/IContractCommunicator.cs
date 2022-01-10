@@ -50,4 +50,13 @@ public interface IContractCommunicator
     void reqCalculateMiningAmount(int _id);
 
     void reqGetPassword();
+
+    void reqGetStorySummery(int _id);
+
+    void reqGetStoryCount();
+
+    void reqSubscribeStory(int _id);
+
+    void reqGetStoryDataFull(int _id);
+
 }
