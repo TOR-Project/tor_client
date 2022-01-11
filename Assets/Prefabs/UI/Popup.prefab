@@ -451,7 +451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1872422315503346003, guid: f41bd8c51bc89ba47ac937cb20cd4df1, type: 3}
       propertyPath: m_Text
-      value: "\uD655\uC778"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1872422315503346003, guid: f41bd8c51bc89ba47ac937cb20cd4df1, type: 3}
       propertyPath: m_Color.a
@@ -647,7 +647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1872422315503346003, guid: f41bd8c51bc89ba47ac937cb20cd4df1, type: 3}
       propertyPath: m_Text
-      value: "\uD655\uC778"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1872422315503346003, guid: f41bd8c51bc89ba47ac937cb20cd4df1, type: 3}
       propertyPath: m_Color.a

@@ -236,21 +236,36 @@ public class WebContractCommunicator : IContractCommunicator
 
     public void reqGetStorySummery(int _id)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _id;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetStorySummery", values);
     }
 
     public void reqGetStoryCount()
     {
-        throw new System.NotImplementedException();
+        Application.ExternalCall("reqGetStoryCount", "");
     }
 
     public void reqSubscribeStory(int _id)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _id;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqSubscribeStory", values);
     }
 
     public void reqGetStoryDataFull(int _id)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _id;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetStoryDataFull", values);
     }
 }

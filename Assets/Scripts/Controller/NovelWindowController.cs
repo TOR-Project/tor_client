@@ -159,7 +159,13 @@ public class NovelWindowController : MonoBehaviour
 
     public void subscribeStory(NovelData _nd)
     {
-        ContractManager.instance.reqSubscribeStory(_nd.id);
+        if (UserManager.instance.getCoinAmount() >= Utils.convertToPeb(Const.SUBSCRIBE_FEE))
+        {
+            ContractManager.instance.reqSubscribeStory(_nd.id);
+        } else
+        {
+            globalUIWindowController.showPopupByTextKey("ID_LEAK_TRT", null);
+        }
     }
 
     public void onSubscribingCompleted(int _id, bool _success)
@@ -168,6 +174,11 @@ public class NovelWindowController : MonoBehaviour
         {
             novelList[_id].isSubscribed = true;
             loadFullData(novelList[_id]);
+            if (currentNovelTitleRowController != null)
+            {
+                currentNovelTitleRowController.setNovelData(novelList[_id]);
+            }
+            ContractManager.instance.reqCoinAmount();
         }
         else
         {

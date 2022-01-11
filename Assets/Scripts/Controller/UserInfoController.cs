@@ -16,11 +16,12 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
     [SerializeField]
     Text nicknameText;
     [SerializeField]
-    Text coinAmountText;
+    SlidingNumberController coinNumberController;
 
     private void Awake()
     {
         UserManager.instance.addObserver(this);
+        coinNumberController.setAdditionalString("", " " + Const.TOR_COIN);
     }
 
     private void OnDestroy()
@@ -40,7 +41,7 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
 
     public void onCoinAmountChanged(BigInteger _amount)
     {
-        coinAmountText.text = Utils.convertPebToTorStr(_amount) + " " + Const.TOR_COIN;
+        coinNumberController.setNumber(_amount);
     }
 
     public void onNicknameChanged(string _nickname)

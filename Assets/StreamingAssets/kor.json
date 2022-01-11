@@ -136,6 +136,7 @@
         {"key":"ID_CANT_ENTER_CHARACTER",                   "value":"루그란디스에 등록되지 않은 모험가를 확인중에 있습니다!\n잠시만 기다려 주세요."},
         {"key":"ID_INIT_CHARACTER_EXP",                     "value":"루그란디스에 등록되지 않은 모험가가 발견되었습니다!\n모험가 등록을 시작합니다."},
         {"key":"ID_TOO_MANY_CHARACTER",                     "value":"\n\n모험가가 너무 많아 여러번에 걸쳐 등록을 진행합니다.\n({0} / {1})"},
+        {"key":"ID_LEAK_TRT",                               "value":"TRT가 부족합니다!"},
                         
         {"key":"ID_LUGRANDIS",                              "value":"Lugrandis"},
         {"key":"ID_ALL_REGION",                             "value":"All Region"},
