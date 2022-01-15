@@ -12,6 +12,7 @@ public class Const
     public const int ERR_NO_CHARACTER = 6;
 
     public const bool PRODUCTION = true;
+    public const bool MEMORY_SAVE = true;
 
     public const int TERMS_VERSION = 1;
 

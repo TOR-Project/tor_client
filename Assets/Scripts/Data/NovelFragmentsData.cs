@@ -18,7 +18,6 @@ public class NovelFragmentsData
 
     public NovelFragmentsData(int _page, string _contetns, NovelFragmentsType _type)
     {
-        Debug.Log("NovelFragmentsData " + _page + ", " + _contetns + ", " + _type);
         page = _page;
         contents = _contetns;
         type = _type;

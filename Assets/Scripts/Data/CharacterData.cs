@@ -6,6 +6,7 @@ using UnityEngine;
 public class CharacterData
 {
     public int tokenId = -1;
+    public bool isMine = false;
     public string url = "";
     public string image = "";
     public string description = "";

@@ -23,6 +23,11 @@ public class SoundLoadingComponent : LoadingComponent
         updateProgress(getProgressMax());
     }
 
+    public override void resetAll()
+    {
+        progress = 0;
+    }
+
     public bool updateProgress(float _progress)
     {
         progress = _progress;

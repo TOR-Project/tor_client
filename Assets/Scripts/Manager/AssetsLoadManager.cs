@@ -15,7 +15,7 @@ public class AssetsLoadManager : MonoBehaviour
             return mInstance;
         }
     }
-    
+
     private Dictionary<string, Sprite> spriteMap = new Dictionary<string, Sprite>();
     private Dictionary<string, AssetBundle> assetBundleMap = new Dictionary<string, AssetBundle>();
     private Dictionary<string, bool> downloadPendingMap = new Dictionary<string, bool>();
@@ -59,10 +59,11 @@ public class AssetsLoadManager : MonoBehaviour
     private IEnumerator loadSprite(string _url, Func<Sprite, bool> _callback, Func<float, bool> _progressCallback)
     {
         WWW www = new WWW(_url);
+        Coroutine corutine = null;
 
         if (_progressCallback != null)
         {
-            StartCoroutine(DownloadProgress(www, _progressCallback));
+            corutine = StartCoroutine(DownloadProgress(www, _progressCallback));
         }
 
         yield return www;
@@ -79,6 +80,12 @@ public class AssetsLoadManager : MonoBehaviour
             Debug.Log("ERROR: " + www.error);
             _callback(null);
         }
+
+        if (corutine != null)
+        {
+            yield return corutine;
+        }
+        www.Dispose();
     }
 
     public void requestAssets(string _fileName, Func<AssetBundle, bool> _callback, Func<float, bool> _progressCallback)

@@ -99,7 +99,7 @@ public class MiningWindowController : MonoBehaviour
     {
         ContractManager.instance.reqGetPassword();
         StartCoroutine(playMiningSound());
-        MiningManager.instance.startMiningAmountSyncronizer();
+        MiningManager.instance.startMiningAmountSyncronizer(0);
     }
 
     private void OnDisable()
@@ -128,7 +128,7 @@ public class MiningWindowController : MonoBehaviour
 
     private void updateCharacterData()
     {
-        List<CharacterData> list = CharacterManager.instance.getCharacterList();
+        List<CharacterData> list = CharacterManager.instance.getMyCharacterList();
         list.Sort(SortByTokenIdAscending);
 
 
@@ -478,7 +478,7 @@ public class MiningWindowController : MonoBehaviour
         for (int idx = 0; idx < selectedWaitingCharacterIdList.Count; idx++)
         {
             int tokenId = selectedWaitingCharacterIdList[idx];
-            CharacterData data = CharacterManager.instance.getCharacterData(tokenId);
+            CharacterData data = CharacterManager.instance.getMyCharacterData(tokenId);
             data.stakingData.purpose = StakingManager.PURPOSE_MINING;
             data.stakingData.startBlock = SystemInfoManager.instance.blockNumber;
         }
@@ -536,7 +536,7 @@ public class MiningWindowController : MonoBehaviour
 
         for (int idx = 0; idx < selectedWorkingCharacterIdList.Count; idx++)
         {
-            CharacterData data = CharacterManager.instance.getCharacterData(selectedWorkingCharacterIdList[idx]);
+            CharacterData data = CharacterManager.instance.getMyCharacterData(selectedWorkingCharacterIdList[idx]);
             data.stakingData.purpose = StakingManager.PURPOSE_BREAK;
             MiningManager.instance.getMiningData(data.tokenId).resetAmount();
         }
@@ -664,7 +664,7 @@ public class MiningWindowController : MonoBehaviour
             for (int i = 0; i < receiptIdList.Length; i++)
             {
                 MiningData md = MiningManager.instance.getMiningData(receiptIdList[i]);
-                CharacterData cd = CharacterManager.instance.getCharacterData(receiptIdList[i]);
+                CharacterData cd = CharacterManager.instance.getMyCharacterData(receiptIdList[i]);
                 countryTax[cd.country] += md.amount[MiningManager.IDX_TAX];
                 finalAmount += md.amount[MiningManager.IDX_FINAL];
                 commissionAmount += md.amount[MiningManager.IDX_COMMISSION];
@@ -691,7 +691,8 @@ public class MiningWindowController : MonoBehaviour
     {
         receiptIdList = null;
         receiptPanel.SetActive(false);
-        MiningManager.instance.startMiningAmountSyncronizer();
+        MiningManager.instance.resetAllMiningData();
+        MiningManager.instance.startMiningAmountSyncronizer(3);
         setAllParticleEnabled(true);
     }
 

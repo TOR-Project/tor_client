@@ -45,13 +45,15 @@ public class SpriteLoadingComponent : LoadingComponent
         return true;
     }
 
-    public void resetAll()
+    public override void resetAll()
     {
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         if (renderer != null)
         {
             renderer.sprite = null;
         }
+
+        progress = 0;
     }
 
     public bool updateProgress(float _progress)

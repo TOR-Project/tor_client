@@ -34,10 +34,10 @@ public class MiningManager : MonoBehaviour
         mInstance = this;
     }
 
-    public void startMiningAmountSyncronizer()
+    public void startMiningAmountSyncronizer(float _delay)
     {
         syncronizerSeq++;
-        StartCoroutine(updateMiningData(syncronizerSeq));
+        StartCoroutine(updateMiningData(syncronizerSeq, _delay));
     }
 
     public void stopMiningAmountSyncronizer()
@@ -63,8 +63,13 @@ public class MiningManager : MonoBehaviour
         _callback();
     }
 
-    private IEnumerator updateMiningData(int _seq)
+    private IEnumerator updateMiningData(int _seq, float _delay)
     {
+        if (_delay != 0)
+        {
+            yield return new WaitForSeconds(_delay);
+        }
+
         while(_seq == syncronizerSeq)
         {
             int maxCount = miningObserverMap.Count;

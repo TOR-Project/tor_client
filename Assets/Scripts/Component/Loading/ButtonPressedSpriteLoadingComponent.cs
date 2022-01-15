@@ -47,12 +47,14 @@ public class ButtonPressedSpriteLoadingComponent : LoadingComponent
         return true;
     }
 
-    public void resetAll()
+    public override void resetAll()
     {
         Button button = GetComponent<Button>();
         SpriteState spriteState = button.spriteState;
         spriteState.pressedSprite = null;
         button.spriteState = spriteState;
+
+        progress = 0;
     }
 
     public bool updateProgress(float _progress)

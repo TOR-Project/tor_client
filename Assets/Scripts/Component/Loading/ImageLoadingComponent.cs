@@ -22,7 +22,10 @@ public class ImageLoadingComponent : LoadingComponent
 
     public override void startLoading()
     {
-        AssetsLoadManager.instance.requestSprite(url, updateSprite, updateProgress);
+        if (url != "")
+        {
+            AssetsLoadManager.instance.requestSprite(url, updateSprite, updateProgress);
+        }
     }
 
     public bool updateSprite(Sprite sprite)
@@ -45,13 +48,15 @@ public class ImageLoadingComponent : LoadingComponent
         return true;
     }
 
-    public void resetAll()
+    public override void resetAll()
     {
         Image image = GetComponent<Image>();
         if (image != null)
         {
             image.sprite = null;
         }
+
+        progress = 0;
     }
 
     public bool updateProgress(float _progress)

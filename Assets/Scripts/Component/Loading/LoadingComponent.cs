@@ -21,4 +21,6 @@ public abstract class LoadingComponent : MonoBehaviour
     {
         return LanguageManager.instance.getText(getLoadingTextKey());
     }
+
+    public virtual void resetAll() { }
 }

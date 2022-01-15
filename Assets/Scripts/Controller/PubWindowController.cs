@@ -28,9 +28,7 @@ public class PubWindowController : MonoBehaviour
     [SerializeField]
     GameObject infoPanel;
     [SerializeField]
-    Image avatarImage;
-    [SerializeField]
-    EquipItemCardController[] equipItemCardControllerList;
+    CharacterImageController characterImageController;
 
     [SerializeField]
     Text nameText;
@@ -231,7 +229,7 @@ public class PubWindowController : MonoBehaviour
 
     private List<CharacterData> getFilteredCharacterList(int _regionFilter)
     {
-        List<CharacterData> allList = CharacterManager.instance.getCharacterList();
+        List<CharacterData> allList = CharacterManager.instance.getMyCharacterList();
         if (_regionFilter == CountryManager.COUNTRY_ALL)
         {
             return allList;
@@ -317,16 +315,15 @@ public class PubWindowController : MonoBehaviour
         infoPanel.SetActive(true);
 
         CharacterData data = _cardController.getCharacterData();
+        characterImageController.updateCharacterImage(data);
 
         nameText.text = data.name;
-        regionText.text = CountryManager.instance.getCountryText(data.country);
+        regionText.text = CountryManager.instance.getCountryName(data.country);
         raceText.text = CharacterManager.instance.getRaceText(data.race);
         classText.text = CharacterManager.instance.getJobText(data.job);
         levelValueText.text = data.level.ToString();
         attValueText.text = data.statusData.att.ToString();
         defValueText.text = data.statusData.def.ToString();
-
-        avatarImage.sprite = CharacterManager.instance.getAvatarImage(data.job);
 
         EquipItemData[] equipItemDataList = new EquipItemData[]
         {
@@ -343,9 +340,6 @@ public class PubWindowController : MonoBehaviour
         for (int i = 0; i < equipItemDataList.Length; i++)
         {
             EquipItemData ed = equipItemDataList[i];
-
-            EquipItemCardController eicc = equipItemCardControllerList[i];
-            eicc.setEquipItem(ed);
 
             if (ed == null)
             {

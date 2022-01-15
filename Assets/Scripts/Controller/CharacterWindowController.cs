@@ -27,7 +27,7 @@ public class CharacterWindowController : MonoBehaviour
 
     private void updateCharacterInfo()
     {
-        List<CharacterData> characterList = CharacterManager.instance.getCharacterList();
+        List<CharacterData> characterList = CharacterManager.instance.getMyCharacterList();
 
         int miningCount = 0;
         int electionCount = 0;

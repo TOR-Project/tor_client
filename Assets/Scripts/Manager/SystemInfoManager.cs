@@ -8,6 +8,8 @@ using UnityEngine;
 public class SystemInfoManager : MonoBehaviour
 {
     [SerializeField]
+    public bool isTestnet = false;
+    [SerializeField]
     public long blockNumber = 0;
     [SerializeField]
     public string connectedWalletAddress = "";
@@ -40,6 +42,11 @@ public class SystemInfoManager : MonoBehaviour
     public void startBlockNumberChecker()
     {
         Debug.Log("startBlockNumberChecker");
+        if (blockNumberChecking)
+        {
+            Debug.Log("startBlockNumberChecker - return");
+            return;
+        }
         blockNumberChecking = true;
         StartCoroutine(blockNumberSyncronizer());
     }
@@ -53,6 +60,11 @@ public class SystemInfoManager : MonoBehaviour
     public void startWalletAddressChecker(string _initAddress)
     {
         Debug.Log("startWalletAddressChecker " + _initAddress);
+        if (walletAddressChecking)
+        {
+            Debug.Log("startWalletAddressChecker - return");
+            return;
+        }
         connectedWalletAddress = _initAddress;
         walletAddressChecking = true;
         StartCoroutine(walletAddressSyncronizer());
@@ -67,6 +79,11 @@ public class SystemInfoManager : MonoBehaviour
     public void startServerStateChecker(bool _initServerAvailable)
     {
         Debug.Log("startServerStateChecker " + _initServerAvailable);
+        if (serverStateChecking)
+        {
+            Debug.Log("startServerStateChecker - return");
+            return;
+        }
         serverAvailable = _initServerAvailable;
         serverStateChecking = true;
         StartCoroutine(serverStateSyncronizer());

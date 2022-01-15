@@ -61,4 +61,33 @@ public class LoadingWindowController : MonoBehaviour
         loadingComponentPool = null;
         _callback();
     }
+
+    internal void clearAll(GameObject _activeWindow)
+    {
+        if (!Const.MEMORY_SAVE)
+        {
+            return;
+        }
+
+        AssetsLoadManager.instance.cleanAll();
+        SoundManager.instance.cleanAll();
+
+        LoadingComponentPool loadingComponentPool = _activeWindow.GetComponent<LoadingComponentPool>();
+        if (loadingComponentPool == null)
+        {
+            return;
+        }
+
+        LoadingComponent[] loadingComponet = loadingComponentPool.getLoadingComponents();
+        if (loadingComponet != null)
+        {
+            foreach (LoadingComponent lc in loadingComponet)
+            {
+                lc.resetAll();
+            }
+        }
+
+        System.GC.Collect();
+        Resources.UnloadUnusedAssets();
+    }
 }

@@ -38,7 +38,7 @@ public class CountryManager : MonoBehaviour
         mInstance = this;
     }
     
-    public string getCountryText(int _cid)
+    public string getCountryName(int _cid)
     {
         string key = "";
         switch(_cid)
@@ -57,6 +57,33 @@ public class CountryManager : MonoBehaviour
                 break;
             case COUNTRY_BARBAROS:
                 key = "ID_BARBAROS";
+                break;
+            default:
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
+    }
+
+    public string getCountryExp(int _cid)
+    {
+        string key = "";
+        switch (_cid)
+        {
+            case COUNTRY_EVEGENIS:
+                key = "ID_EVEGENIS_EXP";
+                break;
+            case COUNTRY_ENFILIIS:
+                key = "ID_ENFILIIS_EXP";
+                break;
+            case COUNTRY_HELLVESTA:
+                key = "ID_HELLVESTA_EXP";
+                break;
+            case COUNTRY_TRIPOLI:
+                key = "ID_TRIPOLI_EXP";
+                break;
+            case COUNTRY_BARBAROS:
+                key = "ID_BARBAROS_EXP";
                 break;
             default:
                 break;

@@ -36,6 +36,12 @@ public class SoundManager : MonoBehaviour
         StartCoroutine(loadSound("wallet", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/connect+wallet/effect/button.wav", seAudioMap, null, null));
     }
 
+    public void cleanAll()
+    {
+        bgmAudioMap.Clear();
+        seAudioMap.Clear();
+    }
+
     public void playBgm(string _key)
     {
         if (!bgmAudioMap.ContainsKey(_key))
@@ -124,9 +130,10 @@ public class SoundManager : MonoBehaviour
     private IEnumerator loadSound(string _key, string _url, Dictionary<string, AudioClip> _map, Action _callback, Func<float, bool> _progressCallback)
     {
         WWW www = new WWW(_url);
+        Coroutine corutine = null;
         if (_progressCallback != null)
         {
-            StartCoroutine(DownloadProgress(www, _progressCallback));
+            corutine = StartCoroutine(DownloadProgress(www, _progressCallback));
         }
         yield return www;
         if (www.error == null)
@@ -140,6 +147,12 @@ public class SoundManager : MonoBehaviour
             Debug.Log("ERROR: " + www.error);
             _callback?.Invoke();
         }
+
+        if (corutine != null)
+        {
+            yield return corutine;
+        }
+        www.Dispose();
     }
 
     IEnumerator DownloadProgress(WWW _www, Func<float, bool> _progressCallback)

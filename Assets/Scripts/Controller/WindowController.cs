@@ -44,6 +44,7 @@ public class WindowController : MonoBehaviour
     public void Proceed()
     {
         Debug.Log("Proceed()");
+        loadingController.clearAll(_activeWindow);
         _activeWindow.SetActive(false);
         _activeWindow = _windowToOpen;
 

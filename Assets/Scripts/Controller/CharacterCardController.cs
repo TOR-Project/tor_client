@@ -9,7 +9,7 @@ using Coffee.UIExtensions;
 
 public class CharacterCardController : MonoBehaviour, MiningDataObserever
 {
-    public const string BACKGROUND_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/background/background.png";
+    public const string BACKGROUND_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/background/background.jpg";
     public const string MIRROR_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/frame/frame.png";
 
     public const int STATE_PUB = 1;

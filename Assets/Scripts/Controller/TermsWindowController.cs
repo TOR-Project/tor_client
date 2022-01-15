@@ -53,6 +53,8 @@ public class TermsWindowController : MonoBehaviour
 
     private void OnEnable()
     {
+        SystemInfoManager.instance.startBlockNumberChecker();
+
         globalUIController.hideInfoPanel();
 
         if (UserManager.instance.getTermsVer() < Const.TERMS_VERSION)

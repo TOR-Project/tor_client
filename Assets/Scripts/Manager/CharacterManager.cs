@@ -45,7 +45,9 @@ public class CharacterManager : MonoBehaviour
     public const int TX_SPLIT_AMOUNT = 200;
 
     private Dictionary<int, Sprite> avatarSpriteMap = new Dictionary<int, Sprite>();
-    private Dictionary<int, CharacterData> characterDataMap = new Dictionary<int, CharacterData>();
+    private Dictionary<int, CharacterData> myCharacterDataMap = new Dictionary<int, CharacterData>();
+    private Dictionary<int, CharacterData> otherCharacterDataMap = new Dictionary<int, CharacterData>();
+    private Dictionary<int, List<Func<CharacterData, bool>>> pendingCharacterDataCallbackMap = new Dictionary<int, List<Func<CharacterData, bool>>>();
     private int characterCount = 0;
     private int stakingCharacterCount = 0;
     private int receivedStakingDataCount = 0;
@@ -80,21 +82,46 @@ public class CharacterManager : MonoBehaviour
 
     public void resetAllData()
     {
-        characterDataMap.Clear();
+        myCharacterDataMap.Clear();
         characterCount  = 0;
         characterIdList = new int[] { };
         notInitCharacterIdList = new int[] { };
         notInitedCharacterDataList.Clear();
     }
 
-    public List<CharacterData> getCharacterList()
+    public List<CharacterData> getMyCharacterList()
     {
-        return characterDataMap.Values.ToList();
+        return myCharacterDataMap.Values.ToList();
     }
 
-    public CharacterData getCharacterData(int _id)
+    public CharacterData getMyCharacterData(int _id)
     {
-        return characterDataMap[_id];
+        return myCharacterDataMap[_id];
+    }
+
+    public void getCharacterDataAsync(int _id, Func<CharacterData, bool> _callback)
+    {
+        if (myCharacterDataMap.ContainsKey(_id))
+        {
+            _callback(myCharacterDataMap[_id]);
+            return;
+        }
+
+        if (otherCharacterDataMap.ContainsKey(_id))
+        {
+            _callback(otherCharacterDataMap[_id]);
+            return;
+        }
+
+        if (!pendingCharacterDataCallbackMap.ContainsKey(_id))
+        {
+            pendingCharacterDataCallbackMap.Add(_id, new List<Func<CharacterData, bool>>());
+        }
+        pendingCharacterDataCallbackMap[_id].Add(_callback);
+        if (pendingCharacterDataCallbackMap[_id].Count <= 1)
+        {
+            ContractManager.instance.reqCharacterData(new int[] { _id });
+        }
     }
 
     public string getRaceText(int _rid)
@@ -387,9 +414,13 @@ public class CharacterManager : MonoBehaviour
      * */
     public void setCharacterCount(int _count, int _stakingCount)
     {
+        if (isSameCharacterCount(_count, _stakingCount))
+        {
+            finishCharacterLoading();
+            return;
+        }
         characterCount = _count;
         stakingCharacterCount = _stakingCount;
-
         ContractManager.instance.reqCharacterList(characterCount);
         loadingStep = 2;
     }
@@ -402,7 +433,7 @@ public class CharacterManager : MonoBehaviour
     {
         characterIdList = _idList;
         stakingCharacterIdList = _stakingIdList;
-        characterDataMap.Clear();
+        myCharacterDataMap.Clear();
 
         int[] allCharacterIdList = characterIdList.Concat(stakingCharacterIdList).ToArray();
         if (allCharacterIdList.Length == 0)
@@ -424,6 +455,7 @@ public class CharacterManager : MonoBehaviour
         CharacterData data = new CharacterData();
 
         data.tokenId = int.Parse(_characterData["tokenId"].ToString());
+        data.isMine = true;
         data.image = IMAGE_URL + data.tokenId + ".jpg";
         data.name = _characterData["name"].ToString();
         if (data.name.Equals(""))
@@ -449,17 +481,32 @@ public class CharacterManager : MonoBehaviour
         data.equipData.pants = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.PANTS, data, int.Parse(_equipData["pants"].ToString()));
         data.equipData.shoes = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.SHOES, data, int.Parse(_equipData["shoes"].ToString()));
 
-        if (!characterDataMap.ContainsKey(data.tokenId))
+        if (loadingStep == 3)
         {
-            characterDataMap.Add(data.tokenId, data);
+            if (!myCharacterDataMap.ContainsKey(data.tokenId))
+            {
+                myCharacterDataMap.Add(data.tokenId, data);
+            }
+            else
+            {
+                characterCount--;
+            }
+
+            if (myCharacterDataMap.Count >= (characterCount + stakingCharacterCount))
+            {
+                reqStakingData();
+            }
         } else
         {
-            characterCount--;
-        }
-
-        if (characterDataMap.Count >= (characterCount + stakingCharacterCount))
-        {
-            reqStakingData();
+            if (!otherCharacterDataMap.ContainsKey(data.tokenId))
+            {
+                otherCharacterDataMap.Add(data.tokenId, data);
+            }
+            foreach(Func<CharacterData, bool> callback in pendingCharacterDataCallbackMap[data.tokenId])
+            {
+                callback(data);
+            }
+            pendingCharacterDataCallbackMap[data.tokenId].Clear();
         }
     }
 
@@ -487,7 +534,7 @@ public class CharacterManager : MonoBehaviour
     {
         int tokenId = int.Parse(_stakingData["id"].ToString());
 
-        foreach (CharacterData cd in characterDataMap.Values)
+        foreach (CharacterData cd in myCharacterDataMap.Values)
         {
             if (cd.tokenId == tokenId)
             {
@@ -516,5 +563,24 @@ public class CharacterManager : MonoBehaviour
     public void resetLoadingStep()
     {
         loadingStep = 0;
+    }
+
+    public bool isSameCharacterCount(int _count, int _stakingCount)
+    {
+        int count = 0;
+        int stakingCount = 0;
+
+        foreach(CharacterData cd in myCharacterDataMap.Values)
+        {
+            if (cd.stakingData.tokenId == -1)
+            {
+                count++;
+            } else
+            {
+                stakingCount++;
+            }
+        }
+
+        return count == _count && stakingCount == _stakingCount;
     }
 }
