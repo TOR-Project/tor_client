@@ -59,4 +59,9 @@ public interface IContractCommunicator
 
     void reqGetStoryDataFull(int _id);
 
+    void reqGetCommentLast(int _novelId, int _count);
+
+    void reqGetComment(int _novelId, int _fromCommentId, int _count);
+
+    void reqSendComment(int _novelId, string _mainTitle, string _comment);
 }

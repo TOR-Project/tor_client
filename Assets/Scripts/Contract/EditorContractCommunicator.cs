@@ -632,4 +632,66 @@ public class EditorContractCommunicator : IContractCommunicator
 
         mContractManager.resGetStoryDataFull(value);
     }
+
+    int commentLastIdx = 100;
+    public void reqGetCommentLast(int _novelId, int _count)
+    {
+        List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+        for (int i = 0; i < _count; i++)
+        {
+            int commentId = commentLastIdx - i;
+            if (commentId < 0)
+            {
+                break;
+            }
+            Dictionary<string, object> dic = new Dictionary<string,object>();
+            dic["id"] = commentId;
+            dic["nickname"] = "Crow" + commentId;
+            dic["block"] = 1234567890;
+            dic["comment"] = "나는 크로우다.";
+
+            data.Add(dic);
+        }
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resGetCommentLast(value);
+    }
+
+    public void reqGetComment(int _novelId, int _fromCommentId, int _count)
+    {
+        List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+        for (int i = 0; i < _count; i++)
+        {
+            int commentId = _fromCommentId - i;
+            if (commentId < 0)
+            {
+                break;
+            }
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic["id"] = commentId;
+            dic["nickname"] = "Crow" + commentId;
+            dic["block"] = 1234567890;
+            dic["comment"] = "나는 크로우다.";
+
+            data.Add(dic);
+        }
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resGetCommentLast(value);
+    }
+
+    public void reqSendComment(int _novelId, string _mainTitle, string _comment)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["id"] = ++commentLastIdx;
+        data["nickname"] = "Crow" + commentLastIdx;
+        data["block"] = 1234567890;
+        data["comment"] = _comment;
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resSendComment(value);
+    }
 }

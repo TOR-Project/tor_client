@@ -268,4 +268,24 @@ public class WebContractCommunicator : IContractCommunicator
 
         Application.ExternalCall("reqGetStoryDataFull", values);
     }
+
+    public void reqGetCommentLast(int _id, int _count)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["count"] = _count;
+        data["id"] = _id;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetCommentLast", values);
+    }
+
+    public void reqSendComment(int _novelId, string _mainTitle, string _comment)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqGetComment(int _novelId, int _fromCommentId, int _count)
+    {
+        throw new System.NotImplementedException();
+    }
 }

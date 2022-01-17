@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,8 @@ public class NovelWindowController : MonoBehaviour
     private const int NEXT = 3;
 
     public int defaultFontSize = 18;
+
+    public const int COMMENT_LOAD_SIZE = 30;
 
     [SerializeField]
     RectTransform titleContainerRT;
@@ -31,6 +34,20 @@ public class NovelWindowController : MonoBehaviour
     GameObject prevButton;
     [SerializeField]
     GameObject nextButton;
+    [SerializeField]
+    GameObject commentButton;
+    [SerializeField]
+    Text commentTitleText;
+    [SerializeField]
+    GameObject commentLoading;
+    [SerializeField]
+    TextMeshProUGUI commentText;
+    [SerializeField]
+    RectTransform commentContentsRT;
+    [SerializeField]
+    GameObject commentRowPrefab;
+    [SerializeField]
+    Scrollbar commentScrollbar;
 
     [SerializeField]
     GlobalUIWindowController globalUIWindowController;
@@ -43,9 +60,12 @@ public class NovelWindowController : MonoBehaviour
     int maxStoryCount = 0;
     List<NovelData> novelList = new List<NovelData>();
     List<NovelFragmentsData> novelFregmentData = new List<NovelFragmentsData>();
+    List<CommentData> commentDataList = new List<CommentData>();
     NovelTitleRowController currentNovelTitleRowController;
+    NovelData displayedNovelData = null;
     int pageNum = 0;
     int maxPageNum = 0;
+    bool refreshComment = false;
 
     private void OnEnable()
     {
@@ -162,7 +182,8 @@ public class NovelWindowController : MonoBehaviour
         if (UserManager.instance.getCoinAmount() >= Utils.convertToPeb(Const.SUBSCRIBE_FEE))
         {
             ContractManager.instance.reqSubscribeStory(_nd.id);
-        } else
+        }
+        else
         {
             globalUIWindowController.showPopupByTextKey("ID_LEAK_TRT", null);
         }
@@ -192,7 +213,8 @@ public class NovelWindowController : MonoBehaviour
         {
             bookLoading.SetActive(true);
             ContractManager.instance.reqGetStoryDataFull(_nd.id);
-        } else
+        }
+        else
         {
             showStoryData(_nd);
         }
@@ -215,6 +237,8 @@ public class NovelWindowController : MonoBehaviour
 
     private void showStoryData(NovelData _nd)
     {
+        displayedNovelData = _nd;
+
         pageNum = 2;
 
         makeNovelFregmentData(_nd.contents);
@@ -239,7 +263,7 @@ public class NovelWindowController : MonoBehaviour
         novelFregmentData.Add(new NovelFragmentsData(page++, contents.Substring(titleStartIdx, length), NovelFragmentsType.TITLE));
         contents = contents.Remove(titleStartIdx - NovelData.TITLE_TAG.Length, length + NovelData.TITLE_TAG.Length + NovelData.TITLE_END_TAG.Length);
 
-        while(contents.Length > 0)
+        while (contents.Length > 0)
         {
             int bestIndex = getBestContentsPosition(contents);
             novelFregmentData.Add(new NovelFragmentsData(page++, contents.Substring(0, bestIndex), NovelFragmentsType.CONTENTS));
@@ -285,7 +309,8 @@ public class NovelWindowController : MonoBehaviour
         {
             updatePage(contentsText[LEFT], pageText[LEFT], _page < novelFregmentData.Count ? novelFregmentData[_page] : null);
             updatePage(contentsText[RIGHT], pageText[RIGHT], _page + 1 < novelFregmentData.Count ? novelFregmentData[_page + 1] : null);
-        } else
+        }
+        else
         {
             pageAnimator.SetTrigger(_animationTrigger);
         }
@@ -303,7 +328,8 @@ public class NovelWindowController : MonoBehaviour
         _contentsText.text = _data.contents;
         _pageText.text = _data.page.ToString();
 
-        switch (_data.type) {
+        switch (_data.type)
+        {
             case NovelFragmentsType.TITLE:
                 _contentsText.fontSize = defaultFontSize + 5;
                 _contentsText.fontStyle = FontStyle.Bold;
@@ -355,7 +381,7 @@ public class NovelWindowController : MonoBehaviour
     public void onStartOfPrevAnimation()
     {
         updatePage(contentsText[PREV], pageText[PREV], pageNum < novelFregmentData.Count ? novelFregmentData[pageNum] : null);
-        updatePage(contentsText[LEFT], pageText[LEFT], pageNum + 2< novelFregmentData.Count ? novelFregmentData[pageNum + 2] : null);
+        updatePage(contentsText[LEFT], pageText[LEFT], pageNum + 2 < novelFregmentData.Count ? novelFregmentData[pageNum + 2] : null);
         updatePage(contentsText[RIGHT], pageText[RIGHT], pageNum + 1 < novelFregmentData.Count ? novelFregmentData[pageNum + 1] : null);
         updatePage(contentsText[NEXT], pageText[NEXT], pageNum + 3 < novelFregmentData.Count ? novelFregmentData[pageNum + 3] : null);
     }
@@ -374,5 +400,132 @@ public class NovelWindowController : MonoBehaviour
     {
         prevButton.SetActive(pageNum > 2);
         nextButton.SetActive(pageNum < maxPageNum - 2);
+        commentButton.SetActive(!nextButton.activeSelf && maxPageNum > 0);
+    }
+
+    public void updateCommentPopup()
+    {
+        if (displayedNovelData == null)
+        {
+            return;
+        }
+        commentTitleText.text = displayedNovelData.mainTitle;
+
+        disableAllComment();
+        requestCommentLast();
+    }
+
+    public void onCommentScrollValueChanged()
+    {
+        if (commentScrollbar.value <= 0)
+        {
+            if (!refreshComment && commentDataList.Count > 0 && commentDataList[commentDataList.Count - 1].id > 0)
+            {
+                refreshComment = true;
+
+                commentLoading.SetActive(true);
+                ContractManager.instance.reqGetComment(displayedNovelData.id, commentDataList[commentDataList.Count - 1].id - 1, COMMENT_LOAD_SIZE);
+            }
+
+        }
+        else
+        {
+            refreshComment = false;
+        }
+    }
+
+    private void requestCommentLast()
+    {
+        commentLoading.SetActive(true);
+        commentDataList.Clear();
+        ContractManager.instance.reqGetCommentLast(displayedNovelData.id, COMMENT_LOAD_SIZE);
+    }
+
+    public void responseComment(List<Dictionary<string, object>> _data)
+    {
+        List<int> idCheckList = new List<int>();
+        foreach (CommentData commentData in commentDataList)
+        {
+            idCheckList.Add(commentData.id);
+        }
+
+        foreach (Dictionary<string, object> item in _data)
+        {
+            CommentData commentData = new CommentData(item);
+            if (!idCheckList.Contains(commentData.id))
+            {
+                commentDataList.Add(commentData);
+            }
+        }
+
+        commentDataList.Sort(SortByIdDescending);
+
+        updateCommentPanel();
+    }
+
+    public void responseCommnetLatestOne(Dictionary<string, object> _data)
+    {
+        commentDataList.Add(new CommentData(_data));
+
+        commentDataList.Sort(SortByIdDescending);
+
+        updateCommentPanel();
+    }
+
+    private void updateCommentPanel()
+    {
+        for (int i = 0; i < commentDataList.Count; i++)
+        {
+            CommentData commentData = commentDataList[i];
+
+            CommentRowController rowController;
+            if (commentContentsRT.childCount > i)
+            {
+                GameObject childObject = commentContentsRT.GetChild(i).gameObject;
+                childObject.SetActive(true);
+                rowController = childObject.GetComponent<CommentRowController>();
+            }
+            else
+            {
+                GameObject commentRow = Instantiate(commentRowPrefab, commentContentsRT, true);
+                commentRow.transform.localScale = UnityEngine.Vector3.one;
+                rowController = commentRow.GetComponent<CommentRowController>();
+            }
+
+            rowController.updateCommentData(commentData);
+        }
+        commentLoading.SetActive(false);
+
+    }
+
+    private void disableAllComment()
+    {
+        for (int i = 0; i < commentContentsRT.childCount; i++)
+        {
+            commentContentsRT.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    public void sendComment()
+    {
+        string comment = commentText.text;
+        if (comment.Length > 500)
+        {
+            string alertMessage = string.Format(LanguageManager.instance.getText("ID_NOVEL_COMMENT_LIMIT_EXCEEDED"), comment.Length);
+            Debug.Log(LanguageManager.instance.getText("ID_NOVEL_COMMENT_LIMIT_EXCEEDED"));
+            Debug.Log(comment.Length);
+            Debug.Log(alertMessage);
+            globalUIWindowController.showAlertPopup(alertMessage, null);
+            return;
+        }
+
+        commentLoading.SetActive(false);
+
+        ContractManager.instance.reqSendComment(displayedNovelData.id, displayedNovelData.mainTitle, comment);
+    }
+
+    public int SortByIdDescending(CommentData cd1, CommentData cd2)
+    {
+        return cd2.id - cd1.id;
     }
 }

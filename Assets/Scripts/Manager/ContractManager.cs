@@ -483,6 +483,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqGetBackMiningStaking(_idList);
     }
 
+
     public void resGetBackMiningStaking(string _json)
     {
         globalUIController.hideLoading();
@@ -610,5 +611,41 @@ public class ContractManager : MonoBehaviour
         }
 
         novelController.onFullDataLoaded(success, id, cotents, illustrationUrl);
+    }
+
+    public void reqGetCommentLast(int _novelId, int _count)
+    {
+        Debug.Log("reqGetCommentLast()");
+
+        mContractCommunicator.reqGetCommentLast(_novelId, _count);
+    }
+
+    public void reqGetComment(int _novelId, int _fromCommentId, int _count)
+    {
+        Debug.Log("reqGetComment()");
+
+        mContractCommunicator.reqGetComment(_novelId, _fromCommentId, _count);
+    }
+
+    public void resGetCommentLast(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_json);
+
+        novelController.responseComment(values);
+    }
+
+
+    public void reqSendComment(int _novelId, string _mainTitle, string _comment)
+    {
+        Debug.Log("reqSendComment()");
+
+        mContractCommunicator.reqSendComment(_novelId, _mainTitle, _comment);
+    }
+
+    internal void resSendComment(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        novelController.responseCommnetLatestOne(values);
     }
 }
