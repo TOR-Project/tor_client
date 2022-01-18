@@ -269,11 +269,11 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("reqGetStoryDataFull", values);
     }
 
-    public void reqGetCommentLast(int _id, int _count)
+    public void reqGetCommentLast(int _novelId, int _count)
     {
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["count"] = _count;
-        data["id"] = _id;
+        data["novelId"] = _novelId;
         var values = JsonConvert.SerializeObject(data);
 
         Application.ExternalCall("reqGetCommentLast", values);
@@ -281,10 +281,29 @@ public class WebContractCommunicator : IContractCommunicator
 
     public void reqSendComment(int _novelId, string _mainTitle, string _comment)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["mainTitle"] = _mainTitle;
+        data["novelId"] = _novelId;
+        data["comment"] = _comment;
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["nickname"] = UserManager.instance.getNickname();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqSendComment", values);
     }
 
     public void reqGetComment(int _novelId, int _fromCommentId, int _count)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["count"] = _count;
+        data["fromCommentId"] = _fromCommentId;
+        data["novelId"] = _novelId;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqGetComment", values);
+    }
+
+    public void reqCountryData(int cid)
     {
         throw new System.NotImplementedException();
     }

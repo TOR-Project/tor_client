@@ -655,7 +655,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         var value = JsonConvert.SerializeObject(data);
 
-        mContractManager.resGetCommentLast(value);
+        mContractManager.resGetComment(value);
     }
 
     public void reqGetComment(int _novelId, int _fromCommentId, int _count)
@@ -679,7 +679,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         var value = JsonConvert.SerializeObject(data);
 
-        mContractManager.resGetCommentLast(value);
+        mContractManager.resGetComment(value);
     }
 
     public void reqSendComment(int _novelId, string _mainTitle, string _comment)
@@ -693,5 +693,90 @@ public class EditorContractCommunicator : IContractCommunicator
         var value = JsonConvert.SerializeObject(data);
 
         mContractManager.resSendComment(value);
+    }
+
+    int[] logLastIdx = new int[] { 150, 100, 15, 50, 300 };
+
+    public void reqCountryData(int _cid)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["id"] = _cid;
+        data["population"] = 0;
+
+        // latest 30 logs
+        List<string> logList = new List<string>();
+        for (int i = 0; i < 30; i++)
+        {
+            int logId = logLastIdx[_cid] - i;
+            if (logId < 0)
+            {
+                break;
+            }
+
+            Dictionary<string, object> logData = new Dictionary<string, object>();
+            logData["id"] = logId;
+            logData["blockNum"] = 1234567890 - logId;
+            int logType = logId % 12 + 1;
+            logData["logType"] = logType;
+            logData["who"] = "0x0000000000";
+            logData["nickName"] = "Crow";
+            if (logType == 4) {
+                logData["dataInt"] = BigInteger.Parse("1000000000000000000").ToString();
+            } else if (logType == 3)
+            {
+                logData["dataInt"] = BigInteger.Parse("100000").ToString(); ;
+            } else if (logType == 12)
+            {
+                logData["dataInt"] = BigInteger.Parse("0").ToString(); ;
+            }
+            logData["dataStr"] = "Crow castle";
+
+            logList.Add(JsonConvert.SerializeObject(logData));
+        }
+        data["logList"] = logList;
+
+        List<string> propertyList = new List<string>();
+
+        for (int i = 0; i < 2; i++)
+        {
+            Dictionary<string, object> propertyData = new Dictionary<string, object>();
+            propertyData["propertyCategory"] = 1;
+            propertyData["propertyType"] = i + 1;
+            propertyData["value"] = i == 0 ? 100000 : -100000;
+            propertyData["startBlock"] = i * 10;
+
+            propertyList.Add(JsonConvert.SerializeObject(propertyData));
+        }
+        data["propertyList"] = propertyList;
+
+        Dictionary<string, object> castleData = new Dictionary<string, object>();
+        castleData["hasMonarch"] = _cid % 2 == 0;
+        castleData["name"] = "Crow castle";
+        castleData["monarchId"] = UnityEngine.Random.Range(0, 10000);
+        castleData["monarchOwnerNickname"] = "Crow";
+
+        List<int> formerMonarchList = new List<int>();
+        for (int i = 0; i < 10; i++)
+        {
+            formerMonarchList.Add(UnityEngine.Random.Range(0, 10000));
+        }
+        castleData["formerMonarchList"] = formerMonarchList;
+
+        Dictionary<string, object> miningTaxData = new Dictionary<string, object>();
+        miningTaxData["tax"] = 100000;
+        miningTaxData["startBlock"] = 1234567890;
+        miningTaxData["endBlock"] = 0;
+
+        castleData["lastMiningTaxData"] = JsonConvert.SerializeObject(miningTaxData);
+
+        castleData["treasury"] = BigInteger.Parse("12345543210000000000000").ToString();
+        castleData["personalSafe"] = BigInteger.Parse("54321123450000000000000").ToString();
+        castleData["nextTaxSettableBlock"] = 1234567890;
+
+        data["castleData"] = JsonConvert.SerializeObject(castleData);
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resCountryData(value);
     }
 }

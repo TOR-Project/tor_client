@@ -41,7 +41,7 @@ public class NovelWindowController : MonoBehaviour
     [SerializeField]
     GameObject commentLoading;
     [SerializeField]
-    TextMeshProUGUI commentText;
+    TMP_InputField commentText;
     [SerializeField]
     RectTransform commentContentsRT;
     [SerializeField]
@@ -465,6 +465,8 @@ public class NovelWindowController : MonoBehaviour
 
     public void responseCommnetLatestOne(Dictionary<string, object> _data)
     {
+        commentText.text = "";
+
         commentDataList.Add(new CommentData(_data));
 
         commentDataList.Sort(SortByIdDescending);
@@ -508,7 +510,7 @@ public class NovelWindowController : MonoBehaviour
 
     public void sendComment()
     {
-        string comment = commentText.text;
+        string comment = commentText.text.Trim();
         if (comment.Length > 500)
         {
             string alertMessage = string.Format(LanguageManager.instance.getText("ID_NOVEL_COMMENT_LIMIT_EXCEEDED"), comment.Length);
@@ -518,6 +520,12 @@ public class NovelWindowController : MonoBehaviour
             globalUIWindowController.showAlertPopup(alertMessage, null);
             return;
         }
+
+        if (string.IsNullOrEmpty(comment))
+        {
+            return;
+        }
+
 
         commentLoading.SetActive(false);
 

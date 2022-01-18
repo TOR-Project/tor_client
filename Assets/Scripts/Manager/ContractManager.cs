@@ -122,6 +122,16 @@ public class ContractManager : MonoBehaviour
         SystemInfoManager.instance.setConnectedWalletAddress(addr);
     }
 
+    internal void reqLogDataLatest(int castleId, int lOG_REQUEST_COUNT)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void reqCastleBasicData(int castleId)
+    {
+        throw new NotImplementedException();
+    }
+
     public void reqServerState()
     {
         mContractCommunicator.reqServerState();
@@ -627,7 +637,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqGetComment(_novelId, _fromCommentId, _count);
     }
 
-    public void resGetCommentLast(string _json)
+    public void resGetComment(string _json)
     {
         var values = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_json);
 
@@ -647,5 +657,19 @@ public class ContractManager : MonoBehaviour
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
         novelController.responseCommnetLatestOne(values);
+    }
+
+    internal void reqCountryData(int _cid)
+    {
+        Debug.Log("reqCountryData()");
+
+        mContractCommunicator.reqCountryData(_cid);
+    }
+
+    internal void resCountryData(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        CountryManager.instance.responseCountyData(values);
     }
 }

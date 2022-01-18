@@ -99,6 +99,11 @@ public class CharacterManager : MonoBehaviour
         return myCharacterDataMap[_id];
     }
 
+    internal bool hasCharacter(int _id)
+    {
+       return myCharacterDataMap.ContainsKey(_id);
+    }
+
     public void getCharacterDataAsync(int _id, Func<CharacterData, bool> _callback)
     {
         if (myCharacterDataMap.ContainsKey(_id))

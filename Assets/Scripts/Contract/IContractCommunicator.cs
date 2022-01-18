@@ -64,4 +64,6 @@ public interface IContractCommunicator
     void reqGetComment(int _novelId, int _fromCommentId, int _count);
 
     void reqSendComment(int _novelId, string _mainTitle, string _comment);
+
+    void reqCountryData(int cid);
 }

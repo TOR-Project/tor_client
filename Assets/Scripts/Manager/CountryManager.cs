@@ -15,6 +15,26 @@ public class CountryManager : MonoBehaviour
     public const int COUNTRY_MAX = 5;
     public const int COUNTRY_ALL = 99;
 
+    public const int PROPERTY_CATEGORY_EVEGENIS_RAYNOR_BLESS = 1;
+
+    public const int PROPERTY_TYPE_MINING_INC = 1;
+    public const int PROPERTY_TYPE_MINING_DEC = 2;
+
+    public const int LOG_TYPE_DISMISSAL = 1;
+    public const int LOG_TYPE_INAUGURATION = 2;
+    public const int LOG_TYPE_ADJUST_MINING_TAX = 3;
+    public const int LOG_TYPE_DONATION = 4;
+    public const int LOG_TYPE_START_RESEARCH = 5;
+    public const int LOG_TYPE_STOP_RESEARCH_STOP = 6;
+    public const int LOG_TYPE_END_RESEARCH = 7;
+    public const int LOG_TYPE_OCCUR_REBELLION = 8;
+    public const int LOG_TYPE_FAIL_REBELLION = 9;
+    public const int LOG_TYPE_SUCCESS_REBELLION = 10;
+    public const int LOG_TYPE_RENAME_CASTLE = 11;
+    public const int LOG_TYPE_ADD_PROPERTY = 12;
+
+    public const int COUNTRY_DATA_REQUEST_INTERVAL = 180; // 3 min
+
     private string[] FLAG_IMAGE_URL_LIST = new string[]
     {
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/flag/evegenis.png",
@@ -24,6 +44,8 @@ public class CountryManager : MonoBehaviour
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/flag/barbaros.png",
     };
 
+    Dictionary<int, CountryData> countryDataMap = new Dictionary<int, CountryData>();
+    Dictionary<int, List<Func<CountryData, bool>>> countryDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
     Dictionary<int, Sprite> flagSpriteMap = new Dictionary<int, Sprite>();
 
     static CountryManager mInstance;
@@ -92,6 +114,21 @@ public class CountryManager : MonoBehaviour
         return LanguageManager.instance.getText(key);
     }
 
+    public string getPropertyTitle(int _id)
+    {
+        string key = "";
+        switch (_id)
+        {
+            case PROPERTY_CATEGORY_EVEGENIS_RAYNOR_BLESS:
+                key = "ID_PROPERTY_CATEGORY_BLESS_OF_RAYNOR";
+                break;
+            default:
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
+    }
+
     public void startFlagImageLoading()
     {
         for (int i = 0; i < FLAG_IMAGE_URL_LIST.Length; i++)
@@ -121,5 +158,42 @@ public class CountryManager : MonoBehaviour
     public Sprite getFlagImage(int _cid)
     {
         return flagSpriteMap[_cid];
+    }
+
+    public void requestCountryData(int _cid, Func<CountryData, bool> _callback)
+    {
+        if (!countryDataMap.ContainsKey(_cid))
+        {
+            countryDataMap.Add(_cid, new CountryData());
+        }
+
+        if (countryDataMap[_cid].lastUpdatedBlock + COUNTRY_DATA_REQUEST_INTERVAL < SystemInfoManager.instance.blockNumber)
+        { 
+
+            if (!countryDataCallbackPendingMap.ContainsKey(_cid))
+            {
+                countryDataCallbackPendingMap.Add(_cid, new List<Func<CountryData, bool>>());
+            }
+
+            countryDataCallbackPendingMap[_cid].Add(_callback);
+            ContractManager.instance.reqCountryData(_cid);
+        } else
+        {
+            _callback(countryDataMap[_cid]);
+        }
+    }
+
+    public void responseCountyData(Dictionary<string, object> _data)
+    {
+        int cid = int.Parse(_data["id"].ToString());
+        CountryData countryData = countryDataMap[cid];
+        countryData.parseData(_data);
+
+        foreach (Func<CountryData, bool> callback in countryDataCallbackPendingMap[cid])
+        {
+            callback(countryData);
+        }
+
+        countryDataCallbackPendingMap[cid].Clear();
     }
 }
