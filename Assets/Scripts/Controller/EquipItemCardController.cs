@@ -54,4 +54,9 @@ public class EquipItemCardController : MonoBehaviour
         borderImage.color = ItemManager.instance.getGradeColor(data.grade);
         borderEffect.SetActive(data.grade == ItemGrade.LEGEND);
     }
+
+    public void setParticleEnabled(bool _set)
+    {
+        borderEffect.SetActive(_set && data != null && data.grade == ItemGrade.LEGEND);
+    }
 }

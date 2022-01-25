@@ -1,4 +1,6 @@
 ﻿
+using System.Numerics;
+
 public interface IContractCommunicator
 {
     void printLog(string _log);
@@ -65,5 +67,27 @@ public interface IContractCommunicator
 
     void reqSendComment(int _novelId, string _mainTitle, string _comment);
 
-    void reqCountryData(int cid);
+    void reqCountryData(int _cid);
+
+    void reqDonate(int _cid, BigInteger _value);
+
+    void reqSetMiningTax(int _cid, int _tax);
+
+    void reqDepositMonarchSafe(int _cid, BigInteger _value);
+
+    void reqWithdrawMonarchSafe(int _cid, BigInteger _value);
+
+    void reqMoreLogData(int _cid, int _fromId, int _count);
+
+    void reqRoundCandidateList(int _round);
+
+    void addCandidateData(CandidateData _data);
+
+    void editCandidateData(CandidateData _data);
+
+    void cancelCandidateData(CandidateData _data);
+
+    void appointmentCandidateData(CandidateData _data);
+
+    void returnCandidateData(CandidateData _data);
 }

@@ -20,7 +20,7 @@ public class CountryManager : MonoBehaviour
     public const int PROPERTY_TYPE_MINING_INC = 1;
     public const int PROPERTY_TYPE_MINING_DEC = 2;
 
-    public const int LOG_TYPE_DISMISSAL = 1;
+    public const int LOG_TYPE_RESIGNATION = 1;
     public const int LOG_TYPE_INAUGURATION = 2;
     public const int LOG_TYPE_ADJUST_MINING_TAX = 3;
     public const int LOG_TYPE_DONATION = 4;
@@ -46,6 +46,8 @@ public class CountryManager : MonoBehaviour
 
     Dictionary<int, CountryData> countryDataMap = new Dictionary<int, CountryData>();
     Dictionary<int, List<Func<CountryData, bool>>> countryDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
+    Dictionary<int, List<Func<CountryData, bool>>> logDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
+
     Dictionary<int, Sprite> flagSpriteMap = new Dictionary<int, Sprite>();
 
     static CountryManager mInstance;
@@ -155,9 +157,30 @@ public class CountryManager : MonoBehaviour
         return flagSpriteMap.Count >= COUNTRY_MAX;
     }
 
-    public Sprite getFlagImage(int _cid)
+    public Sprite getCharacterSideFlagImage(int _cid)
     {
         return flagSpriteMap[_cid];
+    }
+
+    public Sprite getFlagImage(int _cid)
+    {
+        return null;
+    }
+
+    public bool isMonarcOfCountry(int _cid)
+    {
+        if (!countryDataMap.ContainsKey(_cid))
+        {
+            countryDataMap.Add(_cid, new CountryData());
+        }
+
+        if (!countryDataMap[_cid].castleData.hasMonarch)
+        {
+            return false;
+        }
+
+        return CharacterManager.instance.hasCharacter(countryDataMap[_cid].castleData.monarchId);
+
     }
 
     public void requestCountryData(int _cid, Func<CountryData, bool> _callback)
@@ -188,12 +211,59 @@ public class CountryManager : MonoBehaviour
         int cid = int.Parse(_data["id"].ToString());
         CountryData countryData = countryDataMap[cid];
         countryData.parseData(_data);
-
+        Debug.Log("responseCountyData " + cid);
         foreach (Func<CountryData, bool> callback in countryDataCallbackPendingMap[cid])
         {
             callback(countryData);
         }
 
         countryDataCallbackPendingMap[cid].Clear();
+    }
+
+    public CountryData getCountryData(int _cid)
+    {
+        if (countryDataMap.ContainsKey(_cid)) return countryDataMap[_cid];
+        return new CountryData();
+    }
+
+    public void addLog(int _cid, LogData _data)
+    {
+        if (!countryDataMap.ContainsKey(_cid))
+        {
+            countryDataMap.Add(_cid, new CountryData());
+        }
+
+        countryDataMap[_cid].addLog(_data);
+    }
+
+    internal void requestMoreLogData(int _cid, int _fromId, int _count, Func<CountryData, bool> _callback)
+    {
+        if (!countryDataMap.ContainsKey(_cid))
+        {
+            countryDataMap.Add(_cid, new CountryData());
+        }
+
+        if (!logDataCallbackPendingMap.ContainsKey(_cid))
+        {
+            logDataCallbackPendingMap.Add(_cid, new List<Func<CountryData, bool>>());
+        }
+
+        logDataCallbackPendingMap[_cid].Add(_callback);
+        ContractManager.instance.reqMoreLogData(_cid, _fromId, _count);
+    }
+
+    public void responseLogData(Dictionary<string, object> _data)
+    {
+        int cid = int.Parse(_data["id"].ToString());
+        CountryData countryData = countryDataMap[cid];
+        countryData.parseLogData(_data);
+
+        Debug.Log("responseLogData " + cid);
+        foreach (Func<CountryData, bool> callback in logDataCallbackPendingMap[cid])
+        {
+            callback(countryData);
+        }
+
+        logDataCallbackPendingMap[cid].Clear();
     }
 }

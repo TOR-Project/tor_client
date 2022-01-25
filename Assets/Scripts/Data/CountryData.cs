@@ -22,28 +22,60 @@ public class CountryData
         lastUpdatedBlock = SystemInfoManager.instance.blockNumber;
 
         propertyList.Clear();
-        List<string> pList = JsonConvert.DeserializeObject<List<string>>(_data["propertyList"].ToString());
-        foreach (string propertyStr in pList)
+        List<Dictionary<string, object>> pList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_data["propertyList"].ToString());
+        foreach (Dictionary<string, object> propertyDic in pList)
         {
             PropertyData propertyData = new PropertyData();
-            propertyData.parseData(JsonConvert.DeserializeObject<Dictionary<string, object>>(propertyStr));
+            propertyData.parseData(propertyDic);
             propertyList.Add(propertyData);
         }
 
         logList.Clear();
-        List<string> lList = JsonConvert.DeserializeObject<List<string>>(_data["logList"].ToString());
-        foreach (string logStr in lList)
+        List<Dictionary<string, object>> lList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_data["logList"].ToString());
+        foreach (Dictionary<string, object> logDic in lList)
         {
             LogData logData = new LogData();
-            logData.parseData(JsonConvert.DeserializeObject<Dictionary<string, object>>(logStr));
+            logData.parseData(logDic);
             logList.Add(logData);
         }
-        logList.Sort(SortByBlockDescending);
+        logList.Sort(SortByIdDescending);
 
         castleData.parseData(JsonConvert.DeserializeObject<Dictionary<string, object>>(_data["castleData"].ToString()));
     }
-    public int SortByBlockDescending(LogData _ld1, LogData _ld2)
+
+    internal void parseLogData(Dictionary<string, object> _data)
     {
-        return (int)(_ld2.blockNum - _ld1.blockNum);
+        List<int> idCheckList = new List<int>();
+        foreach (LogData logData in logList)
+        {
+            idCheckList.Add(logData.id);
+        }
+
+        List<Dictionary<string, object>> logDataList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_data["logList"].ToString());
+        foreach (Dictionary<string, object> item in logDataList)
+        {
+            LogData logData = new LogData();
+            logData.parseData(item);
+            if (!idCheckList.Contains(logData.id))
+            {
+                logList.Add(logData);
+            }
+        }
+
+        logList.Sort(SortByIdDescending);
+    }
+
+    public void addLog(LogData _logData)
+    {
+        _logData.blockNum = SystemInfoManager.instance.blockNumber;
+        _logData.id = logList.Count > 0 ? logList[0].id + 1 : 0;
+        logList.Add(_logData);
+
+        logList.Sort(SortByIdDescending);
+    }
+
+    public int SortByIdDescending(LogData _ld1, LogData _ld2)
+    {
+        return _ld2.id - _ld1.id;
     }
 }

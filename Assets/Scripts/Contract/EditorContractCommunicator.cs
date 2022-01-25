@@ -263,13 +263,12 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.StartCoroutine(progCoinAmount());
     }
 
-    int coinAdditional = 0;
     private IEnumerator progCoinAmount()
     {
         yield return new WaitForSeconds(0.5f);
 
         Dictionary<string, object> data = new Dictionary<string, object>();
-        data["amount"] = BigInteger.Add(BigInteger.Parse("1234567800000000000000"), BigInteger.Multiply(BigInteger.Parse((coinAdditional++).ToString()), BigInteger.Parse("1000000000000000000")));
+        data["amount"] = BigInteger.Parse("1234567800000000000000");
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCoinAmount(values);
@@ -705,7 +704,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["population"] = 0;
 
         // latest 30 logs
-        List<string> logList = new List<string>();
+        List<Dictionary<string, object>> logList = new List<Dictionary<string, object>>();
         for (int i = 0; i < 30; i++)
         {
             int logId = logLastIdx[_cid] - i;
@@ -716,7 +715,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
             Dictionary<string, object> logData = new Dictionary<string, object>();
             logData["id"] = logId;
-            logData["blockNum"] = 1234567890 - logId;
+            logData["blockNum"] = 1234567890 + logId;
             int logType = logId % 12 + 1;
             logData["logType"] = logType;
             logData["who"] = "0x0000000000";
@@ -725,18 +724,18 @@ public class EditorContractCommunicator : IContractCommunicator
                 logData["dataInt"] = BigInteger.Parse("1000000000000000000").ToString();
             } else if (logType == 3)
             {
-                logData["dataInt"] = BigInteger.Parse("100000").ToString(); ;
+                logData["dataInt"] = BigInteger.Parse("100000").ToString();
             } else if (logType == 12)
             {
-                logData["dataInt"] = BigInteger.Parse("0").ToString(); ;
+                logData["dataInt"] = BigInteger.Parse("0").ToString();
             }
             logData["dataStr"] = "Crow castle";
 
-            logList.Add(JsonConvert.SerializeObject(logData));
+            logList.Add(logData);
         }
         data["logList"] = logList;
 
-        List<string> propertyList = new List<string>();
+        List<Dictionary<string, object>> propertyList = new List<Dictionary<string, object>>();
 
         for (int i = 0; i < 2; i++)
         {
@@ -746,14 +745,14 @@ public class EditorContractCommunicator : IContractCommunicator
             propertyData["value"] = i == 0 ? 100000 : -100000;
             propertyData["startBlock"] = i * 10;
 
-            propertyList.Add(JsonConvert.SerializeObject(propertyData));
+            propertyList.Add(propertyData);
         }
         data["propertyList"] = propertyList;
 
         Dictionary<string, object> castleData = new Dictionary<string, object>();
         castleData["hasMonarch"] = _cid % 2 == 0;
         castleData["name"] = "Crow castle";
-        castleData["monarchId"] = UnityEngine.Random.Range(0, 10000);
+        castleData["monarchId"] = CharacterManager.instance.getMyCharacterList()[0].tokenId; // UnityEngine.Random.Range(0, 10000);
         castleData["monarchOwnerNickname"] = "Crow";
 
         List<int> formerMonarchList = new List<int>();
@@ -768,15 +767,358 @@ public class EditorContractCommunicator : IContractCommunicator
         miningTaxData["startBlock"] = 1234567890;
         miningTaxData["endBlock"] = 0;
 
-        castleData["lastMiningTaxData"] = JsonConvert.SerializeObject(miningTaxData);
+        castleData["lastMiningTaxData"] = miningTaxData;
 
         castleData["treasury"] = BigInteger.Parse("12345543210000000000000").ToString();
         castleData["personalSafe"] = BigInteger.Parse("54321123450000000000000").ToString();
         castleData["nextTaxSettableBlock"] = 1234567890;
 
-        data["castleData"] = JsonConvert.SerializeObject(castleData);
+        data["castleData"] = castleData;
 
         var value = JsonConvert.SerializeObject(data);
         mContractManager.resCountryData(value);
+    }
+
+    public void reqDonate(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resDonate(value);
+    }
+
+    public void reqSetMiningTax(int _cid, int _tax)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["cid"] = _cid;
+        data["tax"] = _tax;
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resSetMiningTax(value);
+    }
+
+    public void reqDepositMonarchSafe(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resDepositMonarchSafe(value);
+    }
+
+    public void reqWithdrawMonarchSafe(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+
+        var value = JsonConvert.SerializeObject(data);
+
+        mContractManager.resWithdrawMonarchSafe(value);
+    }
+
+    public void reqMoreLogData(int _cid, int _fromId, int _count)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["id"] = _cid;
+        // latest 30 logs
+        List<Dictionary<string, object>> logList = new List<Dictionary<string, object>>();
+        for (int i = 0; i < _count; i++)
+        {
+            int logId = _fromId - i;
+            if (logId < 0)
+            {
+                break;
+            }
+
+            Dictionary<string, object> logData = new Dictionary<string, object>();
+            logData["id"] = logId;
+            logData["blockNum"] = 1234567890 + logId;
+            int logType = logId % 12 + 1;
+            logData["logType"] = logType;
+            logData["who"] = "0x0000000000";
+            logData["nickName"] = "Crow";
+            if (logType == 4)
+            {
+                logData["dataInt"] = BigInteger.Parse("1000000000000000000").ToString();
+            }
+            else if (logType == 3)
+            {
+                logData["dataInt"] = BigInteger.Parse("100000").ToString();
+            }
+            else if (logType == 12)
+            {
+                logData["dataInt"] = BigInteger.Parse("0").ToString();
+            }
+            logData["dataStr"] = "Crow castle";
+
+            logList.Add(logData);
+        }
+        data["logList"] = logList;
+
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resMoreLogData(value);
+    }
+
+    private int generatedRound = 0;
+    private List<List<CandidateData>> candidateListArchive = new List<List<CandidateData>>();
+    private List<Dictionary<int, bool>> votingDataListArchive = new List<Dictionary<int, bool>>();
+    private List<List<int>> votingTotalCountListArchive = new List<List<int>>();
+    private void generateElectionArchive(int _maxRound)
+    {
+        if (generatedRound >= _maxRound)
+        {
+            return;
+        }
+
+        // add index 0
+        if (candidateListArchive.Count == 0)
+        {
+            candidateListArchive.Add(new List<CandidateData>());
+            votingDataListArchive.Add(new Dictionary<int, bool>());
+            votingTotalCountListArchive.Add(new List<int>());
+        }
+
+        for (int round = generatedRound + 1; round <= _maxRound; round++)
+        {
+            bool pastRound = round <= ElectionManager.instance.getElectionRound();
+
+            List<CandidateData> candidateList = new List<CandidateData>();
+            Dictionary<int, bool> votingDataMap = new Dictionary<int, bool>();
+            List<int> votingTotalCountList = new List<int>();
+            candidateListArchive.Add(candidateList);
+            votingDataListArchive.Add(votingDataMap);
+            votingTotalCountListArchive.Add(votingTotalCountList);
+
+            for (int cid = 0; cid < CountryManager.COUNTRY_ALL; cid++)
+            {
+                votingTotalCountList.Add(0);
+                int maxCandidateCount = UnityEngine.Random.Range(0, 15);
+                for (int i = 1; i <= maxCandidateCount; i++)
+                {
+                    CandidateData candidateData = new CandidateData();
+                    candidateData.id = i;
+                    candidateData.round = round;
+                    candidateData.tokenId = UnityEngine.Random.Range(0, 10000);
+                    candidateData.countryId = cid;
+                    candidateData.addr = "0x10000000000000000" + round + cid + i;
+                    candidateData.nickname = "닉네임" + round + cid + i;
+                    candidateData.title = "이게 나라냐!! " + round + cid + i;
+                    candidateData.contents = "저를 뽑아주세요!! " + +round + cid + i;
+                    candidateData.url = "http://www.naver.com";
+                    candidateData.canceled = UnityEngine.Random.Range(0, 5) == 0;
+                    if (!candidateData.canceled)
+                    {
+                        candidateData.votingCount = UnityEngine.Random.Range(0, 1000);
+                        votingTotalCountList[cid] += candidateData.votingCount;
+                    }
+                    candidateData.nftReturned = UnityEngine.Random.Range(0, 3) != 0;
+                    candidateData.registBlock = 123456789;
+
+                    candidateList.Add(candidateData);
+                }
+            }
+
+        }
+        generatedRound = _maxRound;
+
+
+        Debug.Log("generateElectionArchive maxRound = " + _maxRound);
+    }
+
+    public void reqRoundCandidateList(int _round)
+    {
+        generateElectionArchive(_round);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["round"] = _round;
+        bool pastRound = _round <= ElectionManager.instance.getElectionRound();
+
+        List<Dictionary<string, object>> candidateDataList = new List<Dictionary<string, object>>();
+
+        foreach(CandidateData cData in candidateListArchive[_round])
+        {
+            if (cData.canceled)
+            {
+                continue;
+            }
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic["id"] = cData.id;
+            dic["round"] = cData.round;
+            dic["tokenId"] = cData.tokenId;
+            dic["country"] = cData.countryId;
+            dic["addr"] = cData.addr;
+            dic["nickname"] = cData.nickname;
+            dic["title"] = cData.title;
+            dic["contents"] = cData.contents;
+            dic["url"] = cData.url;
+            dic["canceled"] = cData.canceled;
+            dic["votingCount"] = pastRound ? cData.votingCount : 0;
+            dic["nftReturned"] = cData.nftReturned;
+            dic["registBlock"] = cData.registBlock;
+
+            candidateDataList.Add(dic);
+        }
+
+        if (pastRound)
+        {
+            data["votingCountList"] = votingTotalCountListArchive[_round];
+        } else
+        {
+            List<int> list = new List<int>();
+            for (int cid = 0; cid < CountryManager.COUNTRY_MAX; cid++)
+            {
+                list.Add(0);
+            }
+            data["votingCountList"] = list;
+        }
+
+        data["list"] = candidateDataList;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resRoundCandidateList(value);
+    }
+
+    public void addCandidateData(CandidateData _data)
+    {
+        int round = _data.round;
+        List<CandidateData> list = candidateListArchive[round];
+        int maxId = 0;
+        foreach(CandidateData cData in list)
+        {
+            if (cData.countryId != _data.countryId)
+            {
+                continue;
+            }
+            if (maxId < cData.id)
+            {
+                maxId = cData.id;
+            }
+        }
+        _data.id = maxId + 1;
+        list.Add(_data);
+
+        _data.canceled = false;
+        _data.votingCount = UnityEngine.Random.Range(0, 1000);
+        votingTotalCountListArchive[_data.round][_data.countryId] += _data.votingCount;
+        _data.nftReturned = false;
+        _data.registBlock = SystemInfoManager.instance.blockNumber;
+
+        responceCandidateData(_data);
+    }
+
+    public void editCandidateData(CandidateData _data)
+    {
+        int round = _data.round;
+        List<CandidateData> list = candidateListArchive[round];
+        for(int i = 0; i < list.Count; i++)
+        {
+            CandidateData cData = list[i];
+            if (cData.id == _data.id)
+            {
+                list.RemoveAt(i);
+                break;
+            }
+        }
+        list.Add(_data);
+
+        _data.canceled = false;
+        _data.votingCount = 0;
+        _data.nftReturned = false;
+
+        responceCandidateData(_data);
+    }
+
+    public void cancelCandidateData(CandidateData _data)
+    {
+        int round = _data.round;
+        List<CandidateData> list = candidateListArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            CandidateData cData = list[i];
+            if (cData.id == _data.id)
+            {
+                cData.canceled = true;
+                cData.nftReturned = true;
+                break;
+            }
+        }
+
+        _data.canceled = true;
+        _data.nftReturned = true;
+
+        responceCandidateData(_data);
+    }
+
+    public void appointmentCandidateData(CandidateData _data)
+    {
+        int round = _data.round;
+        List<CandidateData> list = candidateListArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            CandidateData cData = list[i];
+            if (cData.id == _data.id)
+            {
+                cData.nftReturned = true;
+                break;
+            }
+        }
+
+        _data.nftReturned = true;
+
+        responceCandidateData(_data);
+    }
+
+    public void returnCandidateData(CandidateData _data)
+    {
+        int round = _data.round;
+        List<CandidateData> list = candidateListArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            CandidateData cData = list[i];
+            if (cData.id == _data.id)
+            {
+                cData.nftReturned = true;
+                break;
+            }
+        }
+
+        _data.nftReturned = true;
+
+        responceCandidateData(_data);
+    }
+
+    private void responceCandidateData(CandidateData _data)
+    {
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["id"] = _data.id;
+        dic["round"] = _data.round;
+        dic["tokenId"] = _data.tokenId;
+        dic["country"] = _data.countryId;
+        dic["addr"] = _data.addr;
+        dic["nickname"] = _data.nickname;
+        dic["title"] = _data.title;
+        dic["contents"] = _data.contents;
+        dic["url"] = _data.url;
+        dic["canceled"] = _data.canceled;
+        dic["votingCount"] = _data.votingCount;
+        dic["nftReturned"] = _data.nftReturned;
+        dic["registBlock"] = _data.registBlock;
+
+        var value = JsonConvert.SerializeObject(dic);
+        mContractManager.resUpdateCandidateData(value);
     }
 }

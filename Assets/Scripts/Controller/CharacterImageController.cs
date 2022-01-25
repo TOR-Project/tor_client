@@ -42,4 +42,12 @@ public class CharacterImageController : MonoBehaviour
             eicc.setEquipItem(ed);
         }
     }
+
+    public void setParticleEnabled(bool _set)
+    {
+        foreach (EquipItemCardController eicc in equipItemCardControllerList)
+        {
+            eicc.setParticleEnabled(_set);
+        }
+    }
 }

@@ -24,6 +24,10 @@ public class ContractManager : MonoBehaviour
     MiningWindowController miningController;
     [SerializeField]
     NovelWindowController novelController;
+    [SerializeField]
+    CastlePanelController castlePanelController;
+    [SerializeField]
+    ElectionOfficeWindowController electionOfficeController;
 
     [SerializeField]
     GlobalUIWindowController globalUIController;
@@ -76,6 +80,7 @@ public class ContractManager : MonoBehaviour
         }
     }
 
+
     public bool isContractLoaded(string _name)
     {
         if (contractLoadedMap.ContainsKey(_name))
@@ -120,16 +125,6 @@ public class ContractManager : MonoBehaviour
 
         string addr = values["address"].ToString();
         SystemInfoManager.instance.setConnectedWalletAddress(addr);
-    }
-
-    internal void reqLogDataLatest(int castleId, int lOG_REQUEST_COUNT)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal void reqCastleBasicData(int castleId)
-    {
-        throw new NotImplementedException();
     }
 
     public void reqServerState()
@@ -355,6 +350,7 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqCoinAmount();
     }
 
+
     public void resCoinAmount(string _json)
     {
         Debug.Log("resCoinAmount() json = " + _json);
@@ -365,6 +361,7 @@ public class ContractManager : MonoBehaviour
 
         UserManager.instance.setCoinAmount(amount);
     }
+
 
     public void reqCharacterCount()
     {
@@ -672,4 +669,163 @@ public class ContractManager : MonoBehaviour
 
         CountryManager.instance.responseCountyData(values);
     }
+
+    internal void reqDonate(int _cid, BigInteger _value)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqDonate()");
+
+        mContractCommunicator.reqDonate(_cid, _value);
+    }
+
+    internal void resDonate(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int cid = int.Parse(values["cid"].ToString());
+        BigInteger value = BigInteger.Parse(values["value"].ToString());
+
+        globalUIController.hideLoading();
+        Debug.Log("resDonate()");
+
+        reqCoinAmount();
+        castlePanelController.onDonateSuccessed(cid, value);
+    }
+
+    internal void reqSetMiningTax(int _cid, int _tax)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqSetMiningTax()");
+
+        mContractCommunicator.reqSetMiningTax(_cid, _tax);
+    }
+
+    internal void resSetMiningTax(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int cid = int.Parse(values["cid"].ToString());
+        int tax = int.Parse(values["tax"].ToString());
+
+        globalUIController.hideLoading();
+        Debug.Log("resSetMiningTax()");
+
+        castlePanelController.onMiningTaxSettingSuccessed(cid, tax);
+    }
+
+    internal void reqDepositMonarchSafe(int _cid, BigInteger _value)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqDepositMonarchSafe()");
+
+        mContractCommunicator.reqDepositMonarchSafe(_cid, _value);
+    }
+
+    internal void resDepositMonarchSafe(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int cid = int.Parse(values["cid"].ToString());
+        BigInteger value = BigInteger.Parse(values["value"].ToString());
+
+        globalUIController.hideLoading();
+        Debug.Log("resDepositMonarchSafe()");
+
+        reqCoinAmount();
+        castlePanelController.onDepositSuccssed(cid, value);
+    }
+
+    internal void reqWithdrawMonarchSafe(int _cid, BigInteger _value)
+    {
+        globalUIController.showLoading();
+        Debug.Log("reqWithdrawMonarchSafe()");
+
+        mContractCommunicator.reqWithdrawMonarchSafe(_cid, _value);
+    }
+
+    internal void resWithdrawMonarchSafe(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        int cid = int.Parse(values["cid"].ToString());
+        BigInteger value = BigInteger.Parse(values["value"].ToString());
+
+        globalUIController.hideLoading();
+        Debug.Log("resWithdrawMonarchSafe()");
+
+        reqCoinAmount();
+        castlePanelController.onWithdrawSuccssed(cid, value);
+    }
+
+    internal void reqMoreLogData(int _cid, int _fromId, int _count)
+    {
+        Debug.Log("reqMoreLogData()");
+        mContractCommunicator.reqMoreLogData(_cid, _fromId, _count);
+    }
+
+    internal void resMoreLogData(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        CountryManager.instance.responseLogData(values);
+    }
+
+    internal void reqRoundCandidateList(int _round)
+    {
+        Debug.Log("reqRoundCandidateList() " + _round);
+        mContractCommunicator.reqRoundCandidateList(_round);
+    }
+
+    public void resRoundCandidateList(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        ElectionManager.instance.responceRoundCandidateList(values);
+    }
+
+    internal void addCandidateData(CandidateData _data)
+    {
+        Debug.Log("addCandidateData()");
+        mContractCommunicator.addCandidateData(_data);
+    }
+    
+    internal void editCandidateData(CandidateData _data)
+    {
+        Debug.Log("editCandidateData()");
+        mContractCommunicator.editCandidateData(_data);
+    }
+
+    internal void cancelCandidateData(CandidateData _data)
+    {
+        Debug.Log("cancelCandidateData()");
+        mContractCommunicator.cancelCandidateData(_data);
+    }
+
+    internal void appointmentCandidateData(CandidateData _data)
+    {
+        Debug.Log("appointmentCandidateData()");
+        mContractCommunicator.appointmentCandidateData(_data);
+    }
+
+    internal void returnCandidateData(CandidateData _data)
+    {
+        Debug.Log("returnCandidateData()");
+        mContractCommunicator.returnCandidateData(_data);
+    }
+
+    public void resUpdateCandidateData(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        CandidateData data = new CandidateData();
+        data.parseData(values);
+
+        ElectionManager.instance.updateCandidateData(data);
+        electionOfficeController.updateCandidateData(data);
+
+    }
+
 }

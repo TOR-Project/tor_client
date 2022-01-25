@@ -104,6 +104,19 @@ public class CharacterManager : MonoBehaviour
        return myCharacterDataMap.ContainsKey(_id);
     }
 
+    public bool isCitizenOfCountry(int _cid)
+    {
+        foreach(CharacterData characterData in getMyCharacterList())
+        {
+            if (characterData.country == _cid)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void getCharacterDataAsync(int _id, Func<CharacterData, bool> _callback)
     {
         if (myCharacterDataMap.ContainsKey(_id))

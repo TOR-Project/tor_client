@@ -16,12 +16,12 @@ public class UserInfoController : MonoBehaviour, UserInfoObserever
     [SerializeField]
     Text nicknameText;
     [SerializeField]
-    SlidingNumberController coinNumberController;
+    SlidingBigNumberController coinNumberController;
 
     private void Awake()
     {
         UserManager.instance.addObserver(this);
-        coinNumberController.setAdditionalString("", " " + Const.TOR_COIN);
+        coinNumberController.setFormat("{0} " + Const.TOR_COIN);
     }
 
     private void OnDestroy()

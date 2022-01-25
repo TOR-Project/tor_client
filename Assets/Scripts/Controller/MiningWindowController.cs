@@ -655,12 +655,6 @@ public class MiningWindowController : MonoBehaviour
             BigInteger commissionAmount = new BigInteger(0);
             int password = Utils.GetTransactionHash(UserManager.instance.getPassword());
 
-            string[] countryTaxStr = new string[CountryManager.COUNTRY_MAX];
-            for (int i = 0; i < CountryManager.COUNTRY_MAX; i++)
-            {
-                countryTaxStr[i] = countryTax[i].ToString();
-            }
-
             for (int i = 0; i < receiptIdList.Length; i++)
             {
                 MiningData md = MiningManager.instance.getMiningData(receiptIdList[i]);
@@ -668,6 +662,12 @@ public class MiningWindowController : MonoBehaviour
                 countryTax[cd.country] += md.amount[MiningManager.IDX_TAX];
                 finalAmount += md.amount[MiningManager.IDX_FINAL];
                 commissionAmount += md.amount[MiningManager.IDX_COMMISSION];
+            }
+
+            string[] countryTaxStr = new string[CountryManager.COUNTRY_MAX];
+            for (int i = 0; i < CountryManager.COUNTRY_MAX; i++)
+            {
+                countryTaxStr[i] = (-countryTax[i]).ToString();
             }
             commissionAmount = -commissionAmount;
             ContractManager.instance.reqReceiveMiningAmount(receiptIdList, countryTaxStr, finalAmount.ToString(), commissionAmount.ToString(), password);

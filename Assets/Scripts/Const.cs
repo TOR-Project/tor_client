@@ -16,6 +16,12 @@ public class Const
 
     public const int TERMS_VERSION = 1;
 
+    public const long START_BLOCK = 78773461; // depolyed block of TorWorld - 101 : 81365461
+    public const long ONE_YEAR = 2592000; // 30 * 24 * 86400
+    public const long QUARTER = ONE_YEAR / 4;
+    public const long ELECTION_START_BLOCK = START_BLOCK + ONE_YEAR; // 0대 임기 시작 년도 봄
+
     public const string TOR_COIN = "TRT";
     public const int SUBSCRIBE_FEE = 2;
+    public const int MONARCH_REGIST_FEE = 500;
 }

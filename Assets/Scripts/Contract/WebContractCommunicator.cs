@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Numerics;
 
 public class WebContractCommunicator : IContractCommunicator
 {
@@ -303,7 +304,98 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("reqGetComment", values);
     }
 
-    public void reqCountryData(int cid)
+    public void reqCountryData(int _cid)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCountryData", values);
+    }
+
+    public void reqDonate(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqDonate", values);
+    }
+
+    public void reqSetMiningTax(int _cid, int _tax)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        data["tax"] = _tax;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqSetMiningTax", values);
+    }
+
+    public void reqDepositMonarchSafe(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqDepositMonarchSafe", values);
+    }
+
+    public void reqWithdrawMonarchSafe(int _cid, BigInteger _value)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        data["value"] = _value.ToString();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqWithdrawMonarchSafe", values);
+    }
+
+    public void reqMoreLogData(int _cid, int _fromId, int _count)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["cid"] = _cid;
+        data["fromId"] = _fromId;
+        data["count"] = _count;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqMoreLogData", values);
+    }
+
+    public void reqRoundCandidateList(int _round)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void addCandidateData(CandidateData _data)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void editCandidateData(CandidateData _data)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void cancelCandidateData(CandidateData _data)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void appointmentCandidateData(CandidateData _data)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void returnCandidateData(CandidateData _data)
     {
         throw new System.NotImplementedException();
     }

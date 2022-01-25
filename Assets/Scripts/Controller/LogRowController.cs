@@ -16,8 +16,8 @@ public class LogRowController : MonoBehaviour
 
         switch(_logData.logType)
         {
-            case CountryManager.LOG_TYPE_DISMISSAL:
-                valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_DISMISSAL"), _logData.whoNickName);
+            case CountryManager.LOG_TYPE_RESIGNATION:
+                valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_RESIGNATION"), _logData.whoNickName);
                 break;
             case CountryManager.LOG_TYPE_INAUGURATION:
                 valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_INAUGURATION"), _logData.whoNickName);

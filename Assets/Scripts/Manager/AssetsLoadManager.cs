@@ -71,6 +71,7 @@ public class AssetsLoadManager : MonoBehaviour
         {
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
             Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0.5f, 0.5f));
+            sprite.name = _url;
             spriteMap[_url] = sprite;
             downloadPendingMap[_url] = false;
             _callback(sprite);

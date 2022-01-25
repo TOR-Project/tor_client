@@ -158,7 +158,7 @@ public class ButtonStateSpriteLoadingComponent : LoadingComponent
         spriteState.disabledSprite = null;
         button.spriteState = spriteState;
 
-        highlightProgress = pressedProgress = selectedProgress = disabledProgress = 0;
+        highlightProgress = pressedProgress = selectedProgress = disabledProgress = maxProgress = 0;
     }
 
     public bool updateHighlightProgress(float _progress)

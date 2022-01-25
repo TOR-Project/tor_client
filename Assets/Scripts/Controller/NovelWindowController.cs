@@ -443,6 +443,7 @@ public class NovelWindowController : MonoBehaviour
 
     public void responseComment(List<Dictionary<string, object>> _data)
     {
+        refreshComment = false;
         List<int> idCheckList = new List<int>();
         foreach (CommentData commentData in commentDataList)
         {

@@ -23,8 +23,13 @@ public class LoadingWindowController : MonoBehaviour
     public bool setupLoading(GameObject _targetWindow, Action _callback)
     {
         loadingComponentPool = _targetWindow.GetComponent<LoadingComponentPool>();
-        if (loadingComponentPool == null || loadingComponentPool.isAllLoadingCompleted())
+        if (loadingComponentPool == null)
         {
+            return true;
+        }
+
+        loadingComponentPool.init();
+        if (loadingComponentPool.isAllLoadingCompleted()) {
             return true;
         }
 
@@ -53,6 +58,7 @@ public class LoadingWindowController : MonoBehaviour
                     loadingText.text = lc.getLoadingText();
                     slider.value = progress + lc.getProgressCurrent();
                     yield return new WaitForSeconds(0.1f);
+                    // Debug.Log(lc.gameObject.name + " " + lc.getProgressCurrent() + " / " + lc.getProgressMax());
                 }
                 slider.value = progress + lc.getProgressMax();
             }

@@ -15,6 +15,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     public const int STATE_PUB = 1;
     public const int STATE_WAITING_ROOM = 2;
     public const int STATE_WORKING_PLACE = 3;
+    public const int STATE_ELECTION = 4;
 
     [SerializeField]
     GameObject componentsGroup;
@@ -146,7 +147,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
             loadingObject.SetActive(false);
             return true;
         }, null);
-        flagImage.sprite = CountryManager.instance.getFlagImage(characterData.country);
+        flagImage.sprite = CountryManager.instance.getCharacterSideFlagImage(characterData.country);
         avatarImage.sprite = CharacterManager.instance.getAvatarImage(characterData.job);
         flagImage.enabled = true;
         avatarImage.enabled = true;
