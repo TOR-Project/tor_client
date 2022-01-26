@@ -12,10 +12,14 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     public const string BACKGROUND_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/background/background.jpg";
     public const string MIRROR_IMAGE_URL = "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/frame/frame.png";
 
-    public const int STATE_PUB = 1;
-    public const int STATE_WAITING_ROOM = 2;
-    public const int STATE_WORKING_PLACE = 3;
-    public const int STATE_ELECTION = 4;
+
+    public enum CharacterCardState
+    {
+        STATE_PUB,
+        STATE_WAITING_ROOM,
+        STATE_WORKING_PLACE,
+        STATE_ELECTION
+    }
 
     [SerializeField]
     GameObject componentsGroup;
@@ -47,7 +51,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
 
     CharacterData characterData;
     bool selected = false;
-    int cardState = 0;
+    CharacterCardState cardState = CharacterCardState.STATE_PUB;
     Func<CharacterCardController, bool> clickCallback;
 
     private void OnDestroy()
@@ -78,11 +82,11 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         }
     }
 
-    public void setCharacterId(CharacterData _data, int _state)
+    public void setCharacterId(CharacterData _data, CharacterCardState _state)
     {
         removeListener();
 
-        if (_state == STATE_WORKING_PLACE)
+        if (_state == CharacterCardState.STATE_WORKING_PLACE)
         {
             MiningManager.instance.addMiningDataObserver(_data.tokenId, this);
         }
@@ -104,13 +108,13 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     {
         switch (cardState)
         {
-            case STATE_PUB:
+            case CharacterCardState.STATE_PUB:
                 stateText.text = StakingManager.instance.getStakingText(characterData.stakingData.purpose);
                 break;
-            case STATE_WORKING_PLACE:
+            case CharacterCardState.STATE_WORKING_PLACE:
                 workingObject.SetActive(true);
                 break;
-            case STATE_WAITING_ROOM:
+            case CharacterCardState.STATE_WAITING_ROOM:
             default:
                 break;
         }

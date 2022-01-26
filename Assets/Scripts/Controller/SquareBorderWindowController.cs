@@ -31,9 +31,15 @@ public class SquareBorderWindowController : MonoBehaviour, CandidateObserver
     private void OnEnable()
     {
         ElectionManager.instance.addObserver(this);
+
+        selectedRound = 0;
+        selectedCountryId = -1;
+        selectedIdx = 0;
+
         addRoundInfo();
         resetRegionButton();
         posterController.resetAllPosterPanel();
+        updatePosterControlButton();
     }
 
     private void OnDisable()

@@ -25,6 +25,8 @@ public class CharacterGridController : MonoBehaviour
     Button nextButton;
     [SerializeField]
     Text pageText;
+    [SerializeField]
+    CharacterCardController.CharacterCardState state;
 
     CharacterCardController selectedCharacterController = null;
 
@@ -131,6 +133,11 @@ public class CharacterGridController : MonoBehaviour
             CharacterCardController controller = characterCardControllerList[i];
             controller.setSelected(false);
         }
+        if (selectedCharacterController != null)
+        {
+            selectedCharacterController.setSelected(false);
+            selectedCharacterController = null;
+        }
         Debug.Log("updateCharacterData() count = " + filteredCharacterDataList.Count + ", maxPageNum = " + maxPageNum);
 
         updateArrowButton();
@@ -156,7 +163,7 @@ public class CharacterGridController : MonoBehaviour
             {
                 CharacterData data = filteredCharacterDataList[characterDataIdx];
                 controller.gameObject.SetActive(true);
-                controller.setCharacterId(data, CharacterCardController.STATE_ELECTION);
+                controller.setCharacterId(data, state);
                 bool select = selectedCharacterController != null && selectedCharacterController.getCharacterData().tokenId == data.tokenId;
                 controller.setSelected(select);
                 if (select)

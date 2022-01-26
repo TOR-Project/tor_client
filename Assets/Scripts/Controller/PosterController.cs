@@ -200,6 +200,7 @@ public class PosterController : MonoBehaviour
         {
             resetVotingRate();
             setVotingRate((float)_data.votingCount / ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId));
+            Debug.Log("updateProgress " + _data.votingCount + " / " + ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId));
         }
 
         buttonPanel.SetActive(_mode == PosterMode.OFFICE);

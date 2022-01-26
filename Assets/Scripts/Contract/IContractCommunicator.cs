@@ -90,4 +90,8 @@ public interface IContractCommunicator
     void appointmentCandidateData(CandidateData _data);
 
     void returnCandidateData(CandidateData _data);
+
+    void reqNotVotedCharacterList(int _round, int[] _list);
+
+    void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList);
 }

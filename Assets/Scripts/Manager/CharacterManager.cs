@@ -96,6 +96,10 @@ public class CharacterManager : MonoBehaviour
 
     public CharacterData getMyCharacterData(int _id)
     {
+        if (!hasCharacter(_id))
+        {
+            return null;
+        }
         return myCharacterDataMap[_id];
     }
 
@@ -422,8 +426,8 @@ public class CharacterManager : MonoBehaviour
      * */
     public void loadCharacter()
     {
-        ContractManager.instance.reqCharacterCount();
         loadingStep = 1;
+        ContractManager.instance.reqCharacterCount();
     }
 
     /**
@@ -431,7 +435,7 @@ public class CharacterManager : MonoBehaviour
      *  3. request character list
      * */
     public void setCharacterCount(int _count, int _stakingCount)
-    {
+    { 
         if (isSameCharacterCount(_count, _stakingCount))
         {
             finishCharacterLoading();
@@ -439,8 +443,8 @@ public class CharacterManager : MonoBehaviour
         }
         characterCount = _count;
         stakingCharacterCount = _stakingCount;
-        ContractManager.instance.reqCharacterList(characterCount);
         loadingStep = 2;
+        ContractManager.instance.reqCharacterList(characterCount);
     }
 
     /**
@@ -460,8 +464,8 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            ContractManager.instance.reqCharacterData(allCharacterIdList);
             loadingStep = 3;
+            ContractManager.instance.reqCharacterData(allCharacterIdList);
         }
     }
 
@@ -520,11 +524,14 @@ public class CharacterManager : MonoBehaviour
             {
                 otherCharacterDataMap.Add(data.tokenId, data);
             }
-            foreach(Func<CharacterData, bool> callback in pendingCharacterDataCallbackMap[data.tokenId])
+            if (pendingCharacterDataCallbackMap.ContainsKey(data.tokenId))
             {
-                callback(data);
+                foreach (Func<CharacterData, bool> callback in pendingCharacterDataCallbackMap[data.tokenId])
+                {
+                    callback(data);
+                }
+                pendingCharacterDataCallbackMap[data.tokenId].Clear();
             }
-            pendingCharacterDataCallbackMap[data.tokenId].Clear();
         }
     }
 
@@ -533,6 +540,8 @@ public class CharacterManager : MonoBehaviour
       * */
     public void reqStakingData()
     {
+        Debug.Log("reqStakingData()");
+
         receivedStakingDataCount = 0;
         if (stakingCharacterCount == 0)
         {
@@ -540,8 +549,8 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            ContractManager.instance.reqStakingData(stakingCharacterIdList);
             loadingStep = 4;
+            ContractManager.instance.reqStakingData(stakingCharacterIdList);
         }
     }
 
@@ -550,6 +559,8 @@ public class CharacterManager : MonoBehaviour
       * */
     public void parsingStakingData(Dictionary<string, object> _stakingData)
     {
+        Debug.Log("parsingStakingData()");
+
         int tokenId = int.Parse(_stakingData["id"].ToString());
 
         foreach (CharacterData cd in myCharacterDataMap.Values)
@@ -575,6 +586,8 @@ public class CharacterManager : MonoBehaviour
       * */
     public void finishCharacterLoading()
     {
+        Debug.Log("finishCharacterLoading()");
+
         loadingStep = 5;
     }
 

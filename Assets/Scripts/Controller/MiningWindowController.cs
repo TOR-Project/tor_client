@@ -362,7 +362,7 @@ public class MiningWindowController : MonoBehaviour
             {
                 CharacterData data = waitingAllCharacterDataList[characterDataIdx];
                 controller.gameObject.SetActive(true);
-                controller.setCharacterId(data, CharacterCardController.STATE_WAITING_ROOM);
+                controller.setCharacterId(data, CharacterCardController.CharacterCardState.STATE_WAITING_ROOM);
                 controller.setSelected(selectedWaitingCharacterIdList.Contains(data.tokenId));
             } else
             {
@@ -384,7 +384,7 @@ public class MiningWindowController : MonoBehaviour
             {
                 CharacterData data = workingAllCharacterDataList[characterDataIdx];
                 controller.gameObject.SetActive(true);
-                controller.setCharacterId(data, CharacterCardController.STATE_WORKING_PLACE);
+                controller.setCharacterId(data, CharacterCardController.CharacterCardState.STATE_WORKING_PLACE);
                 controller.setSelected(selectedWorkingCharacterIdList.Contains(data.tokenId));
             } else
             {

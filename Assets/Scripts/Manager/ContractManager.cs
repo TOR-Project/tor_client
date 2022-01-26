@@ -28,6 +28,8 @@ public class ContractManager : MonoBehaviour
     CastlePanelController castlePanelController;
     [SerializeField]
     ElectionOfficeWindowController electionOfficeController;
+    [SerializeField]
+    PollsPlaceController pollsPlaceController;
 
     [SerializeField]
     GlobalUIWindowController globalUIController;
@@ -782,7 +784,7 @@ public class ContractManager : MonoBehaviour
 
         var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
 
-        ElectionManager.instance.responceRoundCandidateList(values);
+        ElectionManager.instance.responseRoundCandidateList(values);
     }
 
     internal void addCandidateData(CandidateData _data)
@@ -828,4 +830,40 @@ public class ContractManager : MonoBehaviour
 
     }
 
+    internal void resAppointmentMonarch(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        CandidateData data = new CandidateData();
+        data.parseData(values);
+
+        electionOfficeController.responceAppointmentMonarch(data);
+    }
+
+    internal void reqNotVotedCharacterList(int _round, int[] _list)
+    {
+        Debug.Log("reqNotVotedCharacterList()");
+        mContractCommunicator.reqNotVotedCharacterList(_round, _list);
+    }
+
+    public void resNotVotedCharacterList(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int[] list = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+
+        ElectionManager.instance.responseNotVotedCharacterList(list);
+    }
+
+    public void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList)
+    {
+        Debug.Log("reqVoteMonarchElection()");
+        mContractCommunicator.reqVoteMonarchElection(_round, _candidateIds, _voteCounts, _idList);
+    }
+
+    public void resVoteMonarchElection(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int[] list = JsonConvert.DeserializeObject<int[]>(values["characterIdList"].ToString());
+
+        pollsPlaceController.responceVoteCompleted(list);
+    }
 }

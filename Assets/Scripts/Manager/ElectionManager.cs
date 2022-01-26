@@ -20,6 +20,7 @@ public class ElectionManager : MonoBehaviour
     private Dictionary<int, List<int>> votingCountMap = new Dictionary<int, List<int>>();
     private Dictionary<int, long> lastRequestBlockMap = new Dictionary<int, long>();
     private ElectionState latestRoundRequestElectionState = ElectionState.SAFETY;
+    private List<Predicate<List<int>>> notVotedCallbackList = new List<Predicate<List<int>>>();
 
     static ElectionManager mInstance;
     public static ElectionManager instance {
@@ -100,7 +101,7 @@ public class ElectionManager : MonoBehaviour
         ContractManager.instance.reqRoundCandidateList(_round);
     }
 
-    public void responceRoundCandidateList(Dictionary<string, object> _data)
+    public void responseRoundCandidateList(Dictionary<string, object> _data)
     {
         int round = int.Parse(_data["round"].ToString());
         List<CandidateData> candidateList;
@@ -127,6 +128,29 @@ public class ElectionManager : MonoBehaviour
         notifyCandidateListReceived(candidateList);
     }
 
+    internal void requestNotVotedCharacterList(int _round, Predicate<List<int>> _callback)
+    {
+        notVotedCallbackList.Add(_callback);
+        int[] list = new int[CharacterManager.instance.getMyCharacterList().Count];
+        for (int i = 0; i < list.Length; i++)
+        {
+            list[i] = CharacterManager.instance.getMyCharacterList()[i].tokenId;
+        }
+        ContractManager.instance.reqNotVotedCharacterList(_round, list);
+    }
+
+    public void responseNotVotedCharacterList(int[] _data)
+    {
+        List<int> list = new List<int>(_data);
+        foreach (Predicate<List<int>> callback in notVotedCallbackList)
+        {
+            callback.Invoke(list);
+        }
+
+        notVotedCallbackList.Clear();
+    }
+
+
     public void updateCandidateData(CandidateData _data)
     {
         List<CandidateData> candidateList;
@@ -142,7 +166,7 @@ public class ElectionManager : MonoBehaviour
 
         for (int i = 0; i < candidateList.Count; i++)
         {
-            if (candidateList[i].id == _data.id)
+            if (candidateList[i].countryId == _data.countryId && candidateList[i].id == _data.id)
             {
                 candidateList.RemoveAt(i);
                 break;

@@ -50,13 +50,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqConnectWallet()
     {
-        mContractManager.StartCoroutine(progConnectWallet());
-    }
-
-    private IEnumerator progConnectWallet()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         bool serverBlocked = false;
         bool versionMismatched = false;
         bool walletConnectFailed = false;
@@ -85,13 +78,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqLatestNotice()
     {
-        mContractManager.StartCoroutine(progLatestNotice());
-    }
-
-    private IEnumerator progLatestNotice()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["title"] = "Welcome";
         data["date"] = 0;
@@ -103,13 +89,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqLoginInfomation(string addr)
     {
-        mContractManager.StartCoroutine(progLoginInfomation(addr));
-    }
-
-    private IEnumerator progLoginInfomation(string addr)
-    {
-        yield return new WaitForSeconds(0.5f);
-
         bool userBanned = false;
         bool noCharacter = false;
         bool hasUserDataLegacy = true;
@@ -178,49 +157,21 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqAgreeTerms(int _ver)
     {
-        mContractManager.StartCoroutine(progAgreeTerms(_ver));
-    }
-
-    private IEnumerator progAgreeTerms(int _ver)
-    {
-        yield return new WaitForSeconds(0.5f);
-
         mContractManager.resAgreeTerms(null);
     }
 
     public void reqUsingToken()
     {
-        mContractManager.StartCoroutine(progUsingToken());
-    }
-
-    private IEnumerator progUsingToken()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         mContractManager.resUsingToken(null);
     }
 
     public void reqUsingNFT()
     {
-        mContractManager.StartCoroutine(progUsingNFT());
-    }
-
-    private IEnumerator progUsingNFT()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         mContractManager.resUsingNFT(null);
     }
 
     public void reqCheckRedundancy(string _nickname)
     {
-        mContractManager.StartCoroutine(progCheckRedundancy(_nickname));
-    }
-
-    private IEnumerator progCheckRedundancy(string _nickname)
-    {
-        yield return new WaitForSeconds(0.5f);
-
         bool available = true;
 
         Dictionary<string, object> data = new Dictionary<string, object>();
@@ -232,25 +183,11 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqRegistTokenToWallet()
     {
-        mContractManager.StartCoroutine(progRegistTokenToWallet());
-    }
-
-    private IEnumerator progRegistTokenToWallet()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         mContractManager.resRegistTokenToWallet("");
     }
 
     public void reqCreateUser(string _nickname, int _ver)
     {
-        mContractManager.StartCoroutine(progCreateUser(_nickname));
-    }
-
-    private IEnumerator progCreateUser(string _nickname)
-    {
-        yield return new WaitForSeconds(0.5f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["nickname"] = _nickname;
         var values = JsonConvert.SerializeObject(data);
@@ -260,13 +197,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqCoinAmount()
     {
-        mContractManager.StartCoroutine(progCoinAmount());
-    }
-
-    private IEnumerator progCoinAmount()
-    {
-        yield return new WaitForSeconds(0.5f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["amount"] = BigInteger.Parse("1234567800000000000000");
         var values = JsonConvert.SerializeObject(data);
@@ -274,21 +204,87 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resCoinAmount(values);
     }
 
-    List<int> characterIdList = new List<int>();
-    List<int> newCharacterIdList = new List<int>();
-    List<int> stakingIdList = new List<int>();
-    public void reqCharacterCount()
+    List<CharacterData> characterListArchive = new List<CharacterData>();
+    List<CharacterData> newCharacterListArchive = new List<CharacterData>();
+    List<CharacterData> stakingListArchive = new List<CharacterData>();
+    Dictionary<int, StakingData> stakingDataArchive = new Dictionary<int, StakingData>();
+    Dictionary<int, CharacterData> allCharacterMapArchive = new Dictionary<int, CharacterData>();
+
+    private void initCharacterArchive()
     {
-        mContractManager.StartCoroutine(progCharacterCount());
+        if (characterListArchive.Count > 0 || newCharacterListArchive.Count > 0 || stakingListArchive.Count > 0)
+        {
+            return;
+        }
+
+        List<int> idCheckList = new List<int>();
+        int randCount = UnityEngine.Random.Range(300, 1000);
+        for (int i = 0; i < randCount; i++)
+        {
+            int id = UnityEngine.Random.Range(0, 10000);
+            if (idCheckList.Contains(id))
+            {
+                continue;
+            }
+            idCheckList.Add(id);
+
+            CharacterData data = getRandomCharacterData(id);
+
+            int whichArr = UnityEngine.Random.Range(0, 3);
+            if (whichArr == 0)
+            {
+                characterListArchive.Add(data);
+            } else if (whichArr == 1)
+            {
+                newCharacterListArchive.Add(data);
+            } else
+            {
+                stakingListArchive.Add(data);
+                StakingData stakingData = new StakingData();
+                stakingData.tokenId = data.tokenId;
+                stakingData.startBlock = 123456789;
+                stakingData.endBlock = 0;
+                stakingData.purpose = StakingManager.PURPOSE_MINING;
+                stakingDataArchive.Add(data.tokenId, stakingData);
+            }
+
+            allCharacterMapArchive.Add(id, data);
+        }
     }
 
-    private IEnumerator progCharacterCount()
+    private CharacterData getRandomCharacterData(int _id)
     {
-        yield return new WaitForSeconds(0.5f);
+        CharacterData data = new CharacterData();
+        data.name = "#" + _id.ToString("0000");
+        data.tokenId = _id;
+        data.level = UnityEngine.Random.Range(1, 10);
+        data.exp = 0;
+        data.country = UnityEngine.Random.Range(0, 5);
+        data.race = UnityEngine.Random.Range(0, 5);
+        data.job = UnityEngine.Random.Range(1, 9);
+        data.statusBonus = 0;
+        data.version = 1;
+
+        data.statusData.att = UnityEngine.Random.Range(50, 500);
+        data.statusData.def = UnityEngine.Random.Range(50, 500);
+
+        data.equipData.weapon = UnityEngine.Random.Range(0, 4);
+        data.equipData.armor = UnityEngine.Random.Range(0, 4);
+        data.equipData.accessory = UnityEngine.Random.Range(0, 4);
+        data.equipData.pants = UnityEngine.Random.Range(0, 4);
+        data.equipData.head = UnityEngine.Random.Range(0, 4);
+        data.equipData.shoes = UnityEngine.Random.Range(0, 4);
+
+        return data;
+    }
+
+    public void reqCharacterCount()
+    {
+        initCharacterArchive();
 
         Dictionary<string, object> data = new Dictionary<string, object>();
-        data["characterCount"] = characterIdList.Count;
-        data["stakingCharacterCount"] = stakingIdList.Count;
+        data["characterCount"] = characterListArchive.Count;
+        data["stakingCharacterCount"] = stakingListArchive.Count;
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCharacterCount(values);
@@ -296,23 +292,16 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqCharacterList(int _characterCount)
     {
-        mContractManager.StartCoroutine(progCharacterList(_characterCount));
-    }
-
-    private IEnumerator progCharacterList(int _characterCount)
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        int[] characterList = new int[characterIdList.Count];
+        int[] characterList = new int[characterListArchive.Count];
         for (int i = 0; i < characterList.Length; i++)
         {
-            characterList[i] = characterIdList[i];
+            characterList[i] = characterListArchive[i].tokenId;
         }
 
-        int[] stakingCharacterList = new int[stakingIdList.Count];
+        int[] stakingCharacterList = new int[stakingListArchive.Count];
         for (int i = 0; i < stakingCharacterList.Length; i++)
         {
-            stakingCharacterList[i] = stakingIdList[i];
+            stakingCharacterList[i] = stakingListArchive[i].tokenId;
         }
 
         Dictionary<string, object> data = new Dictionary<string, object>();
@@ -325,27 +314,12 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqNotInitCharacterList()
     {
-        mContractManager.StartCoroutine(progNotInitCharacterList());
-    }
+        initCharacterArchive();
 
-    private IEnumerator progNotInitCharacterList()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        int randCount = UnityEngine.Random.Range(300, 500);
-        for (int i = 0; i < randCount; i++)
-        {
-            int id = UnityEngine.Random.Range(0, 10000);
-            if (!characterIdList.Contains(id) && !stakingIdList.Contains(id))
-            {
-                newCharacterIdList.Add(id);
-            }
-        }
-
-        int[] characterList = new int[newCharacterIdList.Count];
+        int[] characterList = new int[newCharacterListArchive.Count];
         for (int i = 0; i < characterList.Length; i++)
         {
-            characterList[i] = newCharacterIdList[i];
+            characterList[i] = newCharacterListArchive[i].tokenId;
         }
 
         Dictionary<string, object> data = new Dictionary<string, object>();
@@ -357,70 +331,58 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
     {
-        mContractManager.StartCoroutine(progInitCharacter(_idList, _characterDataList, _statusDataList, _equipDataList));
-    }
-
-    private IEnumerator progInitCharacter(int[] _idList, int[] _characterDataList, int[] _statusDataList, int[] _equipDataList)
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        for (int i = 0; i < newCharacterIdList.Count; i++)
+        for (int i = 0; i < newCharacterListArchive.Count; i++)
         {
-            int seed = UnityEngine.Random.Range(0, 3);
-
-            if (seed == 0)
-            {
-                characterIdList.Add(newCharacterIdList[i]);
-            } else if (seed == 1)
-            {
-                stakingIdList.Add(newCharacterIdList[i]);
-            }
+            characterListArchive.Add(newCharacterListArchive[i]);
         }
 
-        newCharacterIdList.Clear();
+        newCharacterListArchive.Clear();
 
         mContractManager.resInitCharacter("");
-
     }
+
     public void reqCharacterData(int[] _characterIdList)
     {
-        mContractManager.StartCoroutine(progCharacterData(_characterIdList));
-    }
-
-    private IEnumerator progCharacterData(int[] _characterIdList)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         foreach (int id in _characterIdList)
         {
+            CharacterData cData;
+            if (allCharacterMapArchive.ContainsKey(id))
+            {
+                cData = allCharacterMapArchive[id];
+            } else
+            {
+                cData = getRandomCharacterData(id);
+                allCharacterMapArchive.Add(id, cData);
+            }
+
             Dictionary<string, object> data = new Dictionary<string, object>();
 
             Dictionary<string, object> characterData = new Dictionary<string, object>();
-            characterData["name"] = "#" + id.ToString("0000");
-            characterData["tokenId"] = id;
-            characterData["level"] = UnityEngine.Random.Range(1, 10);
-            characterData["exp"] = 0;
-            characterData["country"] = UnityEngine.Random.Range(0, 5);
-            characterData["race"] = UnityEngine.Random.Range(0, 5);
-            characterData["job"] = UnityEngine.Random.Range(1, 9);
-            characterData["statusBonus"] = 0;
-            characterData["version"] = 1;
+            characterData["name"] = cData.name;
+            characterData["tokenId"] = cData.tokenId;
+            characterData["level"] = cData.level;
+            characterData["exp"] = cData.exp;
+            characterData["country"] = cData.country;
+            characterData["race"] = cData.race;
+            characterData["job"] = cData.job;
+            characterData["statusBonus"] = cData.statusBonus;
+            characterData["version"] = cData.version;
 
             data["characterData"] = JsonConvert.SerializeObject(characterData);
 
             Dictionary<string, object> statusData = new Dictionary<string, object>();
-            statusData["att"] = UnityEngine.Random.Range(50, 500);
-            statusData["def"] = UnityEngine.Random.Range(50, 500);
+            statusData["att"] = cData.statusData.att;
+            statusData["def"] = cData.statusData.def;
 
             data["statusData"] = JsonConvert.SerializeObject(statusData);
 
             Dictionary<string, object> equipData = new Dictionary<string, object>();
-            equipData["weapon"] = UnityEngine.Random.Range(0, 4);
-            equipData["armor"] = UnityEngine.Random.Range(0, 4);
-            equipData["pants"] = UnityEngine.Random.Range(0, 4);
-            equipData["head"] = UnityEngine.Random.Range(0, 4);
-            equipData["shoes"] = UnityEngine.Random.Range(0, 4);
-            equipData["accessory"] = UnityEngine.Random.Range(0, 6);
+            equipData["weapon"] = cData.equipData.weapon;
+            equipData["armor"] = cData.equipData.armor;
+            equipData["pants"] = cData.equipData.pants;
+            equipData["head"] = cData.equipData.head;
+            equipData["shoes"] = cData.equipData.shoes;
+            equipData["accessory"] = cData.equipData.accessory;
 
             data["equipData"] = JsonConvert.SerializeObject(equipData);
 
@@ -432,20 +394,15 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqStakingData(int[] _idList)
     {
-        mContractManager.StartCoroutine(progStakingData(_idList));
-    }
-
-    private IEnumerator progStakingData(int[] _idList)
-    {
-        yield return new WaitForSeconds(0.3f);
-
-        for (int i = 0; i < _idList.Length; i++)
+        foreach (int id in _idList)
         {
+            StakingData stakingData = stakingDataArchive[id];
+
             Dictionary<string, object> data = new Dictionary<string, object>();
-            data["id"] = stakingIdList[i];
-            data["startBlock"] = 12345678;
-            data["endBlock"] = 0;
-            data["purpose"] = 4;
+            data["id"] = stakingData.tokenId;
+            data["startBlock"] = stakingData.startBlock;
+            data["endBlock"] = stakingData.endBlock;
+            data["purpose"] = stakingData.purpose;
             var outValue = JsonConvert.SerializeObject(data);
 
             mContractManager.resStakingData(outValue);
@@ -454,49 +411,21 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqAddMiningStaking(int[] _idList)
     {
-        mContractManager.StartCoroutine(progAddMiningStaking(_idList));
-    }
-
-    private IEnumerator progAddMiningStaking(int[] _idList)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         mContractManager.resAddMiningStaking("");
     }
 
     public void reqGetBackMiningStaking(int[] _idList)
     {
-        mContractManager.StartCoroutine(progGetBackMiningStaking(_idList));
-    }
-
-    private IEnumerator progGetBackMiningStaking(int[] _idList)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         mContractManager.resGetBackMiningStaking("");
     }
 
     public void reqReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
     {
-        mContractManager.StartCoroutine(progReceiveMiningAmount(_idList, _countryTax, _finalAmount, _commissionAmount, _password));
-    }
-
-    private IEnumerator progReceiveMiningAmount(int[] _idList, string[] _countryTax, string _finalAmount, string _commissionAmount, int _password)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         mContractManager.resReceiveMiningAmount("");
     }
 
     public void reqCalculateMiningAmount(int _id)
     {
-        mContractManager.StartCoroutine(progCalculateMiningAmount(_id));
-    }
-
-    private IEnumerator progCalculateMiningAmount(int _id)
-    {
-        yield return new WaitForSeconds(0.5f);
-
         BigInteger basicAmount = BigInteger.Parse("1000000000000000000") * 10;
         BigInteger miningTaxAmount = -BigInteger.Parse("1000000000000000000") * 0;
         BigInteger countryAmount = BigInteger.Parse("1000000000000000000") * 0;
@@ -523,13 +452,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqGetPassword()
     {
-        mContractManager.StartCoroutine(progGetPassword());
-    }
-
-    private IEnumerator progGetPassword()
-    {
-        yield return new WaitForSeconds(0.3f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["password"] = 123456;
         var value = JsonConvert.SerializeObject(data);
@@ -539,13 +461,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqGetStorySummery(int _id)
     {
-        mContractManager.StartCoroutine(progGetStorySummery(_id));
-    }
-
-    private IEnumerator progGetStorySummery(int _id)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["id"] = _id;
         if (_id == 0)
@@ -571,13 +486,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqGetStoryCount()
     {
-        mContractManager.StartCoroutine(progGetStoryCount());
-    }
-
-    private IEnumerator progGetStoryCount()
-    {
-        yield return new WaitForSeconds(0.3f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["count"] = 3;
         var value = JsonConvert.SerializeObject(data);
@@ -587,13 +495,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqSubscribeStory(int _id)
     {
-        mContractManager.StartCoroutine(progSubscribeStory(_id));
-    }
-
-    private IEnumerator progSubscribeStory(int _id)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["id"] = _id;
         data["success"] = true;
@@ -604,13 +505,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqGetStoryDataFull(int _id)
     {
-        mContractManager.StartCoroutine(progGetStoryDataFull(_id));
-    }
-
-    private IEnumerator progGetStoryDataFull(int _id)
-    {
-        yield return new WaitForSeconds(0.3f);
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["id"] = _id;
         data["success"] = true;
@@ -694,42 +588,110 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resSendComment(value);
     }
 
-    int[] logLastIdx = new int[] { 150, 100, 15, 50, 300 };
+    List<CountryData> countryDataArchive = new List<CountryData>();
+
+    private void initCountryArchive()
+    {
+        if (countryDataArchive.Count > 0)
+        {
+            return;
+        }
+
+        for (int cid = 0; cid < CountryManager.COUNTRY_MAX; cid++)
+        {
+            CountryData countryData = new CountryData();
+            countryData.id = cid;
+            countryData.population = 0;
+            
+            int logCount = UnityEngine.Random.Range(0, 150);
+            for (int lid = 0; lid < logCount; lid++)
+            {
+                LogData logData = new LogData();
+                logData.blockNum = 123456789 + lid;
+                logData.logType = UnityEngine.Random.Range(0, 11) + 1;
+                logData.whoAddr = "0x000000000000000" + lid;
+                logData.whoNickName = "Crow";
+                if (logData.logType == 4)
+                {
+                    logData.dataInt = BigInteger.Parse("1000000000000000000");
+                }
+                else if (logData.logType == 3)
+                {
+                    logData.dataInt = BigInteger.Parse("100000");
+                }
+                else if (logData.logType == 12)
+                {
+                    logData.dataInt = BigInteger.Parse("0");
+                }
+                logData.dataStr = "Crow castle";
+
+                countryData.addLog(logData);
+            }
+
+            if (cid == 0)
+            {
+                PropertyData propertyData = new PropertyData();
+                propertyData.propertyCategory = CountryManager.PROPERTY_CATEGORY_EVEGENIS_RAYNOR_BLESS;
+                propertyData.propertyType = CountryManager.PROPERTY_TYPE_MINING_INC;
+                propertyData.value = 100000;
+                propertyData.startBlock = 0;
+
+                countryData.propertyList.Add(propertyData);
+            }
+
+            countryData.castleData.hasMonarch = UnityEngine.Random.Range(0, 2) == 0;
+            countryData.castleData.name = "Crow castle";
+            countryData.castleData.monarchId = UnityEngine.Random.Range(0, 10000);
+            countryData.castleData.monarchOwnerNickname = "Crow #" + countryData.castleData.monarchId.ToString("0000");
+
+            for (int i = 0; i < 10; i++)
+            {
+                countryData.castleData.formerMonarchList.Add(UnityEngine.Random.Range(0, 10000));
+            }
+
+            MiningTaxData miningTaxData = new MiningTaxData();
+            miningTaxData.startBlock = 123456789;
+            miningTaxData.endBlock = 0;
+            miningTaxData.tax = UnityEngine.Random.Range(0, 70) * 10000;
+            countryData.castleData.lastMiningTaxData = miningTaxData;
+
+            countryData.castleData.treasury = BigInteger.Parse("100000000000000") * UnityEngine.Random.Range(0, 100000000);
+            countryData.castleData.personalSafe = BigInteger.Parse("100000000000000") * UnityEngine.Random.Range(0, 100000000);
+            countryData.castleData.nextTaxSettableBlock = 0;
+
+            countryDataArchive.Add(countryData);
+        }
+        
+    }
 
     public void reqCountryData(int _cid)
     {
+        initCountryArchive();
+
         Dictionary<string, object> data = new Dictionary<string, object>();
 
         data["id"] = _cid;
-        data["population"] = 0;
+        data["population"] = countryDataArchive[_cid].population;
 
         // latest 30 logs
         List<Dictionary<string, object>> logList = new List<Dictionary<string, object>>();
         for (int i = 0; i < 30; i++)
         {
-            int logId = logLastIdx[_cid] - i;
-            if (logId < 0)
+            if (countryDataArchive[_cid].logList.Count <= i)
             {
                 break;
             }
 
+            LogData lData = countryDataArchive[_cid].logList[i];
+
             Dictionary<string, object> logData = new Dictionary<string, object>();
-            logData["id"] = logId;
-            logData["blockNum"] = 1234567890 + logId;
-            int logType = logId % 12 + 1;
-            logData["logType"] = logType;
-            logData["who"] = "0x0000000000";
-            logData["nickName"] = "Crow";
-            if (logType == 4) {
-                logData["dataInt"] = BigInteger.Parse("1000000000000000000").ToString();
-            } else if (logType == 3)
-            {
-                logData["dataInt"] = BigInteger.Parse("100000").ToString();
-            } else if (logType == 12)
-            {
-                logData["dataInt"] = BigInteger.Parse("0").ToString();
-            }
-            logData["dataStr"] = "Crow castle";
+            logData["id"] = lData.id;
+            logData["blockNum"] = lData.blockNum;
+            logData["logType"] = lData.logType;
+            logData["who"] = lData.whoAddr;
+            logData["nickName"] = lData.whoNickName;
+            logData["dataInt"] = lData.dataInt;
+            logData["dataStr"] = lData.dataStr;
 
             logList.Add(logData);
         }
@@ -737,41 +699,39 @@ public class EditorContractCommunicator : IContractCommunicator
 
         List<Dictionary<string, object>> propertyList = new List<Dictionary<string, object>>();
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < countryDataArchive[_cid].propertyList.Count; i++)
         {
+            PropertyData pData = countryDataArchive[_cid].propertyList[i];
             Dictionary<string, object> propertyData = new Dictionary<string, object>();
-            propertyData["propertyCategory"] = 1;
-            propertyData["propertyType"] = i + 1;
-            propertyData["value"] = i == 0 ? 100000 : -100000;
-            propertyData["startBlock"] = i * 10;
+            propertyData["propertyCategory"] = pData.propertyCategory;
+            propertyData["propertyType"] = pData.propertyType;
+            propertyData["value"] = pData.value;
+            propertyData["startBlock"] = pData.startBlock;
 
             propertyList.Add(propertyData);
         }
         data["propertyList"] = propertyList;
 
+        CastleData cData = countryDataArchive[_cid].castleData;
         Dictionary<string, object> castleData = new Dictionary<string, object>();
-        castleData["hasMonarch"] = _cid % 2 == 0;
-        castleData["name"] = "Crow castle";
-        castleData["monarchId"] = CharacterManager.instance.getMyCharacterList()[0].tokenId; // UnityEngine.Random.Range(0, 10000);
-        castleData["monarchOwnerNickname"] = "Crow";
+        castleData["hasMonarch"] = cData.hasMonarch;
+        castleData["name"] = cData.name;
+        castleData["monarchId"] = cData.monarchId;
+        castleData["monarchOwnerNickname"] = cData.monarchOwnerNickname;
 
-        List<int> formerMonarchList = new List<int>();
-        for (int i = 0; i < 10; i++)
-        {
-            formerMonarchList.Add(UnityEngine.Random.Range(0, 10000));
-        }
-        castleData["formerMonarchList"] = formerMonarchList;
+        castleData["formerMonarchList"] = cData.formerMonarchList;
 
+        MiningTaxData mtData = countryDataArchive[_cid].castleData.lastMiningTaxData;
         Dictionary<string, object> miningTaxData = new Dictionary<string, object>();
-        miningTaxData["tax"] = 100000;
-        miningTaxData["startBlock"] = 1234567890;
-        miningTaxData["endBlock"] = 0;
+        miningTaxData["tax"] = mtData.tax;
+        miningTaxData["startBlock"] = mtData.startBlock;
+        miningTaxData["endBlock"] = mtData.endBlock;
 
         castleData["lastMiningTaxData"] = miningTaxData;
 
-        castleData["treasury"] = BigInteger.Parse("12345543210000000000000").ToString();
-        castleData["personalSafe"] = BigInteger.Parse("54321123450000000000000").ToString();
-        castleData["nextTaxSettableBlock"] = 1234567890;
+        castleData["treasury"] = cData.treasury;
+        castleData["personalSafe"] = cData.personalSafe;
+        castleData["nextTaxSettableBlock"] = cData.nextTaxSettableBlock;
 
         data["castleData"] = castleData;
 
@@ -786,6 +746,8 @@ public class EditorContractCommunicator : IContractCommunicator
         data["cid"] = _cid;
         data["value"] = _value.ToString();
 
+        countryDataArchive[_cid].castleData.treasury += _value;
+
         var value = JsonConvert.SerializeObject(data);
 
         mContractManager.resDonate(value);
@@ -797,6 +759,10 @@ public class EditorContractCommunicator : IContractCommunicator
 
         data["cid"] = _cid;
         data["tax"] = _tax;
+
+        countryDataArchive[_cid].castleData.lastMiningTaxData.tax = _tax;
+        countryDataArchive[_cid].castleData.lastMiningTaxData.startBlock = SystemInfoManager.instance.blockNumber;
+        countryDataArchive[_cid].castleData.nextTaxSettableBlock = SystemInfoManager.instance.blockNumber + 30;
 
         var value = JsonConvert.SerializeObject(data);
 
@@ -810,6 +776,8 @@ public class EditorContractCommunicator : IContractCommunicator
         data["cid"] = _cid;
         data["value"] = _value.ToString();
 
+        countryDataArchive[_cid].castleData.personalSafe += _value;
+
         var value = JsonConvert.SerializeObject(data);
 
         mContractManager.resDepositMonarchSafe(value);
@@ -822,6 +790,8 @@ public class EditorContractCommunicator : IContractCommunicator
         data["cid"] = _cid;
         data["value"] = _value.ToString();
 
+        countryDataArchive[_cid].castleData.personalSafe -= _value;
+
         var value = JsonConvert.SerializeObject(data);
 
         mContractManager.resWithdrawMonarchSafe(value);
@@ -833,35 +803,34 @@ public class EditorContractCommunicator : IContractCommunicator
 
         data["id"] = _cid;
         // latest 30 logs
+        int startIdx = 0;
+        for (int i = 0; i < countryDataArchive[_cid].logList.Count; i++)
+        {
+            if (countryDataArchive[_cid].logList[i].id == _fromId)
+            {
+                startIdx = i;
+                break;
+            }
+        }
+
         List<Dictionary<string, object>> logList = new List<Dictionary<string, object>>();
         for (int i = 0; i < _count; i++)
         {
-            int logId = _fromId - i;
-            if (logId < 0)
+            if (countryDataArchive[_cid].logList.Count <= i + startIdx)
             {
                 break;
             }
 
+            LogData lData = countryDataArchive[_cid].logList[i + startIdx];
+
             Dictionary<string, object> logData = new Dictionary<string, object>();
-            logData["id"] = logId;
-            logData["blockNum"] = 1234567890 + logId;
-            int logType = logId % 12 + 1;
-            logData["logType"] = logType;
-            logData["who"] = "0x0000000000";
-            logData["nickName"] = "Crow";
-            if (logType == 4)
-            {
-                logData["dataInt"] = BigInteger.Parse("1000000000000000000").ToString();
-            }
-            else if (logType == 3)
-            {
-                logData["dataInt"] = BigInteger.Parse("100000").ToString();
-            }
-            else if (logType == 12)
-            {
-                logData["dataInt"] = BigInteger.Parse("0").ToString();
-            }
-            logData["dataStr"] = "Crow castle";
+            logData["id"] = lData.id;
+            logData["blockNum"] = lData.blockNum;
+            logData["logType"] = lData.logType;
+            logData["who"] = lData.whoAddr;
+            logData["nickName"] = lData.whoNickName;
+            logData["dataInt"] = lData.dataInt;
+            logData["dataStr"] = lData.dataStr;
 
             logList.Add(logData);
         }
@@ -874,9 +843,9 @@ public class EditorContractCommunicator : IContractCommunicator
 
     private int generatedRound = 0;
     private List<List<CandidateData>> candidateListArchive = new List<List<CandidateData>>();
-    private List<Dictionary<int, bool>> votingDataListArchive = new List<Dictionary<int, bool>>();
+    private List<List<int>> votingDataListArchive = new List<List<int>>();
     private List<List<int>> votingTotalCountListArchive = new List<List<int>>();
-    private void generateElectionArchive(int _maxRound)
+    private void initElectionArchive(int _maxRound)
     {
         if (generatedRound >= _maxRound)
         {
@@ -887,7 +856,7 @@ public class EditorContractCommunicator : IContractCommunicator
         if (candidateListArchive.Count == 0)
         {
             candidateListArchive.Add(new List<CandidateData>());
-            votingDataListArchive.Add(new Dictionary<int, bool>());
+            votingDataListArchive.Add(new List<int>());
             votingTotalCountListArchive.Add(new List<int>());
         }
 
@@ -896,7 +865,7 @@ public class EditorContractCommunicator : IContractCommunicator
             bool pastRound = round <= ElectionManager.instance.getElectionRound();
 
             List<CandidateData> candidateList = new List<CandidateData>();
-            Dictionary<int, bool> votingDataMap = new Dictionary<int, bool>();
+            List<int> votingDataMap = new List<int>();
             List<int> votingTotalCountList = new List<int>();
             candidateListArchive.Add(candidateList);
             votingDataListArchive.Add(votingDataMap);
@@ -934,13 +903,12 @@ public class EditorContractCommunicator : IContractCommunicator
         }
         generatedRound = _maxRound;
 
-
-        Debug.Log("generateElectionArchive maxRound = " + _maxRound);
+        Debug.Log("initElectionArchive maxRound = " + _maxRound);
     }
 
     public void reqRoundCandidateList(int _round)
     {
-        generateElectionArchive(_round);
+        initElectionArchive(_round);
 
         Dictionary<string, object> data = new Dictionary<string, object>();
 
@@ -1017,6 +985,24 @@ public class EditorContractCommunicator : IContractCommunicator
         _data.nftReturned = false;
         _data.registBlock = SystemInfoManager.instance.blockNumber;
 
+        for(int i = 0; i < characterListArchive.Count; i++)
+        {
+            CharacterData characterData = characterListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                characterListArchive.RemoveAt(i);
+                stakingListArchive.Add(characterData);
+
+                StakingData stakingData = new StakingData();
+                stakingData.tokenId = characterData.tokenId;
+                stakingData.startBlock = SystemInfoManager.instance.blockNumber;
+                stakingData.endBlock = 0;
+                stakingData.purpose = StakingManager.PURPOSE_MONARCH;
+                stakingDataArchive.Add(characterData.tokenId, stakingData);
+                break;
+            }
+        }
+
         responceCandidateData(_data);
     }
 
@@ -1027,7 +1013,7 @@ public class EditorContractCommunicator : IContractCommunicator
         for(int i = 0; i < list.Count; i++)
         {
             CandidateData cData = list[i];
-            if (cData.id == _data.id)
+            if (cData.countryId == _data.countryId && cData.id == _data.id)
             {
                 list.RemoveAt(i);
                 break;
@@ -1049,7 +1035,7 @@ public class EditorContractCommunicator : IContractCommunicator
         for (int i = 0; i < list.Count; i++)
         {
             CandidateData cData = list[i];
-            if (cData.id == _data.id)
+            if (cData.countryId == _data.countryId && cData.id == _data.id)
             {
                 cData.canceled = true;
                 cData.nftReturned = true;
@@ -1059,6 +1045,19 @@ public class EditorContractCommunicator : IContractCommunicator
 
         _data.canceled = true;
         _data.nftReturned = true;
+
+        for (int i = 0; i < stakingListArchive.Count; i++)
+        {
+            CharacterData characterData = stakingListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                stakingListArchive.RemoveAt(i);
+                characterListArchive.Add(characterData);
+
+                stakingDataArchive.Remove(characterData.tokenId);
+                break;
+            }
+        }
 
         responceCandidateData(_data);
     }
@@ -1070,7 +1069,7 @@ public class EditorContractCommunicator : IContractCommunicator
         for (int i = 0; i < list.Count; i++)
         {
             CandidateData cData = list[i];
-            if (cData.id == _data.id)
+            if (cData.countryId == _data.countryId && cData.id == _data.id)
             {
                 cData.nftReturned = true;
                 break;
@@ -1078,6 +1077,24 @@ public class EditorContractCommunicator : IContractCommunicator
         }
 
         _data.nftReturned = true;
+
+        for (int i = 0; i < stakingListArchive.Count; i++)
+        {
+            CharacterData characterData = stakingListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                stakingListArchive.RemoveAt(i);
+                characterListArchive.Add(characterData);
+
+                stakingDataArchive.Remove(characterData.tokenId);
+                break;
+            }
+        }
+
+        CastleData castleData = countryDataArchive[_data.countryId].castleData;
+        castleData.formerMonarchList.Add(castleData.monarchId);
+        castleData.monarchId = _data.tokenId;
+        castleData.hasMonarch = true;
 
         responceCandidateData(_data);
     }
@@ -1089,7 +1106,7 @@ public class EditorContractCommunicator : IContractCommunicator
         for (int i = 0; i < list.Count; i++)
         {
             CandidateData cData = list[i];
-            if (cData.id == _data.id)
+            if (cData.countryId == _data.countryId && cData.id == _data.id)
             {
                 cData.nftReturned = true;
                 break;
@@ -1097,6 +1114,19 @@ public class EditorContractCommunicator : IContractCommunicator
         }
 
         _data.nftReturned = true;
+
+        for (int i = 0; i < stakingListArchive.Count; i++)
+        {
+            CharacterData characterData = stakingListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                stakingListArchive.RemoveAt(i);
+                characterListArchive.Add(characterData);
+
+                stakingDataArchive.Remove(characterData.tokenId);
+                break;
+            }
+        }
 
         responceCandidateData(_data);
     }
@@ -1120,5 +1150,54 @@ public class EditorContractCommunicator : IContractCommunicator
 
         var value = JsonConvert.SerializeObject(dic);
         mContractManager.resUpdateCandidateData(value);
+        mContractManager.resAppointmentMonarch(value);
+    }
+
+    public void reqNotVotedCharacterList(int _round, int[] _list)
+    {
+        List<int> notVotedCharacterIdList = new List<int>();
+        foreach(int id in _list)
+        {
+            if (!votingDataListArchive[_round].Contains(id))
+            {
+                notVotedCharacterIdList.Add(id);
+            }
+        }
+
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["characterIdList"] = notVotedCharacterIdList.ToArray();
+        var value = JsonConvert.SerializeObject(dic);
+        ContractManager.instance.resNotVotedCharacterList(value);
+    }
+
+    public void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList)
+    {
+        foreach (int id in _idList)
+        {
+            votingDataListArchive[_round].Add(id);
+        }
+
+        for (int cid = 0; cid < _candidateIds.Length; cid++)
+        {
+            if (_candidateIds[cid] == -1)
+            {
+                continue;
+            }
+
+            foreach(CandidateData candidateData in candidateListArchive[_round])
+            {
+                if (candidateData.countryId == cid && candidateData.id == _candidateIds[cid])
+                {
+                    candidateData.votingCount += _voteCounts[cid];
+                    votingTotalCountListArchive[_round][cid] += _voteCounts[cid];
+                    break;
+                }
+            }
+        }
+
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["characterIdList"] = _idList;
+        var value = JsonConvert.SerializeObject(dic);
+        ContractManager.instance.resVoteMonarchElection(value);
     }
 }

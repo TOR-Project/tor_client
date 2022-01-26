@@ -32,6 +32,12 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
     GameObject noCharacterText;
     [SerializeField]
     Animator characterSelctPopupAnimator;
+
+    [SerializeField]
+    GameObject congratulationPopup;
+    [SerializeField]
+    Text congratulationPopupText;
+
     private string dismissingTrigger = "dismissing";
 
 
@@ -184,10 +190,19 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
         ContractManager.instance.appointmentCandidateData(_data);
     }
 
+    internal void responceAppointmentMonarch(CandidateData _data)
+    {
+        string castleName = string.Format(LanguageManager.instance.getText("ID_COUNTRY_CASTLE"), CountryManager.instance.getCountryName(_data.countryId));
+        string msg = string.Format(LanguageManager.instance.getText("ID_CONGRATULATION_APPOINTMENT"), CountryManager.instance.getCountryName(_data.countryId), _data.round, castleName);
+        congratulationPopupText.text = msg;
+        congratulationPopup.SetActive(true);
+    }
+
     public void updateCandidateData(CandidateData _data)
     { 
         posterController.updatePoster(_data.canceled ? null : _data, PosterController.PosterMode.OFFICE, _data.round, _data.countryId);
     }
+
     private void Update()
     {
         if (string.IsNullOrEmpty(roundDropdown.captionText.text))

@@ -399,4 +399,14 @@ public class WebContractCommunicator : IContractCommunicator
     {
         throw new System.NotImplementedException();
     }
+
+    public void reqNotVotedCharacterList(int _round, int[] _list)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCount, int[] _idList)
+    {
+        throw new System.NotImplementedException();
+    }
 }
