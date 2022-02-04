@@ -94,4 +94,6 @@ public interface IContractCommunicator
     void reqNotVotedCharacterList(int _round, int[] _list);
 
     void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList);
+
+    void reqConstantValues();
 }

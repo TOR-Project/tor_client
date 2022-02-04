@@ -9,7 +9,9 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
 {
     private int selectedRound = 0;
     private int selectedCountryId = -1;
-    private List<CandidateData> roundCandidateList;
+
+    [SerializeField]
+    GlobalUIWindowController globalUIWindowController;
 
     [SerializeField]
     Dropdown roundDropdown;
@@ -139,7 +141,6 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
 
     public void onCandidateListReceived(List<CandidateData> _list)
     {
-        roundCandidateList = _list;
         mapLoading.SetActive(false);
     }
 
@@ -163,10 +164,11 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
     {
         if (_data.id == -1)
         {
-            ContractManager.instance.addCandidateData(_data);
+            string msg = string.Format(LanguageManager.instance.getText("ID_REGIST_CONFIRM_TEXT"), Const.MONARCH_REGIST_FEE);
+            globalUIWindowController.showConfirmPopup(msg, () => ContractManager.instance.addCandidateData(_data));
         } else
         {
-            ContractManager.instance.editCandidateData(_data);
+            globalUIWindowController.showConfirmPopup(LanguageManager.instance.getText("ID_EDIT_CONFIRM_TEXT"), () => ContractManager.instance.editCandidateData(_data));
         }
     }
 
@@ -177,17 +179,17 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
 
     public void cancelCandidateData(CandidateData _data)
     {
-        ContractManager.instance.cancelCandidateData(_data);
+        globalUIWindowController.showConfirmPopup(LanguageManager.instance.getText("ID_CANCEL_CONFIRM_TEXT"), () => ContractManager.instance.cancelCandidateData(_data));
     }
 
     public void returnCandidateData(CandidateData _data)
     {
-        ContractManager.instance.returnCandidateData(_data);
+        globalUIWindowController.showConfirmPopup(LanguageManager.instance.getText("ID_RETURN_CONFIRM_TEXT"), () => ContractManager.instance.returnCandidateData(_data));
     }
 
     public void appointmentCandidateData(CandidateData _data)
     {
-        ContractManager.instance.appointmentCandidateData(_data);
+        globalUIWindowController.showConfirmPopup(LanguageManager.instance.getText("ID_APPOINTMENT_CONFIRM_TEXT"), () => ContractManager.instance.appointmentCandidateData(_data));
     }
 
     internal void responceAppointmentMonarch(CandidateData _data)
@@ -196,6 +198,7 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
         string msg = string.Format(LanguageManager.instance.getText("ID_CONGRATULATION_APPOINTMENT"), CountryManager.instance.getCountryName(_data.countryId), _data.round, castleName);
         congratulationPopupText.text = msg;
         congratulationPopup.SetActive(true);
+        posterController.setParticleEnabled(false);
     }
 
     public void updateCandidateData(CandidateData _data)

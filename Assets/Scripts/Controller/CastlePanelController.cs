@@ -333,7 +333,7 @@ public class CastlePanelController : MonoBehaviour
 
     public void onMiningTaxSettingButtonClicked()
     {
-        inputPopupController.show(LanguageManager.instance.getText("ID_MINING_TAX_POPUP_CONTENTS"), string.Format("{0:0.0000}", CountryManager.instance.getCountryData(countryId).castleData.lastMiningTaxData.tax), TMPro.TMP_InputField.ContentType.DecimalNumber, onMiningTaxSettingConfirmed);
+        inputPopupController.show(string.Format(LanguageManager.instance.getText("ID_MINING_TAX_POPUP_CONTENTS"), Const.MINING_TAX_SETTLING_DELAY) , string.Format("{0:0.0000}", CountryManager.instance.getCountryData(countryId).castleData.lastMiningTaxData.tax), TMPro.TMP_InputField.ContentType.DecimalNumber, onMiningTaxSettingConfirmed);
         if (SystemInfoManager.instance.blockNumber < CountryManager.instance.getCountryData(countryId).castleData.nextTaxSettableBlock)
         {
             inputPopupController.setFeedbackText(string.Format(LanguageManager.instance.getText("ID_MINING_TAX_POPUP_ERROR_TERM"), CountryManager.instance.getCountryData(countryId).castleData.nextTaxSettableBlock));
@@ -417,6 +417,7 @@ public class CastlePanelController : MonoBehaviour
 
         float tax = _tax / 10000f;
         CountryManager.instance.getCountryData(_cid).castleData.lastMiningTaxData.tax = tax;
+        CountryManager.instance.getCountryData(_cid).castleData.nextTaxSettableBlock = SystemInfoManager.instance.blockNumber + Const.MINING_TAX_SETTLING_DELAY;
         miningTaxNumberController.setNumber(tax);
         inputPopupController.dismiss();
 

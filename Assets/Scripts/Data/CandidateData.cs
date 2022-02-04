@@ -10,7 +10,7 @@ public class CandidateData
     public int round;
     public int tokenId;
     public int countryId;
-    public string addr;
+    public string address;
     public string nickname;
     public string title;
     public string contents;
@@ -26,7 +26,7 @@ public class CandidateData
         round = int.Parse(_data["round"].ToString());
         tokenId = int.Parse(_data["tokenId"].ToString());
         countryId = int.Parse(_data["country"].ToString());
-        addr = _data["addr"].ToString();
+        address = _data["address"].ToString();
         nickname = _data["nickname"].ToString();
         title = _data["title"].ToString();
         contents = _data["contents"].ToString();
@@ -35,5 +35,24 @@ public class CandidateData
         votingCount = int.Parse(_data["votingCount"].ToString());
         nftReturned = bool.Parse(_data["nftReturned"].ToString());
         registBlock = long.Parse(_data["registBlock"].ToString());
+    }
+
+    public CandidateData clone()
+    {
+        CandidateData data = new CandidateData();
+        data.id = id;
+        data.round = round;
+        data.tokenId = tokenId;
+        data.countryId = countryId;
+        data.address = address;
+        data.nickname = nickname;
+        data.title = title;
+        data.contents = contents;
+        data.url = url;
+        data.canceled = canceled;
+        data.votingCount = votingCount;
+        data.nftReturned = nftReturned;
+        data.registBlock = registBlock;
+        return data;
     }
 }

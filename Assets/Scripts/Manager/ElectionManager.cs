@@ -166,15 +166,27 @@ public class ElectionManager : MonoBehaviour
 
         for (int i = 0; i < candidateList.Count; i++)
         {
-            if (candidateList[i].countryId == _data.countryId && candidateList[i].id == _data.id)
+            CandidateData cData = candidateList[i];
+            if (cData.countryId == _data.countryId && cData.id == _data.id)
             {
-                candidateList.RemoveAt(i);
+                CharacterData characterData = CharacterManager.instance.getMyCharacterData(cData.tokenId);
+                if (characterData != null)
+                {
+                    characterData.stakingData.purpose = StakingManager.PURPOSE_BREAK;
+                }
+                candidateList.Remove(cData);
                 break;
             }
         }
 
         if (!_data.canceled)
         {
+            CharacterData characterData = CharacterManager.instance.getMyCharacterData(_data.tokenId);
+            if (characterData != null)
+            {
+                characterData.stakingData.purpose = _data.nftReturned ? StakingManager.PURPOSE_BREAK : StakingManager.PURPOSE_MONARCH;
+            }
+
             candidateList.Add(_data);
         }
     }
@@ -232,7 +244,7 @@ public class ElectionManager : MonoBehaviour
     {
         if (candidateDataMap.ContainsKey(_round))
         {
-            return candidateDataMap[_round].Find(data => data.countryId == _cid && data.addr.Equals(UserManager.instance.getWalletAddress()));
+            return candidateDataMap[_round].Find(data => data.countryId == _cid && data.address.ToLower().Equals(UserManager.instance.getWalletAddress().ToLower()));
         }
 
         return null;

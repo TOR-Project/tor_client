@@ -346,6 +346,25 @@ public class ContractManager : MonoBehaviour
         termsController.resCreateUser();
     }
 
+    public void reqConstantValues()
+    {
+        Debug.Log("reqContantValues()");
+        mContractCommunicator.reqConstantValues();
+    }
+
+    public void resConstantValues(string _json)
+    {
+        Debug.Log("resConstantValues() json = " + _json);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        Const.START_BLOCK = long.Parse(values["startBlock"].ToString());
+        Const.ELECTION_START_BLOCK = long.Parse(values["electionStartBlock"].ToString());
+        Const.SUBSCRIBE_FEE = int.Parse(values["subscribeFee"].ToString());
+        Const.MONARCH_REGIST_FEE = int.Parse(values["monarchRegistFee"].ToString());
+        Const.MINING_TAX_SETTLING_DELAY = int.Parse(values["miningTaxSettlingDelay"].ToString());
+        Const.CONSTANT_LOADED = true;
+    }
+
     public void reqCoinAmount()
     {
         Debug.Log("reqCoinAmount()");
@@ -828,6 +847,7 @@ public class ContractManager : MonoBehaviour
         ElectionManager.instance.updateCandidateData(data);
         electionOfficeController.updateCandidateData(data);
 
+        reqCoinAmount();
     }
 
     internal void resAppointmentMonarch(string _json)

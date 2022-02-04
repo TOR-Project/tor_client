@@ -844,7 +844,7 @@ public class EditorContractCommunicator : IContractCommunicator
     private int generatedRound = 0;
     private List<List<CandidateData>> candidateListArchive = new List<List<CandidateData>>();
     private List<List<int>> votingDataListArchive = new List<List<int>>();
-    private List<List<int>> votingTotalCountListArchive = new List<List<int>>();
+    private List<List<int>> totalVotingCountListArchive = new List<List<int>>();
     private void initElectionArchive(int _maxRound)
     {
         if (generatedRound >= _maxRound)
@@ -857,7 +857,7 @@ public class EditorContractCommunicator : IContractCommunicator
         {
             candidateListArchive.Add(new List<CandidateData>());
             votingDataListArchive.Add(new List<int>());
-            votingTotalCountListArchive.Add(new List<int>());
+            totalVotingCountListArchive.Add(new List<int>());
         }
 
         for (int round = generatedRound + 1; round <= _maxRound; round++)
@@ -869,7 +869,7 @@ public class EditorContractCommunicator : IContractCommunicator
             List<int> votingTotalCountList = new List<int>();
             candidateListArchive.Add(candidateList);
             votingDataListArchive.Add(votingDataMap);
-            votingTotalCountListArchive.Add(votingTotalCountList);
+            totalVotingCountListArchive.Add(votingTotalCountList);
 
             for (int cid = 0; cid < CountryManager.COUNTRY_ALL; cid++)
             {
@@ -882,11 +882,11 @@ public class EditorContractCommunicator : IContractCommunicator
                     candidateData.round = round;
                     candidateData.tokenId = UnityEngine.Random.Range(0, 10000);
                     candidateData.countryId = cid;
-                    candidateData.addr = "0x10000000000000000" + round + cid + i;
+                    candidateData.address = "0x10000000000000000" + round + cid + i;
                     candidateData.nickname = "닉네임" + round + cid + i;
                     candidateData.title = "이게 나라냐!! " + round + cid + i;
                     candidateData.contents = "저를 뽑아주세요!! " + +round + cid + i;
-                    candidateData.url = "http://www.naver.com";
+                    candidateData.url = "https://taleofraynornft.com/";
                     candidateData.canceled = UnityEngine.Random.Range(0, 5) == 0;
                     if (!candidateData.canceled)
                     {
@@ -928,7 +928,7 @@ public class EditorContractCommunicator : IContractCommunicator
             dic["round"] = cData.round;
             dic["tokenId"] = cData.tokenId;
             dic["country"] = cData.countryId;
-            dic["addr"] = cData.addr;
+            dic["address"] = cData.address;
             dic["nickname"] = cData.nickname;
             dic["title"] = cData.title;
             dic["contents"] = cData.contents;
@@ -943,7 +943,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         if (pastRound)
         {
-            data["votingCountList"] = votingTotalCountListArchive[_round];
+            data["votingCountList"] = totalVotingCountListArchive[_round];
         } else
         {
             List<int> list = new List<int>();
@@ -981,7 +981,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         _data.canceled = false;
         _data.votingCount = UnityEngine.Random.Range(0, 1000);
-        votingTotalCountListArchive[_data.round][_data.countryId] += _data.votingCount;
+        totalVotingCountListArchive[_data.round][_data.countryId] += _data.votingCount;
         _data.nftReturned = false;
         _data.registBlock = SystemInfoManager.instance.blockNumber;
 
@@ -1096,7 +1096,7 @@ public class EditorContractCommunicator : IContractCommunicator
         castleData.monarchId = _data.tokenId;
         castleData.hasMonarch = true;
 
-        responceCandidateData(_data);
+        responceCandidateData(_data, true);
     }
 
     public void returnCandidateData(CandidateData _data)
@@ -1131,14 +1131,14 @@ public class EditorContractCommunicator : IContractCommunicator
         responceCandidateData(_data);
     }
 
-    private void responceCandidateData(CandidateData _data)
+    private void responceCandidateData(CandidateData _data, bool _isAppointment = false)
     {
         Dictionary<string, object> dic = new Dictionary<string, object>();
         dic["id"] = _data.id;
         dic["round"] = _data.round;
         dic["tokenId"] = _data.tokenId;
         dic["country"] = _data.countryId;
-        dic["addr"] = _data.addr;
+        dic["address"] = _data.address;
         dic["nickname"] = _data.nickname;
         dic["title"] = _data.title;
         dic["contents"] = _data.contents;
@@ -1150,7 +1150,10 @@ public class EditorContractCommunicator : IContractCommunicator
 
         var value = JsonConvert.SerializeObject(dic);
         mContractManager.resUpdateCandidateData(value);
-        mContractManager.resAppointmentMonarch(value);
+        if (_isAppointment)
+        {
+            mContractManager.resAppointmentMonarch(value);
+        }
     }
 
     public void reqNotVotedCharacterList(int _round, int[] _list)
@@ -1189,7 +1192,7 @@ public class EditorContractCommunicator : IContractCommunicator
                 if (candidateData.countryId == cid && candidateData.id == _candidateIds[cid])
                 {
                     candidateData.votingCount += _voteCounts[cid];
-                    votingTotalCountListArchive[_round][cid] += _voteCounts[cid];
+                    totalVotingCountListArchive[_round][cid] += _voteCounts[cid];
                     break;
                 }
             }
@@ -1199,5 +1202,18 @@ public class EditorContractCommunicator : IContractCommunicator
         dic["characterIdList"] = _idList;
         var value = JsonConvert.SerializeObject(dic);
         ContractManager.instance.resVoteMonarchElection(value);
+    }
+
+    public void reqConstantValues()
+    {
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["startBlock"] = Const.START_BLOCK;
+        dic["electionStartBlock"] = Const.ELECTION_START_BLOCK;
+        dic["subscribeFee"] = Const.SUBSCRIBE_FEE;
+        dic["monarchRegistFee"] = Const.MONARCH_REGIST_FEE;
+        dic["miningTaxSettlingDelay"] = Const.MINING_TAX_SETTLING_DELAY;
+
+        var value = JsonConvert.SerializeObject(dic);
+        mContractManager.resConstantValues(value);
     }
 }

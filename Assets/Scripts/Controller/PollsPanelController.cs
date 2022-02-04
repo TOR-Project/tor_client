@@ -79,6 +79,6 @@ public class PollsPanelController : MonoBehaviour
             }
         }
 
-        return -1;
+        return 0;
     }
 }

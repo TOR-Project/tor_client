@@ -5,13 +5,16 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 using TMPro;
-
+using System.Runtime.InteropServices;
 public class PosterController : MonoBehaviour
 {
     public enum PosterMode
     {
         OFFICE, BORDER
     }
+
+    [DllImport("__Internal")]
+    private static extern void OpenTab(string url);
 
     int round = 0;
     int cid = 0;
@@ -151,6 +154,7 @@ public class PosterController : MonoBehaviour
             characterData = CharacterManager.instance.getMyCharacterData(_data.tokenId);
             tokenIdText.text = characterData.name;
             characterImageController.updateCharacterImage(characterData);
+            characterImageController.gameObject.SetActive(true);
         } else
         {
             characterImageController.gameObject.SetActive(false);
@@ -175,7 +179,7 @@ public class PosterController : MonoBehaviour
         contentsText.text = _data.contents;
         urlText.text = _data.url;
 
-        flagImage.sprite = CountryManager.instance.getFlagImage(cid);
+        flagImage.sprite = CountryManager.instance.getSmallFlagImage(cid);
 
         characterSelectPanel.SetActive(false);
         promiseShowingPanel.SetActive(true);
@@ -184,7 +188,7 @@ public class PosterController : MonoBehaviour
         int nowRound = ElectionManager.instance.getElectionRound();
         ElectionState nowState = ElectionManager.instance.getElectionState();
 
-        bool voteFinished = round <= nowRound && _data.votingCount >= 0 && ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId) > 0;
+        bool voteFinished = round <= nowRound;
         bool isWinner = false;
         if (voteFinished)
         {
@@ -199,8 +203,8 @@ public class PosterController : MonoBehaviour
         if (voteInfoPanel.activeSelf)
         {
             resetVotingRate();
-            setVotingRate((float)_data.votingCount / ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId));
-            Debug.Log("updateProgress " + _data.votingCount + " / " + ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId));
+            int totalVotingCount = ElectionManager.instance.getTotalVotingCount(_data.round, _data.countryId);
+            setVotingRate((float)_data.votingCount / (totalVotingCount <= 0 ? 1 : totalVotingCount));
         }
 
         buttonPanel.SetActive(_mode == PosterMode.OFFICE);
@@ -216,8 +220,10 @@ public class PosterController : MonoBehaviour
 
     public void updateEditPanel(CandidateData _data)
     {
+        candidateData = _data;
+
         CharacterData characterData = _data.tokenId == -1 ? null : CharacterManager.instance.getMyCharacterData(_data.tokenId);
-        numText.text = _data.id == -1 ? string.Format(LanguageManager.instance.getText("ID_CANDIDATE_REGIST_TITLE"), CountryManager.instance.getCountryName(_data.countryId), _data.round) : string.Format(LanguageManager.instance.getText("ID_POSTER_NUM_TITLE"), _data.id);
+        numText.text = _data.id == -1 ? string.Format(LanguageManager.instance.getText("ID_CANDIDATE_REGIST_TITLE"), _data.round) : string.Format(LanguageManager.instance.getText("ID_POSTER_NUM_TITLE"), _data.id);
         nicknameText.text = _data.nickname;
         tokenIdText.text = characterData == null ? "" : characterData.name;
 
@@ -234,7 +240,7 @@ public class PosterController : MonoBehaviour
         contentsInputField.text = _data.contents;
         urlInputField.text = _data.url;
 
-        flagImage.sprite = CountryManager.instance.getFlagImage(cid);
+        flagImage.sprite = CountryManager.instance.getSmallFlagImage(cid);
 
         monarchIcon.SetActive(false);
         voteInfoPanel.SetActive(false);
@@ -262,6 +268,7 @@ public class PosterController : MonoBehaviour
             globalUIWindowController.showPopupByTextKey("ID_PLEASE_SELECT_CHARACTER", null);
             return;
         }
+
         if (string.IsNullOrEmpty(titleInputField.text))
         {
             globalUIWindowController.showPopupByTextKey("ID_PLEASE_FILL_TITLE", null);
@@ -273,6 +280,7 @@ public class PosterController : MonoBehaviour
             globalUIWindowController.showPopupByTextKey("ID_PLEASE_FILL_CONTENTS", null);
             return;
         }
+
         candidateData.title = titleInputField.text;
         candidateData.contents = contentsInputField.text;
         candidateData.url = urlInputField.text;
@@ -286,7 +294,7 @@ public class PosterController : MonoBehaviour
 
     public void onEditButtonClicked()
     {
-        updateEditPanel(candidateData);
+        updateEditPanel(candidateData.clone());
         candidatePanel.SetActive(true);
     }
 
@@ -310,7 +318,7 @@ public class PosterController : MonoBehaviour
         candidateData.round = round;
         candidateData.id = -1;
         candidateData.tokenId = -1;
-        candidateData.addr = UserManager.instance.getWalletAddress();
+        candidateData.address = UserManager.instance.getWalletAddress();
         candidateData.nickname = UserManager.instance.getNickname();
         updateEditPanel(candidateData);
 
@@ -337,7 +345,7 @@ public class PosterController : MonoBehaviour
     {
         if (candidateData != null && !string.IsNullOrEmpty(candidateData.url))
         {
-            Application.ExternalEval("window.open(\"" + candidateData.url + "\")");
+            OpenTab(candidateData.url);
         }
     }
 

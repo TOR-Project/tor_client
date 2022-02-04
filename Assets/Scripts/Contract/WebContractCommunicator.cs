@@ -372,41 +372,113 @@ public class WebContractCommunicator : IContractCommunicator
 
     public void reqRoundCandidateList(int _round)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _round;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqRoundCandidateList", values);
     }
 
     public void addCandidateData(CandidateData _data)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _data.round;
+        data["tokenId"] = _data.tokenId;
+        data["country"] = _data.countryId;
+        data["title"] = _data.title;
+        data["contents"] = _data.contents;
+        data["url"] = _data.url;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqAddCandidateData", values);
     }
 
     public void editCandidateData(CandidateData _data)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _data.id;
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+
+        data["tokenId"] = _data.tokenId;
+        data["title"] = _data.title;
+        data["contents"] = _data.contents;
+        data["url"] = _data.url;
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqEditCandidateData", values);
     }
 
     public void cancelCandidateData(CandidateData _data)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _data.id;
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqCancelCandidateData", values);
     }
 
     public void appointmentCandidateData(CandidateData _data)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _data.id;
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqAppointmentCandidateData", values);
     }
 
     public void returnCandidateData(CandidateData _data)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = _data.id;
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqReturnCandidateData", values);
     }
 
     public void reqNotVotedCharacterList(int _round, int[] _list)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _round;
+        data["list"] = _list;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqNotVotedCharacterList", values);
     }
 
     public void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCount, int[] _idList)
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _round;
+        data["candidateIds"] = _candidateIds;
+        data["voteCount"] = _voteCount;
+        data["idList"] = _idList;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqVoteMonarchElection", values);
+    }
+
+    public void reqConstantValues()
+    {
+        Application.ExternalCall("reqConstantValues", "");
     }
 }

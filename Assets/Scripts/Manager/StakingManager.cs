@@ -15,8 +15,10 @@ public class StakingManager : MonoBehaviour
 
 
     static StakingManager mInstance;
-    public static StakingManager instance {
-        get {
+    public static StakingManager instance
+    {
+        get
+        {
             return mInstance;
         }
     }

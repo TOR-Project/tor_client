@@ -48,7 +48,9 @@ public class MapWindowController : MonoBehaviour
         flagContents.text = CountryManager.instance.getCountryExp(_cid);
         flagGameObject.SetActive(true);
         mapButtonText.text = LanguageManager.instance.getText("ID_BACK");
+        flagIcon.sprite = CountryManager.instance.getBigFlagImage(_cid);
     }
+
     public void closeFlag()
     {
         mapButton.interactable = false;

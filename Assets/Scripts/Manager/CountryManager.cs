@@ -35,7 +35,7 @@ public class CountryManager : MonoBehaviour
 
     public const int COUNTRY_DATA_REQUEST_INTERVAL = 180; // 3 min
 
-    private string[] FLAG_IMAGE_URL_LIST = new string[]
+    private string[] CHARACTER_FLAG_IMAGE_URL_LIST = new string[]
     {
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/flag/evegenis.png",
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/flag/enfiliis.png",
@@ -44,15 +44,37 @@ public class CountryManager : MonoBehaviour
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/flag/barbaros.png",
     };
 
+    private string[] BIG_FLAG_IMAGE_URL_LIST = new string[]
+    {
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/flag_0002_A35-4.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/flag_0004_A35-2.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/flag_0000_A35.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/flag_0003_A35-3.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/flag_0001_A35-5.png",
+    };
+
+    private string[] SMALL_FLAG_IMAGE_URL_LIST = new string[]
+    {
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/small_bedge_0001_%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EC%95%84%ED%8A%B8%EC%9B%8C%ED%81%AC-21.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/small_bedge_0004_%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EC%95%84%ED%8A%B8%EC%9B%8C%ED%81%AC-19.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/small_bedge_0002_%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EC%95%84%ED%8A%B8%EC%9B%8C%ED%81%AC-20.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/small_bedge_0000_%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EC%95%84%ED%8A%B8%EC%9B%8C%ED%81%AC-22.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/country_flag/small_bedge_0003_%EC%A0%9C%EB%AA%A9_%EC%97%86%EB%8A%94_%EC%95%84%ED%8A%B8%EC%9B%8C%ED%81%AC-23.png",
+    };
+
     Dictionary<int, CountryData> countryDataMap = new Dictionary<int, CountryData>();
     Dictionary<int, List<Func<CountryData, bool>>> countryDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
     Dictionary<int, List<Func<CountryData, bool>>> logDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
 
-    Dictionary<int, Sprite> flagSpriteMap = new Dictionary<int, Sprite>();
+    Dictionary<int, Sprite> characterFlagSpriteMap = new Dictionary<int, Sprite>();
+    Dictionary<int, Sprite> bigFlagSpriteMap = new Dictionary<int, Sprite>();
+    Dictionary<int, Sprite> smallFlagSpriteMap = new Dictionary<int, Sprite>();
 
     static CountryManager mInstance;
-    public static CountryManager instance {
-        get {
+    public static CountryManager instance
+    {
+        get
+        {
             return mInstance;
         }
     }
@@ -61,11 +83,11 @@ public class CountryManager : MonoBehaviour
     {
         mInstance = this;
     }
-    
+
     public string getCountryName(int _cid)
     {
         string key = "";
-        switch(_cid)
+        switch (_cid)
         {
             case COUNTRY_EVEGENIS:
                 key = "ID_EVEGENIS";
@@ -133,19 +155,32 @@ public class CountryManager : MonoBehaviour
 
     public void startFlagImageLoading()
     {
-        for (int i = 0; i < FLAG_IMAGE_URL_LIST.Length; i++)
+        for (int i = 0; i < COUNTRY_MAX; i++)
         {
-            if (FLAG_IMAGE_URL_LIST[i] == "")
-            {
-                continue;
-            }
-
             int key = i;
-            AssetsLoadManager.instance.requestSprite(FLAG_IMAGE_URL_LIST[key], (_sprite) =>
+            AssetsLoadManager.instance.requestSprite(CHARACTER_FLAG_IMAGE_URL_LIST[key], (_sprite) =>
             {
-                if (!flagSpriteMap.ContainsKey(key))
+                if (!characterFlagSpriteMap.ContainsKey(key))
                 {
-                    flagSpriteMap.Add(key, _sprite);
+                    characterFlagSpriteMap.Add(key, _sprite);
+                }
+                return true;
+            }, null);
+
+            AssetsLoadManager.instance.requestSprite(BIG_FLAG_IMAGE_URL_LIST[key], (_sprite) =>
+            {
+                if (!bigFlagSpriteMap.ContainsKey(key))
+                {
+                    bigFlagSpriteMap.Add(key, _sprite);
+                }
+                return true;
+            }, null);
+
+            AssetsLoadManager.instance.requestSprite(SMALL_FLAG_IMAGE_URL_LIST[key], (_sprite) =>
+            {
+                if (!smallFlagSpriteMap.ContainsKey(key))
+                {
+                    smallFlagSpriteMap.Add(key, _sprite);
                 }
                 return true;
             }, null);
@@ -154,17 +189,24 @@ public class CountryManager : MonoBehaviour
 
     public bool isFlagImageLoaded()
     {
-        return flagSpriteMap.Count >= COUNTRY_MAX;
+        return characterFlagSpriteMap.Count >= COUNTRY_MAX
+            && bigFlagSpriteMap.Count >= COUNTRY_MAX
+            && smallFlagSpriteMap.Count >= COUNTRY_MAX;
     }
 
-    public Sprite getCharacterSideFlagImage(int _cid)
+    public Sprite getCharacterFlagImage(int _cid)
     {
-        return flagSpriteMap[_cid];
+        return characterFlagSpriteMap[_cid];
     }
 
-    public Sprite getFlagImage(int _cid)
+    public Sprite getBigFlagImage(int _cid)
     {
-        return null;
+        return bigFlagSpriteMap[_cid];
+    }
+
+    public Sprite getSmallFlagImage(int _cid)
+    {
+        return smallFlagSpriteMap[_cid];
     }
 
     public bool isMonarcOfCountry(int _cid)
@@ -191,7 +233,7 @@ public class CountryManager : MonoBehaviour
         }
 
         if (countryDataMap[_cid].lastUpdatedBlock + COUNTRY_DATA_REQUEST_INTERVAL < SystemInfoManager.instance.blockNumber)
-        { 
+        {
 
             if (!countryDataCallbackPendingMap.ContainsKey(_cid))
             {
@@ -200,7 +242,8 @@ public class CountryManager : MonoBehaviour
 
             countryDataCallbackPendingMap[_cid].Add(_callback);
             ContractManager.instance.reqCountryData(_cid);
-        } else
+        }
+        else
         {
             _callback(countryDataMap[_cid]);
         }

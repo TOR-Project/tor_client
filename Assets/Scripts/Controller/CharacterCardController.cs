@@ -151,7 +151,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
             loadingObject.SetActive(false);
             return true;
         }, null);
-        flagImage.sprite = CountryManager.instance.getCharacterSideFlagImage(characterData.country);
+        flagImage.sprite = CountryManager.instance.getCharacterFlagImage(characterData.country);
         avatarImage.sprite = CharacterManager.instance.getAvatarImage(characterData.job);
         flagImage.enabled = true;
         avatarImage.enabled = true;

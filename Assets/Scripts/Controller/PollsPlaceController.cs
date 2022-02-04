@@ -140,9 +140,9 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
         {
             int selectedId = pollsPanelControllerArr[cid].getSelectedId();
             candidateIds[cid] = selectedId;
-            voteCounts[cid] = selectedId < 0 ? 0 : votingCount[cid];
+            voteCounts[cid] = selectedId <= 0 ? 0 : votingCount[cid];
 
-            if (selectedId >= 0)
+            if (selectedId > 0)
             {
                 foreach (CharacterData data in CharacterManager.instance.getMyCharacterList())
                 {
