@@ -481,4 +481,60 @@ public class WebContractCommunicator : IContractCommunicator
     {
         Application.ExternalCall("reqConstantValues", "");
     }
+
+    public void reqAgendaListCount()
+    {
+        Application.ExternalCall("reqAgendaListCount", "");
+    }
+
+    public void reqAgendaList(int[] _myCharacterTokenIdList)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["idList"] = _myCharacterTokenIdList;
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqAgendaListCount", values);
+    }
+
+    public void reqOfferAgenda(AgendaData _agendaData)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["agenda"] = _agendaData.generateData();
+
+        var values = JsonConvert.SerializeObject(data); 
+        Application.ExternalCall("reqOfferAgenda", values);
+    }
+
+    public void reqCancelAgenda(AgendaData _agendaData)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["agenda"] = _agendaData.generateData();
+
+        var values = JsonConvert.SerializeObject(data); 
+        Application.ExternalCall("reqCancelAgenda", values);
+    }
+
+    public void reqReturnCharacterFromAgenda(AgendaData _agendaData)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["agenda"] = _agendaData.generateData();
+
+        var values = JsonConvert.SerializeObject(data); 
+        Application.ExternalCall("reqReturnCharacterFromAgenda", values);
+    }
+
+    public void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["selectedIdx"] = _selectedIdx;
+        data["agenda"] = _agendaData.generateData();
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqVoteAgenda", values);
+    }
 }

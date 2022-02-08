@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class UserManager : MonoBehaviour
     bool nftUsing = false;
     [SerializeField]
     bool needMigration = false;
+    [SerializeField]
+    bool isAdmin = false;
     [SerializeField]
     BigInteger coinAmount = BigInteger.Zero;
     [SerializeField]
@@ -52,7 +55,12 @@ public class UserManager : MonoBehaviour
         return walletAddress;
     }
 
-    public void setUserData(string _nickName, int _termsVer, string[] _friends, bool _tokenUsing, bool _nftUsing, bool _needMigration)
+    public bool isMyAddress(string _addr)
+    {
+        return string.Equals(walletAddress.ToLower(), _addr.ToLower());
+    }
+
+    public void setUserData(string _nickName, int _termsVer, string[] _friends, bool _tokenUsing, bool _nftUsing, bool _needMigration, bool _isAdmin)
     {
         nickname = _nickName;
         termsVersion = _termsVer;
@@ -65,6 +73,7 @@ public class UserManager : MonoBehaviour
         tokenUsing = _tokenUsing;
         nftUsing = _nftUsing;
         needMigration = _needMigration;
+        isAdmin = _isAdmin;
 
         notifyNicknameChanged();
     }
@@ -216,5 +225,10 @@ public class UserManager : MonoBehaviour
     public void removeObserver(UserInfoObserever ob)
     {
         observerList.Remove(ob);
+    }
+
+    public bool isAdminAccount()
+    {
+        return isAdmin;
     }
 }

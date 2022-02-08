@@ -96,4 +96,16 @@ public interface IContractCommunicator
     void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList);
 
     void reqConstantValues();
+
+    void reqAgendaListCount();
+
+    void reqAgendaList(int[] _myCharacterTokenIdList);
+
+    void reqOfferAgenda(AgendaData _agendaData);
+
+    void reqCancelAgenda(AgendaData _agendaData);
+
+    void reqReturnCharacterFromAgenda(AgendaData _agendaData);
+
+    void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData);
 }

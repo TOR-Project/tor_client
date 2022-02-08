@@ -18,7 +18,8 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         STATE_PUB,
         STATE_WAITING_ROOM,
         STATE_WORKING_PLACE,
-        STATE_ELECTION
+        STATE_ELECTION,
+        STATE_GOVERNANCE
     }
 
     [SerializeField]

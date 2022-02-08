@@ -244,7 +244,7 @@ public class ElectionManager : MonoBehaviour
     {
         if (candidateDataMap.ContainsKey(_round))
         {
-            return candidateDataMap[_round].Find(data => data.countryId == _cid && data.address.ToLower().Equals(UserManager.instance.getWalletAddress().ToLower()));
+            return candidateDataMap[_round].Find(data => data.countryId == _cid && UserManager.instance.isMyAddress(data.address));
         }
 
         return null;

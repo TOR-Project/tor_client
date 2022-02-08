@@ -30,6 +30,8 @@ public class ContractManager : MonoBehaviour
     ElectionOfficeWindowController electionOfficeController;
     [SerializeField]
     PollsPlaceController pollsPlaceController;
+    [SerializeField]
+    GovernanaceWindowController governanaceWindowController;
 
     [SerializeField]
     GlobalUIWindowController globalUIController;
@@ -218,6 +220,7 @@ public class ContractManager : MonoBehaviour
         {
             bool hasUserData = bool.Parse(values["hasUserData"].ToString());
             bool hasUserDataLegacy = bool.Parse(values["hasUserDataLegacy"].ToString());
+            bool isAdmin = bool.Parse(values["isAdmin"].ToString());
             bool latestTerms = false;
             bool tokenUsing = bool.Parse(values["tokenUsing"].ToString());
             bool nftUsing = bool.Parse(values["nftUsing"].ToString());
@@ -230,7 +233,7 @@ public class ContractManager : MonoBehaviour
                 latestTerms = termsVersion >= Const.TERMS_VERSION;
                 string[] friends = JsonConvert.DeserializeObject<string[]>(values["friends"].ToString());
 
-                UserManager.instance.setUserData(nickName, termsVersion, friends, tokenUsing, nftUsing, false);
+                UserManager.instance.setUserData(nickName, termsVersion, friends, tokenUsing, nftUsing, false, isAdmin);
             } else
             {
                 string nickName = "";
@@ -241,7 +244,7 @@ public class ContractManager : MonoBehaviour
                     nickName = values["nickNameLegacy"].ToString();
                     termsVersion = int.Parse(values["termsVersionLegacy"].ToString());
                 }
-                UserManager.instance.setUserData(nickName, termsVersion, new string[] { }, tokenUsing, nftUsing, needMigration);
+                UserManager.instance.setUserData(nickName, termsVersion, new string[] { }, tokenUsing, nftUsing, needMigration, isAdmin);
             }
 
             loginController.enterNextPage(hasUserData, latestTerms, tokenUsing, nftUsing, needMigration);
@@ -416,6 +419,7 @@ public class ContractManager : MonoBehaviour
         int[] stakingCharacterIdList = JsonConvert.DeserializeObject<int[]>(values["stakingCharacterIdList"].ToString());
         CharacterManager.instance.setCharacterIdList(characterIdList, stakingCharacterIdList);
     }
+
 
     public void reqNotInitCharacterList()
     {
@@ -886,4 +890,76 @@ public class ContractManager : MonoBehaviour
 
         pollsPlaceController.responceVoteCompleted(list);
     }
+
+    internal void reqAgendaListCount()
+    {
+        Debug.Log("reqAgendaListCount()");
+        mContractCommunicator.reqAgendaListCount();
+    }
+
+    internal void resAgendaListCount(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int count = int.Parse(values["count"].ToString());
+        GovernanceManager.instance.responseAgendaCount(count);
+    }
+
+    internal void reqAgendaList()
+    {
+        Debug.Log("reqAgendaList()");
+        int[] myCharacterTokenIdList = CharacterManager.instance.getMyCharacterList().ConvertAll(cd => cd.tokenId).ToArray();
+        mContractCommunicator.reqAgendaList(myCharacterTokenIdList);
+    }
+
+    internal void resAgendaList(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_json);
+        GovernanceManager.instance.responseAgendaList(values);
+    }
+
+    internal void reqOfferAgenda(AgendaData _agendaData)
+    {
+        Debug.Log("reqOfferAgenda()");
+        mContractCommunicator.reqOfferAgenda(_agendaData);
+    }
+
+    internal void resOfferAgenda(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        AgendaData agendaData = new AgendaData();
+        agendaData.parseData(values);
+
+        GovernanceManager.instance.updateAgendaData(agendaData);
+        governanaceWindowController.responseOfferAgenda(agendaData);
+    }
+
+    internal void reqCancelAgenda(AgendaData _agendaData)
+    {
+        Debug.Log("reqCancelAgenda()");
+        mContractCommunicator.reqCancelAgenda(_agendaData);
+    }
+
+    internal void reqReturnCharacterFromAgenda(AgendaData _agendaData)
+    {
+        Debug.Log("reqReturnCharacterFromAgenda()");
+        mContractCommunicator.reqReturnCharacterFromAgenda(_agendaData);
+    }
+
+    internal void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData)
+    {
+        Debug.Log("reqVoteAgenda()");
+        mContractCommunicator.reqVoteAgenda(_selectedIdx, _agendaData);
+    }
+
+    internal void resUpdateAgendaData(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        AgendaData agendaData = new AgendaData();
+        agendaData.parseData(values);
+
+        GovernanceManager.instance.updateAgendaData(agendaData);
+    }
+
 }

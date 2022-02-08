@@ -38,7 +38,7 @@ public class ImageLoadingComponent : LoadingComponent
         }
 
         Image image = GetComponent<Image>();
-        if (image.overrideSprite != sprite)
+        if (image != null && image.overrideSprite != sprite)
         {
             image.sprite = sprite;
             Debug.Log("image updated : " + url);

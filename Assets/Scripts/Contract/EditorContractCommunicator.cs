@@ -78,6 +78,10 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqLatestNotice()
     {
+        initCharacterArchive();
+        initCountryArchive();
+        initGovernanceArchive();
+
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["title"] = "Welcome";
         data["date"] = 0;
@@ -95,6 +99,7 @@ public class EditorContractCommunicator : IContractCommunicator
         bool hasUserData = true;
         bool tokenUsing = true;
         bool nftUsing = true;
+        bool isAdmin = false;
 
         Dictionary<string, object> data = new Dictionary<string, object>();
 
@@ -128,6 +133,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["hasUserData"] = hasUserData;
         data["tokenUsing"] = tokenUsing;
         data["nftUsing"] = nftUsing;
+        data["isAdmin"] = isAdmin;
 
         data["err"] = errCode;
         var values = JsonConvert.SerializeObject(data);
@@ -280,8 +286,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqCharacterCount()
     {
-        initCharacterArchive();
-
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["characterCount"] = characterListArchive.Count;
         data["stakingCharacterCount"] = stakingListArchive.Count;
@@ -314,8 +318,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqNotInitCharacterList()
     {
-        initCharacterArchive();
-
         int[] characterList = new int[newCharacterListArchive.Count];
         for (int i = 0; i < characterList.Length; i++)
         {
@@ -666,8 +668,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqCountryData(int _cid)
     {
-        initCountryArchive();
-
         Dictionary<string, object> data = new Dictionary<string, object>();
 
         data["id"] = _cid;
@@ -1215,5 +1215,288 @@ public class EditorContractCommunicator : IContractCommunicator
 
         var value = JsonConvert.SerializeObject(dic);
         mContractManager.resConstantValues(value);
+    }
+
+    private List<AgendaData> agendaListArchive = new List<AgendaData>();
+    private Dictionary<int, List<int>> agendaVotedTokenListMap = new Dictionary<int, List<int>>();
+
+    private void initGovernanceArchive()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            AgendaData agendaData = new AgendaData();
+            agendaData.id = i;
+            agendaData.address = "0x1234567890";
+            agendaData.nickname = i % 2 == 0 ? "Crow" : Const.ADMIN_REP_NICKNAME;
+            agendaData.category = 0;
+            agendaData.items = new List<string> { "아이템1", "아이템2", "아이템3", "아이템4", "아이템5" };
+            agendaData.title = "안건" + i;
+            agendaData.summary = "";
+            agendaData.contents = "내용" + i;
+            agendaData.blind = UnityEngine.Random.Range(0, 2) == 0;
+            agendaData.startBlock = blockNumber + UnityEngine.Random.Range(-10000, 0);
+            agendaData.endBlock = agendaData.startBlock + UnityEngine.Random.Range(1, 20000);
+            agendaData.votingData = agendaData.endBlock <= SystemInfoManager.instance.blockNumber || !agendaData.blind ? new int[] { UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000) } : new int[] { 0, 0, 0, 0, 0 };
+            agendaData.canceled = i % 3 == 0;
+
+            List<int> votedIdList = new List<int>();
+            agendaVotedTokenListMap.Add(agendaData.id, votedIdList);
+            for (int r = 0; r < 2000; r++)
+            {
+                int tokenId = UnityEngine.Random.Range(0, 10000);
+                if (!votedIdList.Contains(tokenId))
+                {
+                    votedIdList.Add(tokenId);
+                }
+            }
+
+            agendaListArchive.Add(agendaData);
+        }
+    }
+
+    public void reqAgendaListCount()
+    {
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["count"] = agendaListArchive.Count;
+
+        var value = JsonConvert.SerializeObject(dic);
+        mContractManager.resAgendaListCount(value);
+    }
+
+    public void reqAgendaList(int[] _myCharacterTokenIdList)
+    {
+        List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+
+        foreach (AgendaData agendaData in agendaListArchive)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+
+            data["id"] = agendaData.id;
+            data["address"] = agendaData.address;
+            data["proposalTokenIdList"] = new int[] { };
+            data["nickname"] = agendaData.nickname;
+            data["category"] = agendaData.category;
+            data["title"] = agendaData.title;
+            data["summary"] = agendaData.summary;
+            data["contents"] = agendaData.contents;
+            data["items"] = agendaData.items.ToArray();
+            data["votingData"] = agendaData.votingData;
+            data["startBlock"] = agendaData.startBlock;
+            data["endBlock"] = agendaData.endBlock;
+            data["periodBlock"] = agendaData.periodBlock;
+            data["blind"] = agendaData.blind;
+            data["canceled"] = agendaData.canceled;
+            data["nftReturned"] = agendaData.nftReturned;
+
+            List<int> votedTokenIdList = agendaVotedTokenListMap[agendaData.id];
+            List<int> notVotedTokenIdList = new List<int>();
+            for (int i = 0; i < _myCharacterTokenIdList.Length; i++)
+            {
+                if (!votedTokenIdList.Contains(_myCharacterTokenIdList[i]))
+                {
+                    notVotedTokenIdList.Add(_myCharacterTokenIdList[i]);
+                }
+            }
+
+            data["notVotedIdList"] = notVotedTokenIdList.ToArray();
+
+            list.Add(data);
+        }
+
+        var value = JsonConvert.SerializeObject(list);
+        mContractManager.resAgendaList(value);
+    }
+
+    public void reqOfferAgenda(AgendaData _agendaData)
+    {
+        int lastId = 0;
+        foreach(AgendaData ad in agendaListArchive)
+        {
+            if (ad.id > lastId)
+            {
+                lastId = ad.id;
+            }
+        }
+
+        _agendaData.id = lastId + 1;
+        _agendaData.startBlock = SystemInfoManager.instance.blockNumber;
+        _agendaData.endBlock = SystemInfoManager.instance.blockNumber + _agendaData.periodBlock;
+        _agendaData.votingData = new int[_agendaData.items.Count];
+        _agendaData.canceled = false;
+        _agendaData.nftReturned = false;
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["id"] = _agendaData.id;
+        data["address"] = _agendaData.address;
+        data["proposalTokenIdList"] = _agendaData.proposalTokenIdList.ToArray();
+        data["nickname"] = _agendaData.nickname;
+        data["category"] = _agendaData.category;
+        data["title"] = _agendaData.title;
+        data["summary"] = _agendaData.summary;
+        data["contents"] = _agendaData.contents;
+        data["items"] = _agendaData.items.ToArray();
+        data["votingData"] = _agendaData.votingData;
+        data["startBlock"] = _agendaData.startBlock;
+        data["endBlock"] = _agendaData.endBlock;
+        data["periodBlock"] = _agendaData.periodBlock;
+        data["blind"] = _agendaData.blind;
+        data["canceled"] = _agendaData.canceled;
+        data["nftReturned"] = _agendaData.nftReturned;
+        data["notVotedIdList"] = _agendaData.notVotedIdList;
+
+        agendaVotedTokenListMap.Add(lastId + 1, new List<int> {});
+        agendaListArchive.Add(_agendaData);
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resOfferAgenda(value);
+
+        for (int i = 0; i < _agendaData.proposalTokenIdList.Count; i++)
+        {
+            int tokenId = _agendaData.proposalTokenIdList[i];
+            foreach(CharacterData cd in characterListArchive)
+            {
+                if (cd.tokenId == tokenId)
+                {
+                    characterListArchive.Remove(cd);
+                    stakingListArchive.Add(cd);
+
+                    StakingData sd = new StakingData();
+                    sd.tokenId = tokenId;
+                    sd.purpose = StakingManager.PURPOSE_GOVERNANCE;
+                    sd.startBlock = SystemInfoManager.instance.blockNumber;
+                    sd.endBlock = 0;
+                    stakingDataArchive.Add(tokenId, sd);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    public void reqCancelAgenda(AgendaData _agendaData)
+    {
+        AgendaData agendaData = null;
+        foreach (AgendaData ad in agendaListArchive)
+        {
+            if (ad.id == _agendaData.id)
+            {
+                agendaData = ad;
+                break;
+            }
+        }
+
+        if (agendaData == null)
+        {
+            return;
+        }
+
+        agendaData.votingData = new int[agendaData.items.Count];
+        agendaData.canceled = true;
+        agendaData.nftReturned = true;
+        agendaData.notVotedIdList = new int[] { };
+
+        responceAgendaData(agendaData);
+
+        for (int i = 0; i < _agendaData.proposalTokenIdList.Count; i++)
+        {
+            int tokenId = _agendaData.proposalTokenIdList[i];
+            foreach (CharacterData cd in stakingListArchive)
+            {
+                if (cd.tokenId == tokenId)
+                {
+                    stakingListArchive.Remove(cd);
+                    characterListArchive.Add(cd);
+                    stakingDataArchive.Remove(tokenId);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void reqReturnCharacterFromAgenda(AgendaData _agendaData)
+    {
+        AgendaData agendaData = null;
+        foreach (AgendaData ad in agendaListArchive)
+        {
+            if (ad.id == _agendaData.id)
+            {
+                agendaData = ad;
+                break;
+            }
+        }
+
+        if (agendaData == null)
+        {
+            return;
+        }
+
+        agendaData.nftReturned = true;
+        responceAgendaData(agendaData);
+
+        for (int i = 0; i < _agendaData.proposalTokenIdList.Count; i++)
+        {
+            int tokenId = _agendaData.proposalTokenIdList[i];
+            foreach (CharacterData cd in stakingListArchive)
+            {
+                if (cd.tokenId == tokenId)
+                {
+                    stakingListArchive.Remove(cd);
+                    characterListArchive.Add(cd);
+                    stakingDataArchive.Remove(tokenId);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData)
+    {
+        AgendaData agendaData = null;
+        foreach (AgendaData ad in agendaListArchive)
+        {
+            if (ad.id == _agendaData.id)
+            {
+                agendaData = ad;
+                break;
+            }
+        }
+
+        if (agendaData == null)
+        {
+            return;
+        }
+
+        agendaData.votingData[_selectedIdx] += _agendaData.notVotedIdList.Length;
+        agendaData.notVotedIdList = new int[] { };
+        agendaVotedTokenListMap[agendaData.id].AddRange(_agendaData.notVotedIdList);
+
+        responceAgendaData(agendaData);
+    }
+
+    private void responceAgendaData(AgendaData agendaData)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["id"] = agendaData.id;
+        data["address"] = agendaData.address;
+        data["proposalTokenIdList"] = agendaData.proposalTokenIdList.ToArray();
+        data["nickname"] = agendaData.nickname;
+        data["category"] = agendaData.category;
+        data["title"] = agendaData.title;
+        data["summary"] = agendaData.summary;
+        data["contents"] = agendaData.contents;
+        data["items"] = agendaData.items.ToArray();
+        data["votingData"] = agendaData.votingData;
+        data["startBlock"] = agendaData.startBlock;
+        data["endBlock"] = agendaData.endBlock;
+        data["periodBlock"] = agendaData.periodBlock;
+        data["blind"] = agendaData.blind;
+        data["canceled"] = agendaData.canceled;
+        data["nftReturned"] = agendaData.nftReturned;
+        data["notVotedIdList"] = agendaData.notVotedIdList;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resUpdateAgendaData(value);
     }
 }

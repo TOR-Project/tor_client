@@ -8,6 +8,12 @@ using System.Numerics;
 
 public class NovelTitleRowController : MonoBehaviour
 {
+    public static Color NORMAL_COLOR = new Color(255, 255, 255);
+    public static Color PRESSED_COLOR = new Color(100, 100, 100);
+    public static Color SELECTED_COLOR = new Color(200, 200, 0);
+    public static Color SUBSCRIVED_COLOR = new Color(0, 200, 0);
+    public static Color PAID_COLOR = new Color(200, 200, 0);
+
     [SerializeField]
     Text titleText;
     [SerializeField]
@@ -25,19 +31,19 @@ public class NovelTitleRowController : MonoBehaviour
         if (_nd.freeBlock == 0) // free
         {
             stateText.text = "";
-            stateTextColor = new Color32(0, 200, 0, 255);
+            stateTextColor = SUBSCRIVED_COLOR;
         }
         else // paid
         {
             if (_nd.isSubscribed)
             {
                 stateText.text = LanguageManager.instance.getText("ID_NOVEL_STATE_SUBSCRRIBE");
-                stateTextColor = new Color32(0, 200, 0, 255);
+                stateTextColor = SUBSCRIVED_COLOR;
             }
             else
             {
                 stateText.text = LanguageManager.instance.getText("ID_NOVEL_STATE_PAID");
-                stateTextColor = new Color32(200, 200, 0, 255);
+                stateTextColor = PAID_COLOR;
             }
         }
         stateText.color = stateTextColor;
@@ -56,7 +62,7 @@ public class NovelTitleRowController : MonoBehaviour
     public void setSelect(bool _set)
     {
         selected = _set;
-        titleText.color = _set ? new Color32(200, 200, 0, 255) : new Color32(255, 255, 255, 255);
+        titleText.color = _set ? SELECTED_COLOR : NORMAL_COLOR;
     }
 
     public void onClickItem()
@@ -74,8 +80,8 @@ public class NovelTitleRowController : MonoBehaviour
         {
             return;
         }
-        titleText.color = new Color32(100, 100, 100, 255);
-        stateText.color = new Color32(100, 100, 100, 255);
+        titleText.color = PRESSED_COLOR;
+        stateText.color = PRESSED_COLOR;
     }
 
     public void onEventUp()
@@ -84,7 +90,7 @@ public class NovelTitleRowController : MonoBehaviour
         {
             return;
         }
-        titleText.color = new Color32(255, 255, 255, 255);
+        titleText.color = NORMAL_COLOR;
         stateText.color = stateTextColor;
     }
 }

@@ -149,9 +149,14 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
         posterController.setParticleEnabled(false);
         characterGridController.updateCharacterData(data => data.stakingData.purpose == StakingManager.PURPOSE_BREAK && data.country == _data.countryId);
         noCharacterText.SetActive(characterGridController.isCharacterEmpty());
+        characterGridController.setOnButtonClickedCallback(list =>
+        {
+            characterSelctPopupAnimator.SetTrigger(dismissingTrigger);
+            return true;
+        });
         characterGridController.setCharacterSelectCallback(data =>
         {
-            _data.tokenId = data.getCharacterData().tokenId;
+            _data.tokenId = data.tokenId;
             posterController.updateEditPanel(_data);
             characterSelctPopupAnimator.SetTrigger(dismissingTrigger);
             posterController.setParticleEnabled(true);

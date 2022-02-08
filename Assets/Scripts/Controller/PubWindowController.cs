@@ -75,34 +75,33 @@ public class PubWindowController : MonoBehaviour
         }
     }
 
-    private bool updateInfoPanel(CharacterCardController _cardController)
+    private bool updateInfoPanel(CharacterData _data)
     {
-        if (_cardController == null || _cardController.getCharacterData() == null)
+        if (_data == null)
         {
             infoPanel.SetActive(false);
             return false;
         }
         infoPanel.SetActive(true);
 
-        CharacterData data = _cardController.getCharacterData();
-        characterImageController.updateCharacterImage(data);
+        characterImageController.updateCharacterImage(_data);
 
-        nameText.text = data.name;
-        regionText.text = CountryManager.instance.getCountryName(data.country);
-        raceText.text = CharacterManager.instance.getRaceText(data.race);
-        classText.text = CharacterManager.instance.getJobText(data.job);
-        levelValueText.text = data.level.ToString();
-        attValueText.text = data.statusData.att.ToString();
-        defValueText.text = data.statusData.def.ToString();
+        nameText.text = _data.name;
+        regionText.text = CountryManager.instance.getCountryName(_data.country);
+        raceText.text = CharacterManager.instance.getRaceText(_data.race);
+        classText.text = CharacterManager.instance.getJobText(_data.job);
+        levelValueText.text = _data.level.ToString();
+        attValueText.text = _data.statusData.att.ToString();
+        defValueText.text = _data.statusData.def.ToString();
 
         EquipItemData[] equipItemDataList = new EquipItemData[]
         {
-            ItemManager.instance.getEquipItem(data.equipData.head),
-            ItemManager.instance.getEquipItem(data.equipData.weapon),
-            ItemManager.instance.getEquipItem(data.equipData.accessory),
-            ItemManager.instance.getEquipItem(data.equipData.armor),
-            ItemManager.instance.getEquipItem(data.equipData.pants),
-            ItemManager.instance.getEquipItem(data.equipData.shoes),
+            ItemManager.instance.getEquipItem(_data.equipData.head),
+            ItemManager.instance.getEquipItem(_data.equipData.weapon),
+            ItemManager.instance.getEquipItem(_data.equipData.accessory),
+            ItemManager.instance.getEquipItem(_data.equipData.armor),
+            ItemManager.instance.getEquipItem(_data.equipData.pants),
+            ItemManager.instance.getEquipItem(_data.equipData.shoes),
         };
 
         int attBoost = 0;

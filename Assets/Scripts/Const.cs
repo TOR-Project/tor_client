@@ -16,15 +16,19 @@ public class Const
 
     public const int TERMS_VERSION = 1;
 
-    public static long START_BLOCK = 78773461; // depolyed block of TorWorld - 101년 : 81365461
     public const long ONE_YEAR = 2592000; // 30 * 24 * 86400
     public const long QUARTER = ONE_YEAR / 4;
-    public static long ELECTION_START_BLOCK = START_BLOCK + ONE_YEAR; // 0대 임기 시작 년도 봄
-
     public const string TOR_COIN = "TRT";
+    public const string ADMIN_REP_NICKNAME = "Tale of Raynor";
+
+    public static long START_BLOCK = 78773461; // depolyed block of TorWorld - 101년 : 81365461
+    public static long ELECTION_START_BLOCK = START_BLOCK + ONE_YEAR; // 0대 임기 시작 년도 봄
     public static int SUBSCRIBE_FEE = 2;
     public static int MONARCH_REGIST_FEE = 300;
     public static int MINING_TAX_SETTLING_DELAY = 259200;
+    public static int GOVERNANCE_CHARACTER_COUNT = 25;
+    public static int GOVERNANCE_MIN_PROPOSER_PERIOD = 86400;
+    public static int GOVERNANCE_MAX_PROPOSER_PERIOD = 86400 * 30;
 
     public static bool CONSTANT_LOADED = false;
 }

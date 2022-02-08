@@ -12,6 +12,10 @@ public class CharacterGridController : MonoBehaviour
     [SerializeField]
     bool setDefaultSelect = false;
     [SerializeField]
+    int maxSelectedCount = 1;
+    [SerializeField]
+    Text countText;
+    [SerializeField]
     GameObject characterCardPrefab;
     [SerializeField]
     GameObject gridPanel;
@@ -28,7 +32,7 @@ public class CharacterGridController : MonoBehaviour
     [SerializeField]
     CharacterCardController.CharacterCardState state;
 
-    CharacterCardController selectedCharacterController = null;
+    List<CharacterData> selectedCharacterDataList = new List<CharacterData>();
 
     List<CharacterData> filteredCharacterDataList = new List<CharacterData>();
     List<CharacterCardController> characterCardControllerList = new List<CharacterCardController>();
@@ -39,7 +43,8 @@ public class CharacterGridController : MonoBehaviour
     float contentsViewHeight = 0;
     Predicate<CharacterData> lastAppliedFilter = null;
 
-    Func<CharacterCardController, bool> characterSelectCallbck = null;
+    Func<List<CharacterData>, bool> onButtonClickedCallback = null;
+    Func<CharacterData, bool> characterSelectCallbck = null;
 
     private void updateAllLayout()
     {
@@ -133,12 +138,9 @@ public class CharacterGridController : MonoBehaviour
             CharacterCardController controller = characterCardControllerList[i];
             controller.setSelected(false);
         }
-        if (selectedCharacterController != null)
-        {
-            selectedCharacterController.setSelected(false);
-            selectedCharacterController = null;
-        }
-        Debug.Log("updateCharacterData() count = " + filteredCharacterDataList.Count + ", maxPageNum = " + maxPageNum);
+
+        selectedCharacterDataList.Clear();
+        // Debug.Log("updateCharacterData() count = " + filteredCharacterDataList.Count + ", maxPageNum = " + maxPageNum);
 
         updateArrowButton();
         updateGrid(0);
@@ -152,24 +154,20 @@ public class CharacterGridController : MonoBehaviour
 
     private void updateGrid(int _page)
     {
-        Debug.Log("updateGrid _page = " + _page);
+        // Debug.Log("updateGrid _page = " + _page);
         for (int i = 0; i < characterCardControllerList.Count; i++)
         {
             CharacterCardController controller = characterCardControllerList[i];
 
             int characterDataIdx = _page * characterCardControllerList.Count + i;
-            Debug.Log("updateGrid idx = " + characterDataIdx);
+            // Debug.Log("updateGrid idx = " + characterDataIdx);
             if (characterDataIdx < filteredCharacterDataList.Count)
             {
                 CharacterData data = filteredCharacterDataList[characterDataIdx];
                 controller.gameObject.SetActive(true);
                 controller.setCharacterId(data, state);
-                bool select = selectedCharacterController != null && selectedCharacterController.getCharacterData().tokenId == data.tokenId;
+                bool select = selectedCharacterDataList.Contains(data);
                 controller.setSelected(select);
-                if (select)
-                {
-                    selectedCharacterController = controller;
-                }
             }
             else
             {
@@ -179,22 +177,12 @@ public class CharacterGridController : MonoBehaviour
 
         pageText.text = (maxPageNum == 0 ? 0 : (_page + 1)) + "/" + maxPageNum;
 
-        if (setDefaultSelect)
-        {
-            if (filteredCharacterDataList.Count > 0)
-            {
-                selectCharacterCard(characterCardControllerList[0], true);
-            }
-            else
-            {
-                selectCharacterCard(null);
-            }
+        if (setDefaultSelect && selectedCharacterDataList.Count == 0)
+        { 
+            selectCharacterCard(filteredCharacterDataList.Count > 0 ? characterCardControllerList[0] : null);
         }
-    }
 
-    public CharacterCardController getSelectedCharacterCardController()
-    {
-        return selectedCharacterController;
+        countText.text = selectedCharacterDataList.Count + "/" + maxSelectedCount;
     }
 
     private List<CharacterData> getFilteredCharacterList(Predicate<CharacterData> _filter)
@@ -238,32 +226,44 @@ public class CharacterGridController : MonoBehaviour
         updateArrowButton();
     }
 
-    private bool selectCharacterCard(CharacterCardController _cardController)
+    public void setMaxSelectedCount(int _count)
     {
-        return selectCharacterCard(_cardController, false);
+        maxSelectedCount = _count;
     }
 
-    private bool selectCharacterCard(CharacterCardController _cardController, bool _forced)
+    private bool selectCharacterCard(CharacterCardController _cardController)
     {
-        if (!_forced && selectedCharacterController == _cardController)
+        if (isSameCharacterSelectedWhenSingleMode(_cardController))
         {
+            // not reaction for same item selected when single mode
             return false;
         }
 
-        if (selectedCharacterController != null)
+        if (maxSelectedCount == 1)
         {
-            selectedCharacterController.setSelected(false);
+            selectedCharacterDataList.Clear();
         }
 
-        if (_cardController != null)
+        if (selectedCharacterDataList.Contains(_cardController.getCharacterData())) {
+            selectedCharacterDataList.Remove(_cardController.getCharacterData());
+        } else if (selectedCharacterDataList.Count >= maxSelectedCount)
         {
-            _cardController.setSelected(true);
+            return false;
+        } else
+        {
+            selectedCharacterDataList.Add(_cardController.getCharacterData());
         }
+        
+        updateGrid(pageNum);
+        countText.text = selectedCharacterDataList.Count + "/" + maxSelectedCount;
 
-        selectedCharacterController = _cardController;
-
-        characterSelectCallbck?.Invoke(_cardController);
+        characterSelectCallbck?.Invoke(_cardController.getCharacterData());
         return true;
+    }
+
+    private bool isSameCharacterSelectedWhenSingleMode(CharacterCardController _cardController)
+    {
+        return maxSelectedCount == 1 && selectedCharacterDataList.Contains(_cardController.getCharacterData());
     }
 
     public bool isCharacterEmpty()
@@ -271,9 +271,43 @@ public class CharacterGridController : MonoBehaviour
         return filteredCharacterDataList.Count == 0;
     }
 
-    public void setCharacterSelectCallback(Func<CharacterCardController, bool> _callback)
+    public void setOnButtonClickedCallback(Func<List<CharacterData>, bool> _callback)
+    {
+        onButtonClickedCallback = _callback;
+    }
+
+    public void setCharacterSelectCallback(Func<CharacterData, bool> _callback)
     {
         characterSelectCallbck = _callback;
+    }
+
+    public void onAllSelectButtonClicked()
+    {
+        foreach (CharacterData cd in filteredCharacterDataList)
+        {
+            if (selectedCharacterDataList.Count >= maxSelectedCount)
+            {
+                break;
+            }
+
+            if (!selectedCharacterDataList.Contains(cd))
+            {
+                selectedCharacterDataList.Add(cd);
+            }
+        }
+
+        updateGrid(pageNum);
+    }
+
+    public void onAllDeselectButtonClicked()
+    {
+        selectedCharacterDataList.Clear();
+        updateGrid(pageNum);
+    }
+
+    public void onConfirmButtonClicked()
+    {
+        onButtonClickedCallback?.Invoke(selectedCharacterDataList);
     }
 
 }

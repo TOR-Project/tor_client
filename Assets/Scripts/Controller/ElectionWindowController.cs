@@ -77,5 +77,4 @@ public class ElectionWindowController : MonoBehaviour, BlockNumberObserever
         ParticleSystem.MainModule mainModule = particleSystem.main;
         mainModule.startColor = particleColor[(int)ElectionManager.instance.getElectionState()];
     }
-
 }
