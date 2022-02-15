@@ -100,6 +100,7 @@ public class GovernanaceWindowController : MonoBehaviour, GovernanceObserver
         agendaData.address = UserManager.instance.getWalletAddress();
         agendaData.nickname = UserManager.instance.isAdminAccount() ? Const.ADMIN_REP_NICKNAME : UserManager.instance.getNickname();
         agendaData.items = new List<string> { "", "" };
+        agendaData.votingData = new int[] { 0, 0 };
         agendaData.proposalTokenIdList = new List<int> {};
         agendaData.notVotedIdList = new int[0];
         return agendaData;

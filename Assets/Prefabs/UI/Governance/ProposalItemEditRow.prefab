@@ -148,7 +148,6 @@ GameObject:
   - component: {fileID: 659637256933188264}
   - component: {fileID: 659637256933188246}
   - component: {fileID: 659637256933188247}
-  - component: {fileID: 659637256933188271}
   m_Layer: 5
   m_Name: Frame
   m_TagString: Untagged
@@ -203,7 +202,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: fb3da2fa9309fda4794e09a2210944c1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -213,19 +212,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &659637256933188271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 659637256933188265}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a21db554fc897145bfa0f8b818db4c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  url: https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/common/ui/Button_square_Fr.png
 --- !u!1 &659637257602982716
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +298,6 @@ GameObject:
   - component: {fileID: 659637257986485929}
   - component: {fileID: 659637257986485911}
   - component: {fileID: 659637257986485928}
-  - component: {fileID: 659637257986485935}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -367,7 +352,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 1c7aa8baa41344947a3e7e4b49706940, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -377,19 +362,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &659637257986485935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 659637257986485930}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a21db554fc897145bfa0f8b818db4c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  url: https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/common/ui/Button_square_red.png
 --- !u!1 &691131027745914485
 GameObject:
   m_ObjectHideFlags: 0

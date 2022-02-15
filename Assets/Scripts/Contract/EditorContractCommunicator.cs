@@ -429,10 +429,10 @@ public class EditorContractCommunicator : IContractCommunicator
     public void reqCalculateMiningAmount(int _id)
     {
         BigInteger basicAmount = BigInteger.Parse("1000000000000000000") * 10;
-        BigInteger miningTaxAmount = -BigInteger.Parse("1000000000000000000") * 0;
-        BigInteger countryAmount = BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger miningTaxAmount = -BigInteger.Parse("1000000000000000000") / 10;
+        BigInteger countryAmount = BigInteger.Parse("1000000000000000000") / 10;
         BigInteger rebellionAmount = BigInteger.Parse("1000000000000000000") * 0;
-        BigInteger earlybirdAmount = BigInteger.Parse("1000000000000000000") * 0;
+        BigInteger earlybirdAmount = BigInteger.Parse("1000000000000000000") * 2;
         BigInteger accountReceivableAmount = BigInteger.Parse("1000000000000000000") * 0;
         BigInteger commissionAmount = -(basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount) / 10;
         BigInteger finalAmount = (basicAmount + miningTaxAmount + countryAmount + rebellionAmount + earlybirdAmount + commissionAmount);
@@ -1212,6 +1212,9 @@ public class EditorContractCommunicator : IContractCommunicator
         dic["subscribeFee"] = Const.SUBSCRIBE_FEE;
         dic["monarchRegistFee"] = Const.MONARCH_REGIST_FEE;
         dic["miningTaxSettlingDelay"] = Const.MINING_TAX_SETTLING_DELAY;
+        dic["governanceCharacterCount"] = Const.GOVERNANCE_CHARACTER_COUNT;
+        dic["governanceMinPeriod"] = Const.GOVERNANCE_MIN_PROPOSER_PERIOD;
+        dic["governanceMaxPeriod"] = Const.GOVERNANCE_MAX_PROPOSER_PERIOD;
 
         var value = JsonConvert.SerializeObject(dic);
         mContractManager.resConstantValues(value);
@@ -1228,16 +1231,15 @@ public class EditorContractCommunicator : IContractCommunicator
             agendaData.id = i;
             agendaData.address = "0x1234567890";
             agendaData.nickname = i % 2 == 0 ? "Crow" : Const.ADMIN_REP_NICKNAME;
-            agendaData.category = 0;
             agendaData.items = new List<string> { "아이템1", "아이템2", "아이템3", "아이템4", "아이템5" };
             agendaData.title = "안건" + i;
-            agendaData.summary = "";
             agendaData.contents = "내용" + i;
             agendaData.blind = UnityEngine.Random.Range(0, 2) == 0;
-            agendaData.startBlock = blockNumber + UnityEngine.Random.Range(-10000, 0);
+            agendaData.startBlock = blockNumber + UnityEngine.Random.Range(1000 * i, 1000 * (i + 1)) - 10000;
             agendaData.endBlock = agendaData.startBlock + UnityEngine.Random.Range(1, 20000);
             agendaData.votingData = agendaData.endBlock <= SystemInfoManager.instance.blockNumber || !agendaData.blind ? new int[] { UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000), UnityEngine.Random.Range(0, 1000) } : new int[] { 0, 0, 0, 0, 0 };
             agendaData.canceled = i % 3 == 0;
+            agendaData.proposalTokenIdList = new List<int>();
 
             List<int> votedIdList = new List<int>();
             agendaVotedTokenListMap.Add(agendaData.id, votedIdList);
@@ -1265,8 +1267,6 @@ public class EditorContractCommunicator : IContractCommunicator
 
     public void reqAgendaList(int[] _myCharacterTokenIdList)
     {
-        List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
-
         foreach (AgendaData agendaData in agendaListArchive)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
@@ -1275,9 +1275,7 @@ public class EditorContractCommunicator : IContractCommunicator
             data["address"] = agendaData.address;
             data["proposalTokenIdList"] = new int[] { };
             data["nickname"] = agendaData.nickname;
-            data["category"] = agendaData.category;
             data["title"] = agendaData.title;
-            data["summary"] = agendaData.summary;
             data["contents"] = agendaData.contents;
             data["items"] = agendaData.items.ToArray();
             data["votingData"] = agendaData.votingData;
@@ -1300,11 +1298,8 @@ public class EditorContractCommunicator : IContractCommunicator
 
             data["notVotedIdList"] = notVotedTokenIdList.ToArray();
 
-            list.Add(data);
+            mContractManager.resAgendaData(JsonConvert.SerializeObject(data));
         }
-
-        var value = JsonConvert.SerializeObject(list);
-        mContractManager.resAgendaList(value);
     }
 
     public void reqOfferAgenda(AgendaData _agendaData)
@@ -1331,9 +1326,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["address"] = _agendaData.address;
         data["proposalTokenIdList"] = _agendaData.proposalTokenIdList.ToArray();
         data["nickname"] = _agendaData.nickname;
-        data["category"] = _agendaData.category;
         data["title"] = _agendaData.title;
-        data["summary"] = _agendaData.summary;
         data["contents"] = _agendaData.contents;
         data["items"] = _agendaData.items.ToArray();
         data["votingData"] = _agendaData.votingData;
@@ -1482,9 +1475,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["address"] = agendaData.address;
         data["proposalTokenIdList"] = agendaData.proposalTokenIdList.ToArray();
         data["nickname"] = agendaData.nickname;
-        data["category"] = agendaData.category;
         data["title"] = agendaData.title;
-        data["summary"] = agendaData.summary;
         data["contents"] = agendaData.contents;
         data["items"] = agendaData.items.ToArray();
         data["votingData"] = agendaData.votingData;

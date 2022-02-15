@@ -11,9 +11,7 @@ public class AgendaData
     public string address;
     public List<int> proposalTokenIdList;
     public string nickname;
-    public int category;
     public string title;
-    public string summary;
     public string contents;
     public List<string> items;
     public int[] votingData;
@@ -31,9 +29,7 @@ public class AgendaData
         address = _data["address"].ToString();
         proposalTokenIdList = new List<int>(JsonConvert.DeserializeObject<int[]>(_data["proposalTokenIdList"].ToString()));
         nickname = _data["nickname"].ToString();
-        category = int.Parse(_data["category"].ToString());
         title = _data["title"].ToString();
-        summary = _data["summary"].ToString();
         contents = _data["contents"].ToString();
         items = new List<string>(JsonConvert.DeserializeObject<string[]>(_data["items"].ToString()));
         votingData = JsonConvert.DeserializeObject<int[]>(_data["votingData"].ToString());
@@ -52,10 +48,8 @@ public class AgendaData
         data["id"] = id;
         data["address"] = address;
         data["proposalTokenIdList"] = proposalTokenIdList.ToArray();
-        data["nickname"] = "";
-        data["category"] = category;
+        data["nickname"] = nickname;
         data["title"] = title;
-        data["summary"] = summary;
         data["contents"] = contents;
         data["items"] = items.ToArray();
         data["votingData"] = votingData;

@@ -365,6 +365,9 @@ public class ContractManager : MonoBehaviour
         Const.SUBSCRIBE_FEE = int.Parse(values["subscribeFee"].ToString());
         Const.MONARCH_REGIST_FEE = int.Parse(values["monarchRegistFee"].ToString());
         Const.MINING_TAX_SETTLING_DELAY = int.Parse(values["miningTaxSettlingDelay"].ToString());
+        Const.GOVERNANCE_CHARACTER_COUNT = int.Parse(values["governanceCharacterCount"].ToString());
+        Const.GOVERNANCE_MIN_PROPOSER_PERIOD = int.Parse(values["governanceMinPeriod"].ToString());
+        Const.GOVERNANCE_MAX_PROPOSER_PERIOD = int.Parse(values["governanceMaxPeriod"].ToString());
         Const.CONSTANT_LOADED = true;
     }
 
@@ -911,10 +914,10 @@ public class ContractManager : MonoBehaviour
         mContractCommunicator.reqAgendaList(myCharacterTokenIdList);
     }
 
-    internal void resAgendaList(string _json)
+    internal void resAgendaData(string _json)
     {
-        var values = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_json);
-        GovernanceManager.instance.responseAgendaList(values);
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        GovernanceManager.instance.responseAgendaData(values);
     }
 
     internal void reqOfferAgenda(AgendaData _agendaData)

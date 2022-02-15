@@ -494,7 +494,7 @@ public class WebContractCommunicator : IContractCommunicator
         data["idList"] = _myCharacterTokenIdList;
 
         var values = JsonConvert.SerializeObject(data);
-        Application.ExternalCall("reqAgendaListCount", values);
+        Application.ExternalCall("reqAgendaList", values);
     }
 
     public void reqOfferAgenda(AgendaData _agendaData)

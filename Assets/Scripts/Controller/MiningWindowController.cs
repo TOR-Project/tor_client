@@ -57,6 +57,14 @@ public class MiningWindowController : MonoBehaviour
     [SerializeField]
     GameObject[] receiptRowPanelList;
     [SerializeField]
+    Text[] amountTaxTextList;
+    [SerializeField]
+    GameObject[] receiptSubRowTaxPanelList;
+    [SerializeField]
+    Text[] amountCountryTextList;
+    [SerializeField]
+    GameObject[] receiptSubRowCountryPanelList;
+    [SerializeField]
     Text receiptTitleText;
     [SerializeField]
     Text receiptSubText;
@@ -607,6 +615,12 @@ public class MiningWindowController : MonoBehaviour
             }
         }
 
+        for (int idx = 0; idx < CountryManager.COUNTRY_MAX; idx++)
+        {
+            receiptSubRowTaxPanelList[idx].SetActive(false);
+            receiptSubRowCountryPanelList[idx].SetActive(false);
+        }
+
         MiningManager.instance.requestMiningData(receiptIdList, resMiningData);
     }
 
@@ -616,14 +630,20 @@ public class MiningWindowController : MonoBehaviour
         receiptAllButton.interactable = true;
 
         BigInteger[] amountList = new BigInteger[MiningManager.IDX_MAX];
+        BigInteger[] amountTaxList = new BigInteger[CountryManager.COUNTRY_MAX];
+        BigInteger[] amountCountryList = new BigInteger[CountryManager.COUNTRY_MAX];
         for (int idx = 0; idx < receiptIdList.Length; idx++)
         {
+            CharacterData characterData = CharacterManager.instance.getMyCharacterData(receiptIdList[idx]);
             MiningData md = MiningManager.instance.getMiningData(receiptIdList[idx]);
 
             for (int amountIdx = 0; amountIdx < amountList.Length; amountIdx++)
             {
                 amountList[amountIdx] += md.amount[amountIdx];
             }
+
+            amountTaxList[characterData.country] += md.amount[MiningManager.IDX_TAX];
+            amountCountryList[characterData.country] += md.amount[MiningManager.IDX_COUNTRY];
         }
 
         for (int idx = 0; idx < amountTextList.Length; idx++)
@@ -635,6 +655,17 @@ public class MiningWindowController : MonoBehaviour
 
             string sign = amountList[idx] > 0 ? "+ " : "";
             amountTextList[idx].text = sign + Utils.convertPebToTorStr(amountList[idx]) + " " + Const.TOR_COIN;
+        }
+
+        for (int idx = 0; idx < amountTaxList.Length; idx++)
+        {
+            receiptSubRowTaxPanelList[idx].SetActive(amountTaxList[idx] != 0);
+            string sign = amountTaxList[idx] > 0 ? "+ " : "";
+            amountTaxTextList[idx].text = sign + Utils.convertPebToTorStr(amountTaxList[idx]) + " " + Const.TOR_COIN;
+
+            receiptSubRowCountryPanelList[idx].SetActive(amountCountryList[idx] != 0);
+            sign = amountCountryList[idx] > 0 ? "+ " : "";
+            amountCountryTextList[idx].text = sign + Utils.convertPebToTorStr(amountCountryList[idx]) + " " + Const.TOR_COIN;
         }
     }
 

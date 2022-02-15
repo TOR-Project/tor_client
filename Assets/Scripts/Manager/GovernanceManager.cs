@@ -14,7 +14,7 @@ public class GovernanceManager : MonoBehaviour
 
     private List<AgendaData> agendaList = new List<AgendaData>();
 
-    private long lastDataReceivedBlock = 0;
+    private long lastDataRequestedBlock = 0;
 
     static GovernanceManager mInstance;
     public static GovernanceManager instance {
@@ -30,12 +30,13 @@ public class GovernanceManager : MonoBehaviour
 
     internal void requestAgendaList()
     {
-        if (lastDataReceivedBlock + requestTermBlock < SystemInfoManager.instance.blockNumber)
+        if (lastDataRequestedBlock + requestTermBlock < SystemInfoManager.instance.blockNumber)
         {
+            agendaList.Clear();
+            lastDataRequestedBlock = SystemInfoManager.instance.blockNumber;
             ContractManager.instance.reqAgendaList();
             return;
         }
-
         ContractManager.instance.reqAgendaListCount();
     }
 
@@ -43,6 +44,8 @@ public class GovernanceManager : MonoBehaviour
     {
         if (agendaList.Count != _count)
         {
+            agendaList.Clear();
+            lastDataRequestedBlock = SystemInfoManager.instance.blockNumber;
             ContractManager.instance.reqAgendaList();
             return;
         }
@@ -50,18 +53,11 @@ public class GovernanceManager : MonoBehaviour
         notifyAgendaListReceived(agendaList);
     }
 
-    public void responseAgendaList(List<Dictionary<string, object>> _data)
+    public void responseAgendaData(Dictionary<string, object> _data)
     {
-        lastDataReceivedBlock = SystemInfoManager.instance.blockNumber;
-
-        agendaList.Clear();
-
-        foreach(Dictionary<string, object> data in _data)
-        {
-            AgendaData agendaData = new AgendaData();
-            agendaData.parseData(data);
-            agendaList.Add(agendaData);
-        }
+        AgendaData agendaData = new AgendaData();
+        agendaData.parseData(_data);
+        agendaList.Add(agendaData);
 
         agendaList.Sort(SortByStartBlockDescending);
 

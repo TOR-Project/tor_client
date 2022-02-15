@@ -177,6 +177,11 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
 
     public void addEditItem()
     {
+        if (editProposalItemContentsRT.childCount > 8)
+        {
+            globalUIWindowController.showPopupByTextKey("ID_AGENDA_ALERT_ITEM_EXCEEDED", null);
+            return;
+        }
         GameObject propertyRow = Instantiate(editProposalItemPrefab, editProposalItemContentsRT, true);
         propertyRow.transform.localScale = UnityEngine.Vector3.one;
         propertyRow.transform.SetSiblingIndex(editProposalItemContentsRT.childCount - 2);
@@ -275,7 +280,7 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
         }
 
         returnButton.SetActive(UserManager.instance.isMyAddress(_agendaData.address) && isFinishedAgenda && !_agendaData.nftReturned);
-        cancelButton.SetActive(UserManager.instance.isMyAddress(_agendaData.address) && !_agendaData.canceled && !isFinishedAgenda && !_agendaData.nftReturned);
+        cancelButton.SetActive(UserManager.instance.isMyAddress(_agendaData.address) && !_agendaData.canceled && !isFinishedAgenda);
         offerButton.SetActive(false);
         voteButton.SetActive(!_agendaData.canceled && !isFinishedAgenda);
 
@@ -336,7 +341,6 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
         }
 
         agendaData.title = titleInputField.text.Trim();
-        agendaData.summary = "";
         agendaData.contents = contentsInputField.text.Trim();
         agendaData.items.Clear();
         for (int idx = 0; idx < editProposalItemContentsRT.childCount - 1; idx++)
@@ -345,6 +349,7 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
             AgendaEditItemRowController rowController = childObject.GetComponent<AgendaEditItemRowController>();
             agendaData.items.Add(rowController.getContents());
         }
+        agendaData.votingData = new int[editProposalItemContentsRT.childCount - 1];
         agendaData.periodBlock = 0;
         long.TryParse(periodInputField.text, out agendaData.periodBlock);
         agendaData.blind = blindToggle.isOn;
