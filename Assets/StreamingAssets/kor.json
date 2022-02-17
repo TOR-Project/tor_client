@@ -304,6 +304,9 @@
         {"key":"ID_AGENDA_CONFIRM_RETURN",                  "value":"확인을 누르면 스테이킹 된 모험가를 언스테이킹 상태로 변경하는 트랜잭션이 발생합니다."},
         {"key":"ID_AGENDA_CONFIRM_VOTE",                    "value":"확인을 누르면 안건에 투표하는 트랜잭션이 발생합니다. 투표된 내용은 번복이 불가합니다."},
           
+        {"key":"ID_SECRET_SHOP",                            "value":"비밀 상점"},
+        {"key":"ID_SELL_ITEM_LIST",                         "value":"상품 리스트"},
+                  
         {"key":"ID_RACE_HUMAN",                             "value":"Human"},
         {"key":"ID_RACE_ELF",                               "value":"Elf"},
         {"key":"ID_RACE_ORC",                               "value":"Orc"},

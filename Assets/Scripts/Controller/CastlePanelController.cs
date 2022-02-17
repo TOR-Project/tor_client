@@ -11,8 +11,9 @@ public class CastlePanelController : MonoBehaviour
 {
     public const int IDX_BASIC_INFO = 0;
     public const int IDX_MONARCH = 1;
-    public const int IDX_RESEARCH = 2;
-    public const int IDX_LOG = 3;
+    public const int IDX_FR = 2;
+    public const int IDX_FINANCE = 3;
+    public const int IDX_LOG = 4;
 
     public const int LOG_REQUEST_COUNT = 30;
 
@@ -132,8 +133,11 @@ public class CastlePanelController : MonoBehaviour
             case IDX_MONARCH:
                 updateMonarchPanel();
                 break;
-            case IDX_RESEARCH:
-                updateResearchPanel();
+            case IDX_FR:
+                updateFRPanel();
+                break;
+            case IDX_FINANCE:
+                updateFinancePanel();
                 break;
             case IDX_LOG:
                 updateLogPanel();
@@ -152,7 +156,13 @@ public class CastlePanelController : MonoBehaviour
         CountryManager.instance.requestCountryData(countryId, updateMonarchInfo);
     }
 
-    private void updateResearchPanel()
+    private void updateFRPanel()
+    {
+        // TBD
+        loading.SetActive(false);
+    }
+
+    private void updateFinancePanel()
     {
         // TBD
         loading.SetActive(false);
