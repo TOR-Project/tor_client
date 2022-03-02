@@ -22,9 +22,17 @@ public class ElectionManager : MonoBehaviour
     private ElectionState latestRoundRequestElectionState = ElectionState.SAFETY;
     private List<Predicate<List<int>>> notVotedCallbackList = new List<Predicate<List<int>>>();
 
+    private List<DataObserver<List<RebellionData>>> rebellionObserverList = new List<DataObserver<List<RebellionData>>>();
+    private Dictionary<int, long> lastRebellionRequestBlockMap = new Dictionary<int, long>();
+    private Dictionary<int, List<int>> votingCompletedIdListMap = new Dictionary<int, List<int>>();
+    private Dictionary<int, List<RebellionData>> rebellionDataMap = new Dictionary<int, List<RebellionData>>();
+
+
     static ElectionManager mInstance;
-    public static ElectionManager instance {
-        get {
+    public static ElectionManager instance
+    {
+        get
+        {
             return mInstance;
         }
     }
@@ -33,7 +41,7 @@ public class ElectionManager : MonoBehaviour
     {
         mInstance = this;
     }
-    
+
     public int getElectionRound()
     {
         long passedBlock = SystemInfoManager.instance.blockNumber - Const.ELECTION_START_BLOCK;
@@ -109,7 +117,8 @@ public class ElectionManager : MonoBehaviour
         {
             candidateList = candidateDataMap[round];
             candidateList.Clear();
-        } else
+        }
+        else
         {
             candidateList = new List<CandidateData>();
             candidateDataMap[round] = candidateList;
@@ -158,7 +167,8 @@ public class ElectionManager : MonoBehaviour
         if (candidateDataMap.ContainsKey(_data.round))
         {
             candidateList = candidateDataMap[_data.round];
-        } else
+        }
+        else
         {
             candidateList = new List<CandidateData>();
             candidateDataMap[_data.round] = candidateList;
@@ -190,6 +200,62 @@ public class ElectionManager : MonoBehaviour
             candidateList.Add(_data);
         }
     }
+
+    internal void requestRebellionDataList(int _round)
+    {
+        long lastRequestBlock = 0;
+        if (lastRebellionRequestBlockMap.ContainsKey(_round))
+        {
+            lastRequestBlock = lastRebellionRequestBlockMap[_round];
+        }
+
+        if (SystemInfoManager.instance.blockNumber < lastRequestBlock + CANDIDATE_DATA_REQUEST_INTERVAL)
+        {
+            notifyRebellionDataListReceived(rebellionDataMap[_round]);
+            return;
+        }
+
+        lastRebellionRequestBlockMap[_round] = SystemInfoManager.instance.blockNumber;
+        ContractManager.instance.reqRoundRebellionList(_round);
+    }
+
+    public void responseRebellionDataList(Dictionary<string, object> _data)
+    {
+        int round = int.Parse(_data["round"].ToString());
+        List<RebellionData> rebellionDataList;
+        if (rebellionDataMap.ContainsKey(round))
+        {
+            rebellionDataList = rebellionDataMap[round];
+            rebellionDataList.Clear();
+        }
+        else
+        {
+            rebellionDataList = new List<RebellionData>();
+            rebellionDataMap[round] = rebellionDataList;
+        }
+
+        votingCompletedIdListMap[round] = JsonConvert.DeserializeObject<List<int>>(_data["idList"].ToString());
+
+        List<Dictionary<string, object>> cList = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(_data["list"].ToString());
+        foreach (Dictionary<string, object> cData in cList)
+        {
+            RebellionData d = new RebellionData();
+            d.parseData(cData);
+            rebellionDataList.Add(d);
+        }
+
+        notifyRebellionDataListReceived(rebellionDataList);
+    }
+
+    public List<int> getVotingCompletedIdList(int _round)
+    {
+        if (votingCompletedIdListMap.ContainsKey(_round))
+        {
+            return votingCompletedIdListMap[_round];
+        }
+        return new List<int>();
+    }
+
 
     public List<CandidateData> getCandidateList(int _round, int _cid)
     {
@@ -255,6 +321,69 @@ public class ElectionManager : MonoBehaviour
         return votingCountMap[_round][_cid];
     }
 
+    public RebellionData getRebellionData(int _round, int _cid)
+    {
+        if (rebellionDataMap.ContainsKey(_round))
+        {
+            return rebellionDataMap[_round].Find(data => data.countryId == _cid);
+        }
+
+        return null;
+    }
+
+    public void updateRebellionData(RebellionData _data)
+    {
+        List<RebellionData> rebellionDataList;
+
+        if (rebellionDataMap.ContainsKey(_data.round))
+        {
+            rebellionDataList = rebellionDataMap[_data.round];
+        }
+        else
+        {
+            rebellionDataList = new List<RebellionData>();
+            rebellionDataMap[_data.round] = rebellionDataList;
+        }
+
+        for (int i = 0; i < rebellionDataList.Count; i++)
+        {
+            RebellionData cData = rebellionDataList[i];
+            if (cData.countryId == _data.countryId)
+            {
+                CharacterData characterData = CharacterManager.instance.getMyCharacterData(cData.tokenId);
+                if (characterData != null)
+                {
+                    characterData.stakingData.purpose = StakingManager.PURPOSE_BREAK;
+                }
+                rebellionDataList.Remove(cData);
+                break;
+            }
+        }
+
+        CharacterData characterDataNew = CharacterManager.instance.getMyCharacterData(_data.tokenId);
+        if (characterDataNew != null)
+        {
+            characterDataNew.stakingData.purpose = _data.nftReturned ? StakingManager.PURPOSE_BREAK : StakingManager.PURPOSE_REBELLION;
+        }
+
+        rebellionDataList.Add(_data);
+    }
+
+    internal void resetJoinableIdList(int _round, int _cid)
+    {
+        List<RebellionData> rebellionDataList = rebellionDataMap[_round];
+        for (int i = 0; i < rebellionDataList.Count; i++)
+        {
+            RebellionData cData = rebellionDataList[i];
+            if (cData.countryId == _cid)
+            {
+                cData.myJoinableCharacterIdList.Clear();
+                break;
+            }
+        }
+
+    }
+
     public void notifyCandidateListReceived(List<CandidateData> _list)
     {
         foreach (CandidateObserver ob in observerList)
@@ -271,5 +400,23 @@ public class ElectionManager : MonoBehaviour
     public void removeObserver(CandidateObserver ob)
     {
         observerList.Remove(ob);
+    }
+
+    public void notifyRebellionDataListReceived(List<RebellionData> _list)
+    {
+        foreach (DataObserver<List<RebellionData>> ob in rebellionObserverList)
+        {
+            ob.onDataReceived(_list);
+        }
+    }
+
+    public void addObserver(DataObserver<List<RebellionData>> ob)
+    {
+        rebellionObserverList.Add(ob);
+    }
+
+    public void removeObserver(DataObserver<List<RebellionData>> ob)
+    {
+        rebellionObserverList.Remove(ob);
     }
 }

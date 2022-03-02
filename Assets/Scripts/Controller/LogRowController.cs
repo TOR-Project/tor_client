@@ -55,6 +55,15 @@ public class LogRowController : MonoBehaviour
             case CountryManager.LOG_TYPE_ADD_PROPERTY:
                 valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_ADD_PROPERTY"), CountryManager.instance.getPropertyTitle(_data.propertyList[int.Parse(_logData.dataInt.ToString())].propertyCategory));
                 break;
+            case CountryManager.LOG_TYPE_REBELLION_START:
+                valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_REBELLION_START"), _logData.whoNickName);
+                break;
+            case CountryManager.LOG_TYPE_REBELLION_FAILED:
+                valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_REBELLION_FAILED"));
+                break;
+            case CountryManager.LOG_TYPE_REBELLION_SUCCESSED:
+                valueText.text = string.Format(LanguageManager.instance.getText("ID_LOG_REBELLION_SUCCESSED"));
+                break;
             default:
                 valueText.text = "";
                 break;

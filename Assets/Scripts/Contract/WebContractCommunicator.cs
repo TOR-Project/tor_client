@@ -477,6 +477,82 @@ public class WebContractCommunicator : IContractCommunicator
         Application.ExternalCall("reqVoteMonarchElection", values);
     }
 
+    public void reqRoundRebellionList(int _round)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _round;
+        data["idList"] = CharacterManager.instance.getMyCharacterList().ConvertAll(cd => cd.tokenId).ToArray();
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqRoundRebellionList", values);
+    }
+
+    public void addRebellionData(RebellionData _data)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["round"] = _data.round;
+        data["tokenId"] = _data.tokenId;
+        data["country"] = _data.countryId;
+        data["title"] = _data.title;
+        data["contents"] = _data.contents;
+        data["url"] = _data.url;
+        data["idList"] = CharacterManager.instance.getMyCharacterList().FindAll(cd => cd.country == _data.countryId).ConvertAll(cd => cd.tokenId).ToArray();
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqAddRebellionData", values);
+    }
+
+    public void revolutionRebellionData(RebellionData _data)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+        data["password"] = Utils.GetTransactionHash(UserManager.instance.getPassword());
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqRevolutionRebellionData", values);
+    }
+
+    public void returnRebellionData(RebellionData _data)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqReturnRebellionData", values);
+    }
+
+    public void reqJoinRebellion(RebellionData _data, bool _isRebel)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["country"] = _data.countryId;
+        data["round"] = _data.round;
+        data["isRebel"] = _isRebel;
+        data["idList"] = _data.myJoinableCharacterIdList.ToArray();
+        var totalAtt = 0;
+        var totalDef = 0;
+        CharacterManager.instance.getMyCharacterList().FindAll(cd => _data.myJoinableCharacterIdList.Contains(cd.tokenId)).ConvertAll(cd => cd.statusData.att).ForEach(att => totalAtt += att);
+        CharacterManager.instance.getMyCharacterList().FindAll(cd => _data.myJoinableCharacterIdList.Contains(cd.tokenId)).ConvertAll(cd => cd.statusData.def).ForEach(def => totalDef += def);
+        data["att"] = totalAtt;
+        data["def"] = totalDef;
+        data["attMag"] = 0;
+        data["defMag"] = 0;
+        data["password"] = Utils.GetTransactionHash(UserManager.instance.getPassword());
+
+        var values = JsonConvert.SerializeObject(data);
+
+        Application.ExternalCall("reqJoinRebellion", values);
+    }
+
     public void reqConstantValues()
     {
         Application.ExternalCall("reqConstantValues", "");
@@ -536,5 +612,15 @@ public class WebContractCommunicator : IContractCommunicator
 
         var values = JsonConvert.SerializeObject(data);
         Application.ExternalCall("reqVoteAgenda", values);
+    }
+
+    public void reqSellItemList()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void reqInventoryItemList()
+    {
+        throw new System.NotImplementedException();
     }
 }

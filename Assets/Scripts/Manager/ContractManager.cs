@@ -31,8 +31,9 @@ public class ContractManager : MonoBehaviour
     [SerializeField]
     PollsPlaceController pollsPlaceController;
     [SerializeField]
+    RuinedTempleWindowController ruinedTempleWindowController;
+    [SerializeField]
     GovernanaceWindowController governanaceWindowController;
-
     [SerializeField]
     GlobalUIWindowController globalUIController;
 
@@ -368,6 +369,9 @@ public class ContractManager : MonoBehaviour
         Const.GOVERNANCE_CHARACTER_COUNT = int.Parse(values["governanceCharacterCount"].ToString());
         Const.GOVERNANCE_MIN_PROPOSER_PERIOD = int.Parse(values["governanceMinPeriod"].ToString());
         Const.GOVERNANCE_MAX_PROPOSER_PERIOD = int.Parse(values["governanceMaxPeriod"].ToString());
+        Const.REBELLION_REGIST_FEE = int.Parse(values["rebellionRegistFee"].ToString());
+        Const.REBELLION_JOIN_FEE = int.Parse(values["rebellionJoinFee"].ToString());
+        Const.REBELLION_RECRUITMENT_PERIOD = int.Parse(values["rebellionRecruitmentPeriod"].ToString());
         Const.CONSTANT_LOADED = true;
     }
 
@@ -894,6 +898,72 @@ public class ContractManager : MonoBehaviour
         pollsPlaceController.responceVoteCompleted(list);
     }
 
+    internal void reqRoundRebellionList(int _round)
+    {
+        Debug.Log("reqRoundRebellionList() " + _round);
+        mContractCommunicator.reqRoundRebellionList(_round);
+    }
+
+    public void resRoundRebellionList(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+
+        ElectionManager.instance.responseRebellionDataList(values);
+    }
+
+    internal void addRebellionData(RebellionData _data)
+    {
+        Debug.Log("addRebellionData()");
+        mContractCommunicator.addRebellionData(_data);
+    }
+
+    internal void revolutionRebellionData(RebellionData _data)
+    {
+        Debug.Log("revolutionRebellionData()");
+        mContractCommunicator.revolutionRebellionData(_data);
+    }
+
+    internal void returnRebellionData(RebellionData _data)
+    {
+        Debug.Log("returnRebellionData()");
+        mContractCommunicator.returnRebellionData(_data);
+    }
+
+    public void resUpdateRebellionData(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        RebellionData data = new RebellionData();
+        data.parseData(values);
+
+        ElectionManager.instance.updateRebellionData(data);
+        ruinedTempleWindowController.updateRebellionData(data);
+
+        reqCoinAmount();
+    }
+
+    public void reqJoinRebellion(RebellionData _data, bool _isRebel)
+    {
+        Debug.Log("reqJoinRebellion()");
+        mContractCommunicator.reqJoinRebellion(_data, _isRebel);
+    }
+
+    public void resJoinRebellion(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int round = int.Parse(values["round"].ToString());
+        int cid = int.Parse(values["country"].ToString());
+        int[] list = JsonConvert.DeserializeObject<int[]>(values["idList"].ToString());
+        bool isRebelJoined = bool.Parse(values["isRebel"].ToString());
+
+        ruinedTempleWindowController.responceJoinRebellion(round, cid, list, isRebelJoined);
+
+        reqCoinAmount();
+    }
+
     internal void reqAgendaListCount()
     {
         Debug.Log("reqAgendaListCount()");
@@ -965,4 +1035,37 @@ public class ContractManager : MonoBehaviour
         GovernanceManager.instance.updateAgendaData(agendaData);
     }
 
+    internal void reqSellItemList()
+    {
+        Debug.Log("reqSellItemList()");
+        mContractCommunicator.reqSellItemList();
+    }
+
+    public void resSellItemList(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        SecretShopManager.instance.responseSellItemList(values);
+    }
+
+    internal void reqInventoryItemList()
+    {
+        Debug.Log("reqInventoryItemList()");
+        mContractCommunicator.reqInventoryItemList();
+    }
+
+    public void resInventoryItemList(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        InventoryManager.instance.responseInventoryItemList(values);
+    }
+
+    internal void reqSellSecretShopItem(int _id, int _value)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void reqBuySecretShopItem(int _id, int _value)
+    {
+        throw new NotImplementedException();
+    }
 }

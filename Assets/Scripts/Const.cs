@@ -29,6 +29,9 @@ public class Const
     public static int GOVERNANCE_CHARACTER_COUNT = 25;
     public static int GOVERNANCE_MIN_PROPOSER_PERIOD = 86400;
     public static int GOVERNANCE_MAX_PROPOSER_PERIOD = 86400 * 30;
+    public static int REBELLION_REGIST_FEE = 300;
+    public static int REBELLION_RECRUITMENT_PERIOD = 259200;
+    public static int REBELLION_JOIN_FEE = 1;
 
     public static bool CONSTANT_LOADED = false;
 }

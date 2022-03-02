@@ -389,7 +389,7 @@ public class CharacterManager : MonoBehaviour
 
         int offset = TX_SPLIT_AMOUNT * splitStep;
         int length = (notInitedCharacterDataList.Count >= TX_SPLIT_AMOUNT * (splitStep + 1)) ? TX_SPLIT_AMOUNT : notInitedCharacterDataList.Count - TX_SPLIT_AMOUNT * splitStep;
-
+        Debug.Log("length = " + length);
         int[] _pendingIdList = new int[length];
         Array.Copy(pendingIdList, offset, _pendingIdList, 0, length);
 

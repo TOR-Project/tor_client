@@ -95,6 +95,12 @@ public interface IContractCommunicator
 
     void reqVoteMonarchElection(int _round, int[] _candidateIds, int[] _voteCounts, int[] _idList);
 
+    void reqRoundRebellionList(int _round);
+    void addRebellionData(RebellionData _data);
+    void revolutionRebellionData(RebellionData _data);
+    void returnRebellionData(RebellionData _data);
+    void reqJoinRebellion(RebellionData _data, bool _isRebel);
+
     void reqConstantValues();
 
     void reqAgendaListCount();
@@ -108,4 +114,7 @@ public interface IContractCommunicator
     void reqReturnCharacterFromAgenda(AgendaData _agendaData);
 
     void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData);
+    void reqSellItemList();
+    void reqInventoryItemList();
+
 }

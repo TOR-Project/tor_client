@@ -32,6 +32,9 @@ public class CountryManager : MonoBehaviour
     public const int LOG_TYPE_SUCCESS_REBELLION = 10;
     public const int LOG_TYPE_RENAME_CASTLE = 11;
     public const int LOG_TYPE_ADD_PROPERTY = 12;
+    public const int LOG_TYPE_REBELLION_START = 13;
+    public const int LOG_TYPE_REBELLION_FAILED = 14;
+    public const int LOG_TYPE_REBELLION_SUCCESSED = 15;
 
     public const int COUNTRY_DATA_REQUEST_INTERVAL = 180; // 3 min
 

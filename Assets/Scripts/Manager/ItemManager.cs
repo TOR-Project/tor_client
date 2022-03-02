@@ -19,11 +19,17 @@ public class ItemManager : MonoBehaviour
 
     Dictionary<int, Sprite> gemSpriteMap = new Dictionary<int, Sprite>();
     Dictionary<long, EquipItemData> equipItemDataMap = new Dictionary<long, EquipItemData>();
+    Dictionary<int, ItemData> itemDataMap = new Dictionary<int, ItemData>();
+
     int equipItemLoadedCount = 0;
+    int itemLoadedCount = 0;
+
 
     static ItemManager mInstance;
-    public static ItemManager instance {
-        get {
+    public static ItemManager instance
+    {
+        get
+        {
             return mInstance;
         }
     }
@@ -31,6 +37,8 @@ public class ItemManager : MonoBehaviour
     private ItemManager()
     {
         mInstance = this;
+
+        itemDataMap.Add(1, new ItemData(1, "ID_ITEM_DRAGON_CHECK_SCROLL", "ID_ITEM_DRAGON_CHECK_SCROLL_EXP", ItemCategory.CONSUME, ItemGrade.RARE, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/3_item/1_image/dragon_scroll.png"));
 
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_ASSASSIN_DAGGER", EquipItemCategory.WEAPON, ItemGrade.NORMAL, EquipItemJobLimit.ASSASSIN, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Normal+Assassin+Dagger.png");
         addEquipItemData(2, "ID_EQUIP_NAME_RARE_ASSASSIN_DAGGER", EquipItemCategory.WEAPON, ItemGrade.RARE, EquipItemJobLimit.ASSASSIN, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Rare+Assassin+Dagger.png");
@@ -65,7 +73,7 @@ public class ItemManager : MonoBehaviour
         addEquipItemData(3, "ID_EQUIP_NAME_LEGEND_WITCH_WAND", EquipItemCategory.WEAPON, ItemGrade.LEGEND, EquipItemJobLimit.WITCH_DOCTOR, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/orcs_witchdoctor/3.+weapon/Legend_witchdoctor_wand.png");
 
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_ELF_EARRING", EquipItemCategory.ACCESSORY, ItemGrade.NORMAL, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Normal+Elf+Ring.png");
-        addEquipItemData(2, "ID_EQUIP_NAME_NORMAL_ELF_NECKLACE",EquipItemCategory.ACCESSORY, ItemGrade.NORMAL, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Normal+Elf+Necklace.png");
+        addEquipItemData(2, "ID_EQUIP_NAME_NORMAL_ELF_NECKLACE", EquipItemCategory.ACCESSORY, ItemGrade.NORMAL, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Normal+Elf+Necklace.png");
         addEquipItemData(3, "ID_EQUIP_NAME_RARE_ELF_EARRING", EquipItemCategory.ACCESSORY, ItemGrade.RARE, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Rare+Elf+Ring.png");
         addEquipItemData(4, "ID_EQUIP_NAME_RARE_ELF_NECKLACE", EquipItemCategory.ACCESSORY, ItemGrade.RARE, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Rare+Elf+Necklace.png");
         addEquipItemData(5, "ID_EQUIP_NAME_LEGEND_ELF_EARRING", EquipItemCategory.ACCESSORY, ItemGrade.LEGEND, EquipItemJobLimit.ALL, EquipItemRaceLimit.ELF | EquipItemRaceLimit.HUMAN, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/elf_bishop/4.+acc/Legend+Elf+Ring.png");
@@ -151,6 +159,14 @@ public class ItemManager : MonoBehaviour
         }
     }
 
+    public void startItemSpriteLoading()
+    {
+        foreach (ItemData data in itemDataMap.Values)
+        {
+            AssetsLoadManager.instance.requestSprite(data.imageUrl, (sprite) => setImageSprite(data, sprite), null);
+        }
+    }
+
     public void startGemImageLoading()
     {
         for (int i = 0; i < GEM_IMAGE_URL_LIST.Length; i++)
@@ -189,6 +205,13 @@ public class ItemManager : MonoBehaviour
         return true;
     }
 
+    private bool setImageSprite(ItemData _data, Sprite _sprite)
+    {
+        _data.imageSpirte = _sprite;
+        itemLoadedCount++;
+        return true;
+    }
+
     public int getEquipItemSpriteLoadedCount()
     {
         return equipItemLoadedCount;
@@ -199,6 +222,16 @@ public class ItemManager : MonoBehaviour
         return equipItemDataMap.Count;
     }
 
+    public int getItemSpriteLoadedCount()
+    {
+        return itemLoadedCount;
+    }
+
+    public int getItemSpriteLoadedMax()
+    {
+        return itemDataMap.Count;
+    }
+
     public EquipItemData getEquipItemData(int _key)
     {
         if (equipItemDataMap.ContainsKey(_key))
@@ -207,6 +240,16 @@ public class ItemManager : MonoBehaviour
         }
         return null;
     }
+
+    public ItemData getItemData(int _id)
+    {
+        if (itemDataMap.ContainsKey(_id))
+        {
+            return itemDataMap[_id];
+        }
+        return null;
+    }
+
 
     public void addEquipItemData(int _id, string _nameKey, EquipItemCategory _category, ItemGrade _grade, long _jobLimit, long _raceLimit, string _imageUrl)
     {
@@ -236,6 +279,52 @@ public class ItemManager : MonoBehaviour
             default:
                 return new Color32(234, 233, 232, 255);
         }
+    }
+
+    public string getGradeName(ItemGrade _grade)
+    {
+        string key;
+        switch (_grade)
+        {
+            case ItemGrade.COMMON:
+                key = "ID_ITEM_GRADE_COMMON";
+                break;
+            case ItemGrade.RARE:
+                key = "ID_ITEM_GRADE_RARE";
+                break;
+            case ItemGrade.UNCOMMON:
+                key = "ID_ITEM_GRADE_UNCOMMON";
+                break;
+            case ItemGrade.UNIQUE:
+                key = "ID_ITEM_GRADE_UNIQUE";
+                break;
+            case ItemGrade.LEGEND:
+                key = "ID_ITEM_GRADE_LEGEND";
+                break;
+            case ItemGrade.NORMAL:
+            default:
+                key = "ID_ITEM_GRADE_NORMAL";
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
+    }
+
+    public string getCategoryName(ItemCategory _category)
+    {
+        string key;
+        switch (_category)
+        {
+            case ItemCategory.CONSUME:
+                key = "ID_ITEM_CATEGORY_CONSUME";
+                break;
+           case ItemCategory.ETC:
+            default:
+                key = "ID_ITEM_CATEGORY_ETC";
+                break;
+        }
+
+        return LanguageManager.instance.getText(key);
     }
 
     public long getEquipItemKeyV1(EquipItemCategory _category, CharacterData _data, long _id)

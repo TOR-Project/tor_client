@@ -10,6 +10,14 @@ public class EditorContractCommunicator : IContractCommunicator
 {
     private ContractManager mContractManager;
 
+    List<CharacterData> characterListArchive = new List<CharacterData>();
+    List<CharacterData> newCharacterListArchive = new List<CharacterData>();
+    List<CharacterData> stakingListArchive = new List<CharacterData>();
+    Dictionary<int, StakingData> stakingDataArchive = new Dictionary<int, StakingData>();
+    Dictionary<int, CharacterData> allCharacterMapArchive = new Dictionary<int, CharacterData>();
+    Dictionary<int, SellItemData> sellItemDataArchive = new Dictionary<int, SellItemData>();
+    Dictionary<int, int> inventoryDataArchive = new Dictionary<int, int>();
+
     public EditorContractCommunicator(ContractManager cm)
     {
         mContractManager = cm;
@@ -81,6 +89,8 @@ public class EditorContractCommunicator : IContractCommunicator
         initCharacterArchive();
         initCountryArchive();
         initGovernanceArchive();
+        initSellItemArchive();
+        initInventoryItemArchive();
 
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["title"] = "Welcome";
@@ -210,12 +220,6 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resCoinAmount(values);
     }
 
-    List<CharacterData> characterListArchive = new List<CharacterData>();
-    List<CharacterData> newCharacterListArchive = new List<CharacterData>();
-    List<CharacterData> stakingListArchive = new List<CharacterData>();
-    Dictionary<int, StakingData> stakingDataArchive = new Dictionary<int, StakingData>();
-    Dictionary<int, CharacterData> allCharacterMapArchive = new Dictionary<int, CharacterData>();
-
     private void initCharacterArchive()
     {
         if (characterListArchive.Count > 0 || newCharacterListArchive.Count > 0 || stakingListArchive.Count > 0)
@@ -240,10 +244,12 @@ public class EditorContractCommunicator : IContractCommunicator
             if (whichArr == 0)
             {
                 characterListArchive.Add(data);
-            } else if (whichArr == 1)
+            }
+            else if (whichArr == 1)
             {
                 newCharacterListArchive.Add(data);
-            } else
+            }
+            else
             {
                 stakingListArchive.Add(data);
                 StakingData stakingData = new StakingData();
@@ -351,7 +357,8 @@ public class EditorContractCommunicator : IContractCommunicator
             if (allCharacterMapArchive.ContainsKey(id))
             {
                 cData = allCharacterMapArchive[id];
-            } else
+            }
+            else
             {
                 cData = getRandomCharacterData(id);
                 allCharacterMapArchive.Add(id, cData);
@@ -468,10 +475,12 @@ public class EditorContractCommunicator : IContractCommunicator
         if (_id == 0)
         {
             data["mainTitle"] = "Prologue";
-        } else if (_id == 1)
+        }
+        else if (_id == 1)
         {
             data["mainTitle"] = "지팡이를 든 왕 (1)";
-        } else
+        }
+        else
         {
             data["mainTitle"] = "지팡이를 든 왕 (2)";
         }
@@ -513,7 +522,7 @@ public class EditorContractCommunicator : IContractCommunicator
         if (_id == 0)
         {
             data["contents"] = "이 땅의 이름은 ‘루그란디스’였다. 세상을 창조한 신의 직접 붙인 이름이라고 말하지만 이 땅에 사는 어느 누구도 그 이름으로 이 땅을 부르지 않았다.\n\n대륙의 패권을 나눠 가진 인간, 엘프, 오크 세 종족은 영토를 나눠 가진 후 그 땅에 서로 다른 이름을 붙였다.\n\n인간들의 개발로 숲과 들에 성벽과 도시가 들어선 트리폴리.\n\n엘프들이 자연과 조화를 이루며 살아가는 숲과 신비가 가득한 엔필리스.\n\n오크들이 생존을 위해 투쟁하는 척박한 헬베스타와 바르바로스.\n\n모든 종족들이 하나의 대륙에는 하나의 이름만 필요하다 생각했다. 그들은 이 땅의 다른 이름을 없애버리기 위해 서로를 죽였다.\n\n한 뼘 남짓한 땅조차 한 달에 수십번은 이름이 바뀌었다.\n\n오랜 시간 계속된 전쟁에 루그란디아라는 이름은 사람들의 머릿속에서 잊혀지고 대지는 시체 밑에서 썩어 들어가던 시대에, 단 한 사람만이 이 땅을 다시 ‘루그란디스’라고 불렀다.\n\n레이나라는 인간 소년였다. 그는 신에게 직접 이 땅의 이름을 들었다고 했다. 이 땅의 이름을 루그란디아로 되돌리라는 계시와 함께.\n\n신의 계시를 받았다는 그의 힘은 정말 기적이라고 밖에 말할 수 없었다. 그가 축복을 내리자 시체와 함께 썩어가던 땅은 생기를 되찾고 피로 물든 강은 다시 맑은 물이 흘렀다. 그는 손길만으로 병과 상처를 치료했다.\n\n그는 말 한마디로 전쟁을 멈추었다. 대륙 중앙을 중립지대로 두어 그 어느 종족도 서로 국경을 접하지 못하도록 만들었다. 그의 결정이 신의 의지였고 모든 종족들은 그의 결정에 따를 수 밖에 없었다.\n\n하지만 전쟁은 끝났어도 루그란디스라는 이름은 돌아오지 않았다. 그가 축복을 내린 후 중립 지대로 만든 땅은 사람들 사이에서 ‘에브제니스’라는 또 다른 이름으로 불렸다. 정작 축복을 내린 레이나는 그 땅을 여전히 루그란디스라라고 불렀다.\n\n그러나 레이나는 오늘 죽었으니 루그란디스라는 이름도 그와 함께 사라지겠지.\n\n\n***\n\n\n세 종족은 화합을 위해 에브제니스에서는 1년에 한 번 공의회가 열렸다. 에브제니스의 중심부에는 이름 모를 신을 모시던 오래된 신전이 있었고 그 안에는 원탁이 있었다.\n\n평등과 공정함을 의미하는 원탁에서 새 종족은 자유롭게 서로의 입장을 드러낼 수 있었다. 그러나 평등과 공정함이란 곧 누군가에게는 양보를 의미했다. 그리고 양보를 좋아하는 이는 없었다.\n\n\n***\n\n\n엘프들의 여왕인 이브노바는 의자에 앉은 채 죽어있는 레이나를 멍하니 바라 보았다.\n\n레이나는 이마가 관통된 채 고개를 숙이고 있었다. 그의 타는 듯 밝던 금발은 흐트러지고 생명력 넘치던 푸른 눈동자는 잿빛으로 변해 있었다.\n\n그를 죽인 오크의 손에는 손바닥만한 석궁이 들려 있었다. 사람의 머리를 관통할 정도로 크고 강한 것이었지만 거대한 오크의 손 안에는 숨길 수 있는 크기였다.\n\n이번 공의회는 처음부터 분위기가 심상치 않았다. 평화에 불만을 가진 오크가 일을 저지를 것이란 소문이 전 대륙에 퍼졌고 공의회가 취소될 것이란 말도 함께 돌았다.\n\n그러나 이브노바는 참가를 만류하는 신하들을 뿌리치고 공의회에 참가했다. 레이나가 참가했기 때문이었다.\n\n이브노바는 아무리 위험한 곳이라 해도 그가 있다면 괜찮을 것이라 생각했다. 왜냐하면 레이나는 신의 사자였으니까, 그런 자가 죽는 것은 상상할 수 없었다. 정확히는 인간의 육체를 가진 이상 언젠가는 죽겠지만, 평범하게 누워서 죽는 것이 아니라 하늘로 승천이라도 할 것이라 상상했다.\n\n그런데 너무나 쉽게 죽어버렸다.\n\n성자, 대현자, 구세주. 그를 칭하는 수 많은 칭호에 어울리지 않는 소박한 죽음이었다.\n\n그리 생각하는 것은 그를 죽인 오크도 마찮가지인 모양이었다. 그는 자리에서 일어선 채 앞으로 튀어나가려는 듯 어정쩡한 자세로 굳어 있었다. 신의 사자를 죽이기 위해 온갖 준비를 해 왔지만 그는 단 한 수만에 죽어버렸다.\n\n잠깐의 무거운 적막이 흐른 후, 이브노바가 오크를 향해 손바닥을 폈다. 그녀의 손에서 오크를 향해 거대한 불덩이가 쏘아졌다. 불은 그가 있던 자리를 집어 삼키고는 그가 있던 방향의 돌벽 마저 검게 그을려 버린 후 사라졌다.\n\n오크는 흔적도 남기지 않고 사라졌다. 정확히는 그의 육체만 사라졌을 뿐 다른 흔적은 남아 있었다. 찢어지고 불에 탄 스크롤 조각이 붙티와 함께 공중에 휘날렸다.\n\n이브노바는 팔을 축 늘어트린 채 가만히 발 끝을 내려다 봤다.\n\n모든 것이 혼란스러웠다. 오크가 마법을 사용하는 것도 그랬고 그자가 자신의 눈을 피해 무기를 숨겨 들어온 것도 그랬다. 무엇보다 레이나의 죽음이 그랬다.\n\n인간의 대표이자 평화의 상징인 그가 죽었으니 인간은 오크와 전쟁을 준비할 것이다.\n\n전쟁을 바라는 오크의 탐욕이 평화를 바라는 신의 의지보다 강했다는 말인가. 그게 아니면, 전쟁이 신의 뜻인가.\n\n짧은 평화는 이렇게 막을 내렸다.\n";
-        } 
+        }
         else if (_id == 1)
         {
             data["contents"] = "여러 종족이 살아가는 루그란디아의 중심부, 에브게니스 지방은 대현자 레이나가 중립 지대로 선포한 이후 공식적으로는 아무도 살지 않는 땅이었다. 따라서 이곳에 사는 자들은 공식적으로 세상에 존재하지 않았다.\n\n누구도 살지 않는 땅이다 보니 이곳은 문명의 바깥에 자리하고 있었다. 사회에서 누릴 수 있는 혜택이라고는 아무것도 없는 이 땅에 숨어들어 사는 존재들은 세상에서 사라지고 싶은 이들이거나 사라져야만 하는 이들이었다.\n\n이곳까지 흘러 들어온 이유는 저마다 달랐지만 단 한가지 공통점이 있다면 다들 언젠가는 이 땅을 벗어나고 싶어 한다는 점이었다.\n\n다들 이곳을 빠져나가 사회에 두고 온 자신의 본래 삶을 되찾고 싶어했다.\n\n그런 점에서 키안은 별종이라 말 할 수 있는 소년이었다. 그는 이곳에서 태어났고 이곳에서 자랐다.\n\n부모에 관한 기억은 별로 없었다. 자아가 생기고 난 뒤로 기억나는 일은 그들과 함께 하루종일 먹을 걸 찾으러 다닌 것뿐이었다. 그러다 어느 날 아버지는 뭘 먹고는 시름시름 앓다가 죽어 버렸고 어머니는 얼마 지나지 않아 날씨가 춥던 날 잠에 든 이후 다시는 일어나지 못했다.\n\n그 밖의 기억이라면 그들이 종종 나누던 대화 내용 따위였다. 둘의 대화에는 키안이 모르는 단어가 많이 등장했다.\n\n영지, 귀족, 왕. 의미는 몰랐지만 바깥에는 그런 것들이 있고 자신의 부모는 그런 것들을 잃어버린 듯했다. 그래서 이곳을 나가고 싶어했다.\n\n그러나 바깥 세상에 두고 온 것이 없는 키안에게는 이곳을 벗어나려는 열망도 없었다.\n\n그의 관심사는 오직 그날 하루를 덜 굶주리는 것뿐이었다.\n\n엘프 영토와 인접한 어느 숲 속에서 그는 지금, 죽은 나무 기둥에 자란 처음 보는 버섯을 보며 먹어도 될지 고민하는 중이었다.\n\n한참을 고민하던 키안은 결국 버섯을 향해 손을 뻗었다.\n\n“그거 먹으면 죽어.”\n\n등 뒤에서 젊은 여자의 목소리가 들렸다. 반사적으로 뒤를 돌아보자 그곳에는 뾰족한 귀를 가진 여자가 서 있었다. 얼굴만 보면 아직 소녀 정도로 보였지만 키는 꽤 커서 성인 여자와 비슷한 정도였다.\n\n옷차림은 긴 바지에 헐렁한 후드 원피스를 입었는데 위 아래가 모두 검은색이었다. 처음에 옷만 봤을 때는 여행자인가 싶었다. 여행자란 가끔 이 근처를 지나가는 부류의 족속으로 키안 같은 자들을 만나면 먹다 남긴 걸 주고 가는 등 도움이 되긴 하는 존재들이었다.\n\n하지만 흰 피부와 윤기가 흐르는 은발을 보아하니, 자신의 두 다리로 밖을 돌아다닐 유형의 인물 같아 보이지는 않았다. 저런 생김새는 마차를 타고 다니는 자들에게 흔히 보였는데 그들은 여행자들과는 달리 키안을 보면 욕지거리만 내뱉고 사라지는 자들이었다.\n\n둘 중 어느 쪽인지는 모르겠지만 얼굴에 굶주린 기색이 없는 걸 보니 이곳에 사는 사람은 아니란 건 확실했다.\n\n소녀는 땅에 자기 키만한 지팡이를 짚고 서있는데 제대로 된 지팡이라기 보단 마치 커다란 나뭇가지를 꺾어 그대로 지팡이로 삼은 모양새였다.\n\n“내가 살려 줬지? 고맙다고 해.”\n\n소녀가 의기양양한 표정으로 말했다. 그녀의 당당한 태도에 키안의 입에서 반사적으로 대답이 튀어나왔다.\n\n“어? 어. 고마워.”\n\n“이 정도로 뭘.”\n\n소녀는 싱긋 웃으며 어깨를 으쓱했다. 그 모습을 잠시 바라보던 키안은 그녀를 내버려 둔 채 발걸음을 옮겼다. 기껏 찾아낸 버섯이 식용 불가 판정을 받았으니 서둘러 다른 먹거리를 찾아야 했다.\n\n대충 주변을 두리번 거리자 근처 땅바닥에 열매를 맺고 있는 식물이 보였다. 알이 굵고 빨간 것이 어쩐지 먹음직스럽게 보였다. 그 앞에 쭈그려 앉아 자세히 살펴보고 있을 때 머리 위에서 또다시 목소리가 들려왔다.\n\n“아, 이건 방울뱀딸기야. 먹어도 죽진 않지만 배가 죽을 만큼 아플 걸?”\n\n은발의 소녀는 어느새 뒤를 따라와 허리를 숙인 채 그의 어깨 너머로 고개를 내밀고 있었다. 키안은 반사적으로 말소리가 난 쪽으로 고개를 돌렸다. 소녀의 얼굴은 그의 코 끝이 그녀의 뺨에 닿을 듯 바로 옆에 있었다.\n\n그녀의 얼굴이 그의 생각보다 가까이 있었는지 키안의 어깨가 움찔거리며 그의 자세가 옆으로 무너졌다.\n\n“그건 나도 알아.”\n\n키안은 엉거주춤한 자세로 일어서며 대답했다. 소녀도 숙이고 있던 허리를 천천히 폈다.\n\n“내가 또 도와줬네?”\n\n소녀는 발랄한 미소를 띄운 채 무언가 할 말이 있지 않냐는 듯 키안을 빤히 쳐다봤다. 하지만 키안은 의미를 모르겠다는 듯 눈썹 하나를 치켜 올린 표정으로 그녀의 얼굴을 가만히 바라보고만 있었다.\n\n둘 사이에 잠깐 침묵이 흐른 후 키안이 먼저 입을 열었다.\n\n“나도 이건 먹으면 안 되는 거 알아. 옛날에 먹어봤으니까.”\n\n그가 고개를 돌리며 대답하는 순간 그녀의 입에서 ‘풉’ 하고 작은 웃음소리가 터져 나왔다. 이건 또 무슨 의미인가 싶어 다시 그녀를 돌아봤을 때는 소녀는 웃음을 참는 듯 다른 쪽으로 고개를 돌리고 있었다. 그녀의 입가가 한 쪽만 올라가 있는 것이 키안은 왠지 기분이 나빴다.\n\n눈동자만 움직여 자신을 흘겨 보는 소녀를 내버려두고 키안은 재빨리 그곳을 벗어났다.\n\n다시 먹을 만한 걸 찾아 숲을 돌아다니는 내내 그의 뒤에서 발소리 하나가 자꾸만 따라왔다.\n\n그 소리가 신경 쓰여 멈춰 서 뒤를 돌아보면 뾰족 귀를 가진 소녀가 서 있었다. 그녀는 그와 눈이 마주칠 때면 휘파람을 불며 주변 풍경을 이리저리 둘러봤다.\n\n“왜 따라 오는 거야?”\n\n그의 질문에 소녀가 뚱딴지 같은 소리를 다 듣는다는 표정을 지으며 고개를 갸웃거렸다.\n\n“따라 간 적 없는데? 나는 내가 갈 길을 가는 거야.”\n\n“어디로 가는 건데?”\n\n“어딜 가려는 건 아니고······. 그냥 찾는 게 좀 있어서.”\n\n“뭘 찾는데?”\n\n“알려주면 찾는 거 네가 도와 줄 거야?”\n\n키안은 조용히 고개를 돌렸다. 오늘 먹을 것도 못 찾았는데 남의 사정 따윈 알 바 아니었다.\n\n한참을 돌아다니다 보니 가슴 높이 정도로 자란 덤불이 보였다. 어디서 본 기억이 있어 가까이 가자, 쪽빛 열매가 덤불 사이사이에 달려 있었다. 이건 먹을 수 있는 것이라 확신을 가지고 말 할 수 있었다. 비록 식감은 물컹하고 맛은 시큼하지만 어쨌든 먹을 수는 있었다.\n\n키안이 셔츠 밑단을 위로 올려 바구니 모양을 만든 후 열매를 가득 담기 시작했다. 그 모습을 지켜보던 소녀가 셔츠 위의 열매 더미에 불쑥 손을 뻗었다. 그리고는 손가락으로 이리저리 열매를 고르더니 한 알 씩 집어 땅에 버리기 시작했다.\n\n“뭐 하는 거야!”\n\n키안이 소스라치게 놀라며 소리쳤다. 그는 셔츠에 담은 열매가 쏟아질까 조심스레 그 자리에 앉으며 소녀가 버린 열매를 다시 주워 담았다.\n\n소녀는 그가 다시 주워 담은 열매를 다시 골라 내어 멀리 던져 버렸다.\n\n“이건 다 못 먹는 것들이야. 이건 덜 익은 거고, 이건 벌레가 속을 파먹었네. 가만히 좀 있어봐 내가 알아서 골라 줄 테니까.\n\n“다 먹을 수 있는 거야!”\n\n소녀는 짧게 한숨을 쉬며 열매 하나를 골라 키안의 입가에 가져다 댔다.\n\n“이건 네가 고른 거야.”\n\n키안은 버벅거리는 동작으로 열매를 입안에 넣었다. 씹으니 물컹한 식감과 시큼한 맛이 느껴졌다. 끝맛이 씁쓸한 것이 조금 거슬렸지만 어쨌든 씹고 삼키는 데는 문제 없었다.\n\n“맛없지? 이건 내가 고른 거야.”\n\n소녀가 다른 열매 하나를 다시 그의 입에 가져다 댔다.\n\n물컹한 것은 똑같았지만 시큼하지 않았다. 오히려 은은한 단맛과 새콤한 맛이 조화를 이루고 있었다.\n\n맛있었다.\n\n“어때?”\n\n소녀가 특유의 의기양양한 표정으로 물었다. 그러나 처음부터 그의 대답을 기다릴 생각은 없었던 모양이었다.\n\n“아니 대답하지 마. 표정만 봐도 알겠네.”\n\n키안은 입안에 남은 단맛을 음미하느라 잠시 뜸을 들인 후 대답했다.\n\n“다 먹을 수 있는 거야. 버릴 필요는 없잖아.”\n\n“먹을 수 있다고 다 먹으면 그게 사람이야? 짐승이지.”\n\n소녀는 기가 차다는 듯 코웃음을 쳤다.\n\n“근데 뭐 잊은 거 없어?”\n\n“응? 아······.”\n\n키안은 허리를 꼿꼿히 세운 체 앉으며 소녀가 버린 열매에 손을 뻗었다. 맛은 없지만 중요한 양식이다.\n\n“아니 그거 말고.”\n\n소녀는 그가 집어려던 열매를 먼저 집어들고는 아까보다 더 멀리 던져 버렸다. 눈으로 쫓을 수 없을 만큼 빠른 동작이었다.\n\n“도움을 받았으면 고맙다고 해야지. 인간들은 왜 이렇게 예의가 없어?”\n\n“아, 고마······.”\n\n“아냐, 됐어. 억지로 안 해도 돼. 그 정도로 힘든 일은 아니었으니까.”\n\n소녀는 가슴을 펴며 뿌듯한 표정을 지었다. 중간에 말이 잘린 탓에 키안의 입은 어중간하게 벌어진 채 굳어버렸다. 그 상태로 그의 눈이 두어번 꿈벅거렸다.\n\n소녀는 멍청해 보이는 표정을 짓고 있는 키안을 무시하고 그의 셔츠 위의 열매 더미에 눈길을 보냈다.\n\n“근데 그걸 혼자 다 먹으려고?”\n\n그녀의 물음에 키안은 입을 닫고 열매를 내려다 봤다. 그는 곧바로 고개를 들고 대답했다.\n\n“같이 나눠 먹을 거야.”\n\n“응? 나랑?”\n\n키안은 소녀를 향해 미간을 살짝 찌푸린 후 다시 셔츠 위를 내려다 봤다.\n\n“동생들이랑 나눠 먹을 거야.”\n\n“뭐? 설마 가족이 있어?“\n\n소녀는 뭔가 의외라는 표정으로 듯 몇 걸음 뒤로 물러나며 콧소리 섞인 투로 중얼거렸다.\n\n“이건 생각한 거랑 좀 다른데······.”\n\n소녀는 그 자리에 선 채 무언가 생각에 빠진 듯한 표정을 지으며 멍하니 허공을 바라봤다. 갑자기 입을 다문 그녀를 살펴보던 키안은 조심스레 그녀의 곁을 지나쳐 왔던 길을 되돌아 갔다. 이상한 여자를 만나서 시간은 좀 걸렸지만 어쨌든 먹을 걸 구했으니 동생들에게 돌아갈 차례였다.\n\n그가 열매를 한 알이라도 흘릴까 셔츠를 내려다보며 조심스레 발걸음을 옮기고 있을 때 갑자기 정면에서 짜증 섞인 목소리가 들렸다.\n\n“그냥 가는 게 어딨어!”\n\n큰  목소리에 키안은 눈썹을 움찔하며 셔츠에서 고개를 들었다. 그러자 정면에는 은발의 소녀가 팔짱을 낀 채 짝다리로 서 있었다.\n\n“이렇게 뜻밖의 도움을 받았으면 ‘정말 감사드립니다. 저는 누구라고 합니다. 도움을 주신 분의 성함을 알고 싶군요.’ 이렇게 말해야지.”\n\n키안은 눈을 한 번 감았다 뜨며 그녀에게 물었다.\n\n“···왜?”\n\n순수한 의문이었다. 키안은 그녀가 말하는 행동의 흐름이 왜 있어야 하는지 이해되지 않았다.\n\n얼빠진 표정을 하고 있는 키안을 본 소녀가 탄식을 내뱉었다.\n\n“하······. 이런 기본적인 것도 모르면 어쩌란 거야.”\n\n소녀는 바닥을 돌멩이 하나를 발 끝으로 굴리며 말을 이었다.\n\n“우리 엘프 아이들은 알아서 잘 자라는데 인간들은 누가 안 가르쳐주면 아무것도 못 하는구나······.”\n\n혼자 알 수 없는 말을 중얼거리는 소녀를 향해 키안이 혼잣말인지 질문인지 모를 말을 내뱉었다.\n\n“엘프? 그게 뭐지?”\n\n그의 질문에 소녀의 입이 숨을 삼키는 소리와 함께 조금 벌어졌다. 꽤나 당황했는지 그녀의 눈꺼풀이 여러번 깜빡거렸다.\n\n“···엘프가 뭔지 몰라? 네 눈 앞에 있잖아.”\n\n그녀의 말에 키안은 어리둥절한 표정을 한 채 셔츠 위의 열매를 내려다봤다.\n\n“그거는 블루 베리고. 내가 엘프잖아.”\n\n“엘프?”\n\n그의 입에서 또 한 번 얼빠진 목소리가 나왔다. 소녀는 자신의 귀를 가리키며 그에게 눈썹을 으쓱해 보였다. 하지만 키안은 여전히 멍하니 서 있었다.\n\n“귀가 뾰족하잖아. 그럼 엘프잖아?”\n\n“아······. 엘프.”\n\n귀가 뾰족하면 엘프. 자신이 먹은 열매가 블루 베리란 것과 함께 오늘 처음 안 사실이었다.\n\n그의 반응을 본 엘프의 어깨가 축 쳐졌다. 그녀는 아무 말 없이 어깨 부근의 머리카락을 손가락으로 꼬며 주변 풍경을 멍하니 바라보았다.\n\n잠시 후 그녀는 꼬고 있던 머리카락을 손가락으로 훑으며 가지런히 정리했다. 그리고 아까보다 낮아진 목소리로 입을 열었다.\n\n“뭐, 내 덕에 엘프가 뭔지도 알게 됐지? “\n\n키안은 조심스레 고개를 끄덕거렸다. 그 모습을 본 엘프의 눈가가 매섭게 좁아졌다.\n\n“고, 고마워.”\n\n“그게 끝이야?”\n\n키안은 그녀의 날카로운 시선을 피해 허공에 시선을 던지며 다음으로 해야 할 행동을 떠올려 봤다.\n\n“내가 어떻게 하라고 했지?”\n\n“아! 난 키안··· 이라고 해. 그, 음, 도움을 주신 분의 이름을 알 수 있을까요······?”\n\n엘프 소녀는 무표정한 얼굴로 그를 잠시 바라보다 눈을 감고 고개를 끄덕였다. 그녀는 자신의 이름을 말하기 전 헛기침을 하며 목을 가다듬었다.\n\n“난 이브노바야. 이브노바 델 이코벨라우나.”\n\n자신의 이름을 말하는 그녀의 목소리는 크고 또렷했다. 하지만 키안에겐 너무 길어서 기억하기 힘든 이름이었다.\n\n서로 이름을 밝힌 둘 사이에 어색한 침묵이 흘렀다. 키안이 이브노바의 눈치를 살피며 조심스레 다시 발걸음을 옮기려 하는 순간 그녀가 큰 걸음으로 그에 앞에 걸어와 섰다.\n\n“그런데 말이야. 도움을 받으면 그걸 보답하는 게 또 예의거든?”\n\n그녀는 키안 앞을 좌우로 왔다갔다 하며 말을 이었다.\n\n“기억할지는 모르겠지만 내가 찾는 게 있는 데 말이야. 그걸 좀 같이 찾아줬으면 해.”\n\n움직이던 그녀는 멈춰선 후 고개를 들고 키안과 눈을 마주쳤다. 그녀의 짙은 녹색 눈동자가 키안의 평범한 갈색 눈동자에 비춰졌다.\n\n“그게 뭔데?”\n\n“말해줘도 모를 거야. 그보다 네 동생들은 어디 살아? 한번 보고 가도 되지?”\n\n키안은 꺼림직하게 고개를 끄덕였다. 어차피 오늘 이브노바의 행적으로 미뤄봐서는 자신이 데려가지 않아도 본인 마음대로 따라올 것 같았다. 생각을 마친 키안은 조심스레 발걸음을 옮겼고 이브노바는 지팡이를 짚으며 그의 뒤를 따라 나섰다.\n\n이브노바를 뒤에 달고 길을 걸으며 그녀가 여기서 뭘 찾으려는 건지 나름대로 추측해보던 키안은 문득 한 기억이 떠올랐다.\n\n“그러고 보니까 지난번에 다른 사람도 너처럼 뭔가 찾고 있다고 하던데.”\n\n“···누가? 뭐를?”\n\n잠깐 시간을 두고 나온 이브노바의 목소리가 아까보다 살짝 낮아졌지만 키안은 눈치채지 못했다.\n\n“누군지는 몰라. 어떤 여자가 너처럼 귀가 뾰족한 여자를 봤는지 물어보더라고. 근데 난 그런 여자는 오늘 처음 본 거니까 그 땐 본 적 없다고 했지. 아, 아니구나.”\n\n키안의 미간이 살짝 찌푸려지며 눈동자가 위를 향했다.\n\n“그 여자도 귀가 뾰족했던 거 같은데.”\n";
@@ -539,7 +548,7 @@ public class EditorContractCommunicator : IContractCommunicator
             {
                 break;
             }
-            Dictionary<string, object> dic = new Dictionary<string,object>();
+            Dictionary<string, object> dic = new Dictionary<string, object>();
             dic["id"] = commentId;
             dic["nickname"] = "Crow" + commentId;
             dic["block"] = 1234567890;
@@ -604,7 +613,7 @@ public class EditorContractCommunicator : IContractCommunicator
             CountryData countryData = new CountryData();
             countryData.id = cid;
             countryData.population = 0;
-            
+
             int logCount = UnityEngine.Random.Range(0, 150);
             for (int lid = 0; lid < logCount; lid++)
             {
@@ -663,7 +672,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
             countryDataArchive.Add(countryData);
         }
-        
+
     }
 
     public void reqCountryData(int _cid)
@@ -917,7 +926,7 @@ public class EditorContractCommunicator : IContractCommunicator
 
         List<Dictionary<string, object>> candidateDataList = new List<Dictionary<string, object>>();
 
-        foreach(CandidateData cData in candidateListArchive[_round])
+        foreach (CandidateData cData in candidateListArchive[_round])
         {
             if (cData.canceled)
             {
@@ -944,7 +953,8 @@ public class EditorContractCommunicator : IContractCommunicator
         if (pastRound)
         {
             data["votingCountList"] = totalVotingCountListArchive[_round];
-        } else
+        }
+        else
         {
             List<int> list = new List<int>();
             for (int cid = 0; cid < CountryManager.COUNTRY_MAX; cid++)
@@ -965,7 +975,7 @@ public class EditorContractCommunicator : IContractCommunicator
         int round = _data.round;
         List<CandidateData> list = candidateListArchive[round];
         int maxId = 0;
-        foreach(CandidateData cData in list)
+        foreach (CandidateData cData in list)
         {
             if (cData.countryId != _data.countryId)
             {
@@ -985,7 +995,7 @@ public class EditorContractCommunicator : IContractCommunicator
         _data.nftReturned = false;
         _data.registBlock = SystemInfoManager.instance.blockNumber;
 
-        for(int i = 0; i < characterListArchive.Count; i++)
+        for (int i = 0; i < characterListArchive.Count; i++)
         {
             CharacterData characterData = characterListArchive[i];
             if (characterData.tokenId == _data.tokenId)
@@ -1010,7 +1020,7 @@ public class EditorContractCommunicator : IContractCommunicator
     {
         int round = _data.round;
         List<CandidateData> list = candidateListArchive[round];
-        for(int i = 0; i < list.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
             CandidateData cData = list[i];
             if (cData.countryId == _data.countryId && cData.id == _data.id)
@@ -1159,7 +1169,7 @@ public class EditorContractCommunicator : IContractCommunicator
     public void reqNotVotedCharacterList(int _round, int[] _list)
     {
         List<int> notVotedCharacterIdList = new List<int>();
-        foreach(int id in _list)
+        foreach (int id in _list)
         {
             if (!votingDataListArchive[_round].Contains(id))
             {
@@ -1187,7 +1197,7 @@ public class EditorContractCommunicator : IContractCommunicator
                 continue;
             }
 
-            foreach(CandidateData candidateData in candidateListArchive[_round])
+            foreach (CandidateData candidateData in candidateListArchive[_round])
             {
                 if (candidateData.countryId == cid && candidateData.id == _candidateIds[cid])
                 {
@@ -1202,6 +1212,300 @@ public class EditorContractCommunicator : IContractCommunicator
         dic["characterIdList"] = _idList;
         var value = JsonConvert.SerializeObject(dic);
         ContractManager.instance.resVoteMonarchElection(value);
+    }
+
+    private int generatedRebellionRound = 0;
+    List<List<RebellionData>> rebellionDataArchive = new List<List<RebellionData>>();
+    private List<List<int>> votingCompletedDataListArchive = new List<List<int>>();
+    private List<List<int>> rebellionJoinDataListArchive = new List<List<int>>();
+
+    private void initRebellionArchive(int _maxRound)
+    {
+        if (generatedRebellionRound >= _maxRound)
+        {
+            return;
+        }
+
+        // add index 0
+        if (candidateListArchive.Count == 0)
+        {
+            rebellionDataArchive.Add(new List<RebellionData>());
+            votingCompletedDataListArchive.Add(new List<int>());
+            rebellionJoinDataListArchive.Add(new List<int>());
+        }
+
+        for (int round = generatedRound + 1; round <= _maxRound; round++)
+        {
+            List<RebellionData> rebellionList = new List<RebellionData>();
+            List<int> votingCompletedIdList= new List<int>();
+            List<int> joinedIdList = new List<int>();
+
+            for (int i = 0; i < 10000; i++)
+            {
+                bool voted = UnityEngine.Random.Range(0, 2) == 0;
+                if (voted)
+                {
+                    votingCompletedIdList.Add(i);
+                }
+                bool joined = UnityEngine.Random.Range(0, 2) == 0;
+                if (joined)
+                {
+                    joinedIdList.Add(i);
+                }
+            }
+
+            rebellionDataArchive.Add(rebellionList);
+            votingCompletedDataListArchive.Add(votingCompletedIdList);
+            rebellionJoinDataListArchive.Add(joinedIdList);
+
+            long rebellionPossibleStartBlock = Const.ELECTION_START_BLOCK + Const.ONE_YEAR * round + Const.QUARTER;
+
+            for (int cid = 0; cid < CountryManager.COUNTRY_ALL; cid++)
+            {
+                bool rebellionDataExist = UnityEngine.Random.Range(0, 2) == 0;
+                if (rebellionDataExist)
+                {
+                    RebellionData rebellionData = new RebellionData();
+                    rebellionData.round = round;
+                    rebellionData.tokenId = UnityEngine.Random.Range(0, 10000);
+                    rebellionData.countryId = cid;
+                    rebellionData.address = "0x10000000000000000" + round + cid;
+                    rebellionData.nickname = "닉네임" + round + cid;
+                    rebellionData.title = "일어나라 동지들이어!! " + round + cid;
+                    rebellionData.contents = "못돼 처먹은 군주를 몰아내자!! " + +round + cid;
+                    rebellionData.url = "https://taleofraynornft.com/";
+
+                    Dictionary<string, float> rebelStat = new Dictionary<string, float>();
+                    rebelStat["player"] = UnityEngine.Random.Range(0, 1000);
+                    rebelStat["att"] = UnityEngine.Random.Range(0, 100000);
+                    rebelStat["def"] = UnityEngine.Random.Range(0, 100000);
+                    rebelStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+                    rebelStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+                    rebellionData.rebelStat = rebelStat;
+
+                    Dictionary<string, float> registanceStat = new Dictionary<string, float>();
+                    registanceStat["player"] = UnityEngine.Random.Range(0, 1000);
+                    registanceStat["att"] = UnityEngine.Random.Range(0, 100000);
+                    registanceStat["def"] = UnityEngine.Random.Range(0, 100000);
+                    registanceStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+                    registanceStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+
+                    rebellionData.myJoinableCharacterIdList = new List<int>();
+                    rebellionData.registanceStat = registanceStat;
+                    rebellionData.nftReturned = UnityEngine.Random.Range(0, 3) != 0;
+                    rebellionData.registBlock = rebellionPossibleStartBlock + (long) UnityEngine.Random.Range(0, Const.QUARTER * 2);
+
+                    rebellionList.Add(rebellionData);
+                }
+            }
+
+        }
+        generatedRebellionRound = _maxRound;
+
+        Debug.Log("initRebellionArchive maxRound = " + _maxRound);
+    }
+
+    public void reqRoundRebellionList(int _round)
+    {
+        initRebellionArchive(_round);
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+
+        data["round"] = _round;
+
+        List<Dictionary<string, object>> candidateDataList = new List<Dictionary<string, object>>();
+
+        foreach (RebellionData rData in rebellionDataArchive[_round])
+        {
+            bool finished = rData.registBlock + Const.REBELLION_RECRUITMENT_PERIOD <= SystemInfoManager.instance.blockNumber;
+
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic["round"] = rData.round;
+            dic["tokenId"] = rData.tokenId;
+            dic["country"] = rData.countryId;
+            dic["address"] = rData.address;
+            dic["nickname"] = rData.nickname;
+            dic["title"] = rData.title;
+            dic["contents"] = rData.contents;
+            dic["url"] = rData.url;
+            dic["rebelStat"] = finished ? rData.rebelStat : new Dictionary<string, float>();
+            dic["registanceStat"] = finished ? rData.registanceStat : new Dictionary<string, float>();
+            dic["idList"] = CharacterManager.instance.getMyCharacterList().ConvertAll(cd => cd.tokenId).FindAll(id => votingCompletedDataListArchive[_round].Contains(id) && !rebellionJoinDataListArchive[_round].Contains(id));
+            dic["nftReturned"] = rData.nftReturned;
+            dic["registBlock"] = rData.registBlock;
+
+            candidateDataList.Add(dic);
+        }
+
+        data["idList"] = CharacterManager.instance.getMyCharacterList().ConvertAll(cd => cd.tokenId).FindAll(id => votingCompletedDataListArchive[_round].Contains(id));
+        data["list"] = candidateDataList;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resRoundRebellionList(value);
+    }
+
+    public void addRebellionData(RebellionData _data)
+    {
+        int round = _data.round;
+        List<RebellionData> list = rebellionDataArchive[round];
+        list.Add(_data);
+
+        _data.nftReturned = false;
+        _data.registBlock = SystemInfoManager.instance.blockNumber;
+
+        Dictionary<string, float> rebelStat = new Dictionary<string, float>();
+        rebelStat["player"] = UnityEngine.Random.Range(0, 1000);
+        rebelStat["att"] = UnityEngine.Random.Range(0, 100000);
+        rebelStat["def"] = UnityEngine.Random.Range(0, 100000);
+        rebelStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+        rebelStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+        _data.rebelStat = rebelStat;
+
+        Dictionary<string, float> registanceStat = new Dictionary<string, float>();
+        registanceStat["player"] = UnityEngine.Random.Range(0, 1000);
+        registanceStat["att"] = UnityEngine.Random.Range(0, 100000);
+        registanceStat["def"] = UnityEngine.Random.Range(0, 100000);
+        registanceStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+        registanceStat["attBoost"] = UnityEngine.Random.Range(0, 10000);
+        _data.registanceStat = registanceStat;
+        _data.myJoinableCharacterIdList = CharacterManager.instance.getMyCharacterList().ConvertAll(cd => cd.tokenId).FindAll(id => votingCompletedDataListArchive[round].Contains(id) && !rebellionJoinDataListArchive[round].Contains(id));
+
+        for (int i = 0; i < characterListArchive.Count; i++)
+        {
+            CharacterData characterData = characterListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                characterListArchive.RemoveAt(i);
+                stakingListArchive.Add(characterData);
+
+                StakingData stakingData = new StakingData();
+                stakingData.tokenId = characterData.tokenId;
+                stakingData.startBlock = SystemInfoManager.instance.blockNumber;
+                stakingData.endBlock = 0;
+                stakingData.purpose = StakingManager.PURPOSE_REBELLION;
+                stakingDataArchive.Add(characterData.tokenId, stakingData);
+                break;
+            }
+        }
+
+        responceRebellionData(_data);
+    }
+
+    public void revolutionRebellionData(RebellionData _data)
+    {
+        int round = _data.round;
+        List<RebellionData> list = rebellionDataArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            RebellionData rData = list[i];
+            if (rData.countryId == _data.countryId)
+            {
+                rData.nftReturned = true;
+                break;
+            }
+        }
+
+        _data.nftReturned = true;
+
+        for (int i = 0; i < stakingListArchive.Count; i++)
+        {
+            CharacterData characterData = stakingListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                stakingListArchive.RemoveAt(i);
+                characterListArchive.Add(characterData);
+
+                stakingDataArchive.Remove(characterData.tokenId);
+                break;
+            }
+        }
+
+        CastleData castleData = countryDataArchive[_data.countryId].castleData;
+        castleData.monarchId = _data.tokenId;
+
+        responceRebellionData(_data);
+    }
+
+    public void returnRebellionData(RebellionData _data)
+    {
+        int round = _data.round;
+        List<RebellionData> list = rebellionDataArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            RebellionData rData = list[i];
+            if (rData.countryId == _data.countryId)
+            {
+                rData.nftReturned = true;
+                break;
+            }
+        }
+
+        _data.nftReturned = true;
+
+        for (int i = 0; i < stakingListArchive.Count; i++)
+        {
+            CharacterData characterData = stakingListArchive[i];
+            if (characterData.tokenId == _data.tokenId)
+            {
+                stakingListArchive.RemoveAt(i);
+                characterListArchive.Add(characterData);
+
+                stakingDataArchive.Remove(characterData.tokenId);
+                break;
+            }
+        }
+
+        responceRebellionData(_data);
+    }
+
+    public void reqJoinRebellion(RebellionData _data, bool _isRebel)
+    {
+        int round = _data.round;
+        List<RebellionData> list = rebellionDataArchive[round];
+        for (int i = 0; i < list.Count; i++)
+        {
+            RebellionData rData = list[i];
+            if (rData.countryId == _data.countryId)
+            {
+                Dictionary<string, float> stat = _isRebel ? rData.rebelStat : rData.registanceStat;
+                stat["player"] += _data.myJoinableCharacterIdList.Count;
+                CharacterManager.instance.getMyCharacterList().FindAll(cd => _data.myJoinableCharacterIdList.Contains(cd.tokenId)).ConvertAll(cd => cd.statusData.att).ForEach(att => stat["att"] += att);
+                CharacterManager.instance.getMyCharacterList().FindAll(cd => _data.myJoinableCharacterIdList.Contains(cd.tokenId)).ConvertAll(cd => cd.statusData.def).ForEach(def => stat["def"] += def);
+
+                Dictionary<string, object> dic = new Dictionary<string, object>();
+                dic["idList"] = rData.myJoinableCharacterIdList.ToArray();
+                dic["isRebel"] = _isRebel;
+
+                rebellionJoinDataListArchive.Add(_data.myJoinableCharacterIdList);
+                rData.myJoinableCharacterIdList.Clear();
+                responceRebellionData(rData);
+
+                var value = JsonConvert.SerializeObject(dic);
+                mContractManager.resJoinRebellion(value);
+                break;
+            }
+        }
+    }
+
+    private void responceRebellionData(RebellionData _data)
+    {
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic["round"] = _data.round;
+        dic["tokenId"] = _data.tokenId;
+        dic["country"] = _data.countryId;
+        dic["address"] = _data.address;
+        dic["nickname"] = _data.nickname;
+        dic["title"] = _data.title;
+        dic["contents"] = _data.contents;
+        dic["url"] = _data.url;
+        dic["rebelStat"] = _data.rebelStat;
+        dic["registanceStat"] = _data.registanceStat;
+        dic["idList"] = _data.myJoinableCharacterIdList;
+        dic["nftReturned"] = _data.nftReturned;
+        dic["registBlock"] = _data.registBlock;
+
+        var value = JsonConvert.SerializeObject(dic);
+        mContractManager.resUpdateRebellionData(value);
     }
 
     public void reqConstantValues()
@@ -1305,7 +1609,7 @@ public class EditorContractCommunicator : IContractCommunicator
     public void reqOfferAgenda(AgendaData _agendaData)
     {
         int lastId = 0;
-        foreach(AgendaData ad in agendaListArchive)
+        foreach (AgendaData ad in agendaListArchive)
         {
             if (ad.id > lastId)
             {
@@ -1338,7 +1642,7 @@ public class EditorContractCommunicator : IContractCommunicator
         data["nftReturned"] = _agendaData.nftReturned;
         data["notVotedIdList"] = _agendaData.notVotedIdList;
 
-        agendaVotedTokenListMap.Add(lastId + 1, new List<int> {});
+        agendaVotedTokenListMap.Add(lastId + 1, new List<int> { });
         agendaListArchive.Add(_agendaData);
 
         var value = JsonConvert.SerializeObject(data);
@@ -1347,7 +1651,7 @@ public class EditorContractCommunicator : IContractCommunicator
         for (int i = 0; i < _agendaData.proposalTokenIdList.Count; i++)
         {
             int tokenId = _agendaData.proposalTokenIdList[i];
-            foreach(CharacterData cd in characterListArchive)
+            foreach (CharacterData cd in characterListArchive)
             {
                 if (cd.tokenId == tokenId)
                 {
@@ -1490,4 +1794,84 @@ public class EditorContractCommunicator : IContractCommunicator
         var value = JsonConvert.SerializeObject(data);
         mContractManager.resUpdateAgendaData(value);
     }
+
+    private void initSellItemArchive()
+    {
+        if (sellItemDataArchive.Count > 0)
+        {
+            return;
+        }
+
+        SellItemData data1 = new SellItemData();
+        data1.id = 1;
+        data1.price = new BigInteger(10000000000000000000);
+        data1.sellPrice = new BigInteger(1000000000000000000);
+        data1.deadline = blockNumber + 86400;
+        data1.remainCount = UnityEngine.Random.Range(0, 100); // buy count
+        sellItemDataArchive[1] = data1;
+    }
+
+    public void reqSellItemList()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        List<Dictionary<string, object>> itemList = new List<Dictionary<string, object>>();
+        foreach (SellItemData sd in sellItemDataArchive.Values)
+        {
+            Dictionary<string, object> itemData = new Dictionary<string, object>();
+
+            itemData["id"] = sd.id;
+            if (sd.id == 1) {
+                int remainCount = characterListArchive.Count - sd.remainCount;
+                if (remainCount <= 0)
+                {
+                    remainCount = -1;
+                }
+                itemData["price"] = (sd.price * (remainCount < 0 ? 5 : 1)).ToString();
+                itemData["remainCount"] = remainCount;
+            } else
+            {
+                itemData["price"] = sd.price.ToString();
+                itemData["remainCount"] = -1; // infinity
+            }
+            itemData["sellPrice"] = sd.sellPrice.ToString();
+            itemData["deadline"] = sd.deadline;
+
+            itemList.Add(itemData);
+        }
+
+        data["itemList"] = itemList;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resSellItemList(value);
+    }
+
+    private void initInventoryItemArchive()
+    {
+        if (inventoryDataArchive.Count > 0)
+        {
+            return;
+        }
+
+        inventoryDataArchive[1] = UnityEngine.Random.Range(0, 100);
+    }
+
+    public void reqInventoryItemList()
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        List<Dictionary<string, object>> itemList = new List<Dictionary<string, object>>();
+        foreach (int id in inventoryDataArchive.Keys)
+        {
+            Dictionary<string, object> itemData = new Dictionary<string, object>();
+
+            itemData["id"] = id;
+            itemData["count"] = inventoryDataArchive[id];
+
+            itemList.Add(itemData);
+        }
+        data["itemList"] = itemList;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resInventoryItemList(value);
+    }
+
 }

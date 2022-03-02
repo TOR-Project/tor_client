@@ -27,7 +27,7 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
     GlobalUIWindowController globalUIWindowController;
 
     private int round = 0;
-    private List<int> characterIdList = null;
+    private List<int> noteVotedIdList = null;
     private int[] votingCount = new int[CountryManager.COUNTRY_MAX];
 
     private void OnEnable()
@@ -98,7 +98,7 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
             votingCount[i] = 0;
         }
 
-        characterIdList = _characterIdList;
+        noteVotedIdList = _characterIdList;
         foreach(int tokenId in _characterIdList)
         {
             CharacterData characterData = CharacterManager.instance.getMyCharacterData(tokenId);
@@ -130,7 +130,10 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
 
     public void onVoteButtonClicked()
     {
-        // TODO
+        if (noteVotedIdList == null)
+        {
+            noteVotedIdList = new List<int>();
+        }
 
         int[] candidateIds = new int[pollsPanelControllerArr.Length];
         int[] voteCounts = new int[pollsPanelControllerArr.Length];
@@ -144,11 +147,12 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
 
             if (selectedId > 0)
             {
-                foreach (CharacterData data in CharacterManager.instance.getMyCharacterList())
+                foreach (int notVotedId in noteVotedIdList)
                 {
-                    if (data.country == cid)
+                    CharacterData data = CharacterManager.instance.getMyCharacterData(notVotedId);
+                    if (data != null && data.country == cid)
                     {
-                        characterIdList.Add(data.tokenId);
+                        characterIdList.Add(notVotedId);
                     }
                 }
             }
@@ -166,9 +170,9 @@ public class PollsPlaceController : MonoBehaviour, CandidateObserver
     {
         foreach(int characterId in _voteCompletedIdList)
         {
-            characterIdList.Remove(characterId);
+            noteVotedIdList.Remove(characterId);
         }
 
-        updatePollsPanel(characterIdList);
+        updatePollsPanel(noteVotedIdList);
     }
 }
