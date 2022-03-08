@@ -139,6 +139,7 @@
         {"key":"ID_MINE_CHARACTER_TITLE",                   "value":"채굴"},
         {"key":"ID_ELECTION_CHARACTER_TITLE",               "value":"군주 출마"},
         {"key":"ID_GOVERNANCE_CHARACTER_TITLE",             "value":"거버넌스 등록"},
+        {"key":"ID_REBELLION_CHARACTER_TITLE",              "value":"반란 주도"},
         {"key":"ID_REMAIN_CHARACTER_TITLE",                 "value":"잔여 모험가"},
         {"key":"ID_CANT_ENTER_CHARACTER",                   "value":"루그란디스에 등록되지 않은 모험가를 확인중에 있습니다!\n잠시만 기다려 주세요."},
         {"key":"ID_INIT_CHARACTER_EXP",                     "value":"루그란디스에 등록되지 않은 모험가가 발견되었습니다!\n모험가 등록을 시작합니다."},
@@ -208,6 +209,7 @@
         {"key":"ID_REBELLION_REGIST_FEE_LEAK",              "value":"반란 성명서 등록에 필요한 TRT가 부족합니다.\n반란에는 {0}TRT가 필요합니다."},
         {"key":"ID_REBELLION_STATEMENT_WARNING",            "value":"나는 ToR의 역사와 미래를 위해 혼신의 힘을 다하여 투쟁할 것을 엄숙히 선언합니다."},
         {"key":"ID_REBELLION_STATEMENT_TITLE",              "value":"성명서"},
+        {"key":"ID_REBELLION_STATEMENT_WIRTE_TITLE",        "value":"성명서 작성"},
         {"key":"ID_JOIN_REBEL",                             "value":"반란군 가입"},
         {"key":"ID_JOIN_RESISTANCE",                        "value":"저항군 가입"},
         {"key":"ID_WIN_REBEL",                              "value":"혁명군 승리"},
@@ -236,6 +238,7 @@
         {"key":"ID_REBELLION_JOIN_COMPLETED",               "value":"{0}명의 모험가가 {1}에 가입하였습니다."},
         {"key":"ID_REBEL",                                  "value":"반란군"},
         {"key":"ID_RESISTANCE",                             "value":"저항군"},
+        {"key":"ID_REBELLION_REMAIN_BLOCK",                 "value":"({0:#,###} block 남음)"},
         
         {"key":"ID_LUGRANDIS",                              "value":"Lugrandis"},
         {"key":"ID_ALL_REGION",                             "value":"All Region"},

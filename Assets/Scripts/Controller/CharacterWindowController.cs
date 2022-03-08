@@ -16,6 +16,8 @@ public class CharacterWindowController : MonoBehaviour
     [SerializeField]
     Text governanceCharacterCountText;
     [SerializeField]
+    Text rebellionCharacterCountText;
+    [SerializeField]
     Text remainCharacterCountText;
 
     private void OnEnable()
@@ -58,6 +60,7 @@ public class CharacterWindowController : MonoBehaviour
         miningCharacterCountText.text = miningCount.ToString();
         electionCharacterCountText.text = electionCount.ToString();
         governanceCharacterCountText.text = governanceCount.ToString();
+        rebellionCharacterCountText.text = rebellionCount.ToString();
         remainCharacterCountText.text = (characterList.Count - miningCount - electionCount - governanceCount - rebellionCount).ToString();
     }
 }

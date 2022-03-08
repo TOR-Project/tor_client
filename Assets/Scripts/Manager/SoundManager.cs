@@ -69,6 +69,7 @@ public class SoundManager : MonoBehaviour
         if (currentBgm != null)
         {
             bgmPlayer.clip = currentBgm;
+            bgmPlayer.loop = true;
             bgmPlayer.Play();
         }
     }

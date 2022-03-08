@@ -23,6 +23,9 @@ public class LoginWindowController : MonoBehaviour
     [SerializeField]
     GameObject titleWindow;
 
+    [SerializeField]
+    SoundLoadingComponent soundLoadingComponent;
+
     private void Awake()
     {
         StartCoroutine(updateNotice());
@@ -34,6 +37,8 @@ public class LoginWindowController : MonoBehaviour
         SystemInfoManager.instance.stopServerStateChecker();
         SystemInfoManager.instance.stopBlockNumberChecker();
         globalUIController.hideInfoPanel();
+
+        SoundManager.instance.requestSound("main", "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/sound/main+menu/bgm/main.mp3", true, () => SoundManager.instance.playBgm("main"), null);
     }
 
     private IEnumerator updateNotice()

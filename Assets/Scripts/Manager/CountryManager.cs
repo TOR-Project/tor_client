@@ -266,6 +266,14 @@ public class CountryManager : MonoBehaviour
         countryDataCallbackPendingMap[cid].Clear();
     }
 
+    public void resetLastUpdatedBlock()
+    {
+        for (int cid = 0; cid < countryDataMap.Count; cid++)
+        {
+            countryDataMap[cid].lastUpdatedBlock = 0;
+        }
+    }
+
     public CountryData getCountryData(int _cid)
     {
         if (countryDataMap.ContainsKey(_cid)) return countryDataMap[_cid];

@@ -6,17 +6,20 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 using System.Runtime.InteropServices;
-public class StatementController : MonoBehaviour
+public class StatementController : MonoBehaviour, BlockNumberObserever
 {
     [DllImport("__Internal")]
     private static extern void OpenTab(string url);
 
+    bool updateBlock = false;
     int round = 0;
     int cid = 0;
     RebellionData rebellionData = null;
 
     [SerializeField]
     Text statementTitleText;
+    [SerializeField]
+    Text remainBlockText;
 
     [SerializeField]
     GameObject selectGuidePanel;
@@ -97,6 +100,12 @@ public class StatementController : MonoBehaviour
     {
         rebelBattleScoreSlidingController.setFormat("{0:#,###}");
         registanceBattleScoreSlidingController.setFormat("{0:#,###}");
+        SystemInfoManager.instance.addBlockNumberObserver(this);
+    }
+
+    private void OnDisable()
+    {
+        SystemInfoManager.instance.removeBlockNumberObserver(this);
     }
 
     public void setRuinedTempleWindowController(RuinedTempleWindowController _controller)
@@ -118,6 +127,8 @@ public class StatementController : MonoBehaviour
         if (_data == null)
         {
             statementTitleText.text = "";
+            remainBlockText.text = "";
+            updateBlock = false;
 
             int nowRound = ElectionManager.instance.getElectionRound();
             ElectionState nowState = ElectionManager.instance.getElectionState();
@@ -186,13 +197,16 @@ public class StatementController : MonoBehaviour
             isRevolution = rebelBattleScore >= registanceBattleScore;
         }
 
+        remainBlockText.text = "";
         if (!rebellionFinished)
         {
             statementTitleText.text = LanguageManager.instance.getText("ID_REBELLION_STATEMENT_TITLE");
+            updateBlock = true;
         } else
         {
             statementTitleText.text = isRevolution ? LanguageManager.instance.getText("ID_WIN_REBEL") : LanguageManager.instance.getText("ID_WIN_RESISTANCE");
             rebelBattleScoreTitleText.text = isRevolution ? LanguageManager.instance.getText("ID_REBEL_BATTLE_SCORE_WON") : LanguageManager.instance.getText("ID_REBEL_BATTLE_SCORE");
+            updateBlock = false;
         }
 
         registButton.SetActive(false);
@@ -238,6 +252,10 @@ public class StatementController : MonoBehaviour
     public void updateEditPanel(RebellionData _data)
     {
         rebellionData = _data;
+
+        statementTitleText.text = LanguageManager.instance.getText("ID_REBELLION_STATEMENT_WIRTE_TITLE");
+        remainBlockText.text = "";
+        updateBlock = false;
 
         CharacterData characterData = _data.tokenId == -1 ? null : CharacterManager.instance.getMyCharacterData(_data.tokenId);
         nicknameText.text = _data.nickname;
@@ -377,5 +395,21 @@ public class StatementController : MonoBehaviour
 
         rebelBattleSliderSldingController.reset();
         registanceBattleSliderSldingController.reset();
+    }
+
+    public void onBlockNumberChanged(long _num)
+    {
+        if (rebellionData != null && updateBlock)
+        {
+            long remainTime = rebellionData.registBlock + Const.REBELLION_RECRUITMENT_PERIOD - _num;
+            if (remainTime < 0)
+            {
+                remainTime = 0;
+            }
+            remainBlockText.text = string.Format(LanguageManager.instance.getText("ID_REBELLION_REMAIN_BLOCK"), remainTime);
+        } else
+        {
+            remainBlockText.text = "";
+        }
     }
 }

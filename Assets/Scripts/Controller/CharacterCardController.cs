@@ -219,16 +219,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
 
     public void onMiningDataChaged(MiningData _data)
     {
-        BigInteger totalAmount = 0;
-        for (int i = 0; i < MiningManager.IDX_MAX; i++)
-        {
-            if (i == MiningManager.IDX_COMMISSION || i == MiningManager.IDX_FINAL)
-            {
-                continue;
-            }
-            totalAmount += _data.amount[i];
-        }
-
-        stateText.text = Utils.convertPebToTorStr(totalAmount) + " " + Const.TOR_COIN; // display total amount not final
+        BigInteger basicAmount = _data.amount[MiningManager.IDX_BASIC];
+        stateText.text = Utils.convertPebToTorStr(basicAmount) + " " + Const.TOR_COIN; // display total amount not final
     }
 }

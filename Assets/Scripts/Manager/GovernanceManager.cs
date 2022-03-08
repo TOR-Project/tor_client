@@ -30,19 +30,12 @@ public class GovernanceManager : MonoBehaviour
 
     internal void requestAgendaList()
     {
-        if (lastDataRequestedBlock + requestTermBlock < SystemInfoManager.instance.blockNumber)
-        {
-            agendaList.Clear();
-            lastDataRequestedBlock = SystemInfoManager.instance.blockNumber;
-            ContractManager.instance.reqAgendaList();
-            return;
-        }
         ContractManager.instance.reqAgendaListCount();
     }
 
     public void responseAgendaCount(int _count)
     {
-        if (agendaList.Count != _count)
+        if (_count > 0 && (agendaList.Count != _count || lastDataRequestedBlock + requestTermBlock < SystemInfoManager.instance.blockNumber))
         {
             agendaList.Clear();
             lastDataRequestedBlock = SystemInfoManager.instance.blockNumber;

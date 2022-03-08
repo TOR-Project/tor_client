@@ -204,6 +204,7 @@ public class ElectionOfficeWindowController : MonoBehaviour, CandidateObserver
         congratulationPopupText.text = msg;
         congratulationPopup.SetActive(true);
         posterController.setParticleEnabled(false);
+        CountryManager.instance.resetLastUpdatedBlock();
     }
 
     public void updateCandidateData(CandidateData _data)

@@ -1519,6 +1519,9 @@ public class EditorContractCommunicator : IContractCommunicator
         dic["governanceCharacterCount"] = Const.GOVERNANCE_CHARACTER_COUNT;
         dic["governanceMinPeriod"] = Const.GOVERNANCE_MIN_PROPOSER_PERIOD;
         dic["governanceMaxPeriod"] = Const.GOVERNANCE_MAX_PROPOSER_PERIOD;
+        dic["rebellionRegistFee"] = Const.REBELLION_REGIST_FEE;
+        dic["rebellionJoinFee"] = Const.REBELLION_JOIN_FEE;
+        dic["rebellionRecruitmentPeriod"] = Const.REBELLION_RECRUITMENT_PERIOD;
 
         var value = JsonConvert.SerializeObject(dic);
         mContractManager.resConstantValues(value);

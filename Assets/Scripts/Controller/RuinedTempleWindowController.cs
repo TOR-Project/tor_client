@@ -175,6 +175,7 @@ public class RuinedTempleWindowController : MonoBehaviour, DataObserver<List<Reb
         else
         {
             globalUIWindowController.showConfirmPopup(LanguageManager.instance.getText("ID_REBELLION_REVOLUTION_CONFIRM_TEXT"), () => ContractManager.instance.revolutionRebellionData(_data));
+            CountryManager.instance.resetLastUpdatedBlock();
         }
     }
 
