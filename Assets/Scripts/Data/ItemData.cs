@@ -9,6 +9,7 @@ public class ItemData
     public int id;
     public string nameKey;
     public string expKey;
+    public string usingKey;
     public ItemCategory category;
     public ItemGrade grade;
 
@@ -16,11 +17,12 @@ public class ItemData
     public Sprite imageSpirte;
     private Action loadImagePostAction;
 
-    public ItemData(int _id, string _nameKey, string _expKey, ItemCategory _category, ItemGrade _grade, string _imageUrl)
+    public ItemData(int _id, string _nameKey, string _expKey, string _usingKey, ItemCategory _category, ItemGrade _grade, string _imageUrl)
     {
         id = _id;
         nameKey = _nameKey;
         expKey = _expKey;
+        usingKey = _usingKey;
         category = _category;
         grade = _grade;
         imageUrl = _imageUrl;

@@ -15,11 +15,15 @@ public class SecretShopWindowController : MonoBehaviour, DataObserver<Dictionary
     [SerializeField]
     GameObject inventoryLoading;
     [SerializeField]
-    ShoppingCardPopupController shoppingCardPopupController;
+    ShoppingCartPopupController shoppingCardPopupController;
     [SerializeField]
     SellItemCellController[] sellItemCellControllerArr;
     [SerializeField]
     InventoryItemCellController[] inventoryCellControllerArr;
+    [SerializeField]
+    Animator shoppingCardPopupAnimator;
+
+    private string dismissingTrigger = "dismissing";
 
     private void OnEnable()
     {
@@ -61,6 +65,8 @@ public class SecretShopWindowController : MonoBehaviour, DataObserver<Dictionary
     // responceSellItemList
     public void onDataReceived(Dictionary<int, SellItemData> _data)
     {
+        resetKioskGrid();
+
         List<int> keyList = new List<int>(_data.Keys);
         keyList.Sort();
         for (int idx = 0; idx < keyList.Count; idx++)
@@ -81,6 +87,8 @@ public class SecretShopWindowController : MonoBehaviour, DataObserver<Dictionary
     // responceInventoryItemList
     public void onDataReceived(Dictionary<int, int> _data)
     {
+        resetInventoryGrid();
+
         List<int> keyList = new List<int>(_data.Keys);
         keyList.Sort();
         for (int idx = 0; idx < keyList.Count; idx++)
@@ -109,5 +117,15 @@ public class SecretShopWindowController : MonoBehaviour, DataObserver<Dictionary
     {
         shoppingCardPopupController.showPopup(_data.id, false);
         return true;
+    }
+
+    internal void responseBuyItem()
+    {
+        shoppingCardPopupAnimator.SetTrigger(dismissingTrigger);
+    }
+
+    internal void responseSellItem()
+    {
+        shoppingCardPopupAnimator.SetTrigger(dismissingTrigger);
     }
 }

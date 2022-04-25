@@ -35,6 +35,10 @@ public class ContractManager : MonoBehaviour
     [SerializeField]
     GovernanaceWindowController governanaceWindowController;
     [SerializeField]
+    SecretShopWindowController secretShopWindowController;
+    [SerializeField]
+    InventoryWindowController inventoryWindowController;
+    [SerializeField]
     GlobalUIWindowController globalUIController;
 
     private static ContractManager mInstance;
@@ -93,11 +97,6 @@ public class ContractManager : MonoBehaviour
             return contractLoadedMap[_name];
         }
         return false;
-    }
-
-    public void printLog(string log)
-    {
-        mContractCommunicator.printLog(log);
     }
 
     public void resTransactionError(string _err)
@@ -477,8 +476,9 @@ public class ContractManager : MonoBehaviour
         var characterData = JsonConvert.DeserializeObject < Dictionary<string, object> > (values["characterData"].ToString());
         var statusData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["statusData"].ToString());
         var equipData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["equipData"].ToString());
+        var pfpData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["pfpData"].ToString());
 
-        CharacterManager.instance.parsingCharacterData(characterData, statusData, equipData);
+        CharacterManager.instance.parsingCharacterData(characterData, statusData, equipData, pfpData);
     }
 
     public void reqStakingData(int[] _idList)
@@ -1059,13 +1059,80 @@ public class ContractManager : MonoBehaviour
         InventoryManager.instance.responseInventoryItemList(values);
     }
 
-    internal void reqSellSecretShopItem(int _id, int _value)
+    internal void reqBuySecretShopItem(int _id, int _amount)
     {
-        throw new NotImplementedException();
+        globalUIController.showLoading();
+        Debug.Log("reqBuySecretShopItem()");
+        mContractCommunicator.reqBuySecretShopItem(_id, _amount);
     }
 
-    internal void reqBuySecretShopItem(int _id, int _value)
+    internal void reqSellSecretShopItem(int _id, int _amount)
     {
-        throw new NotImplementedException();
+        globalUIController.showLoading();
+        Debug.Log("reqSellSecretShopItem()");
+        mContractCommunicator.reqSellSecretShopItem(_id, _amount);
     }
+
+    internal void resBuySecretShopItem(string _json)
+    {
+        globalUIController.hideLoading();
+        reqSellItemList();
+        reqInventoryItemList();
+        reqCoinAmount();
+
+        secretShopWindowController.responseBuyItem();
+    }
+
+    internal void resSellSecretShopItem(string _json)
+    {
+        globalUIController.hideLoading();
+        reqInventoryItemList();
+        reqCoinAmount();
+
+        secretShopWindowController.responseSellItem();
+    }
+
+    internal void reqDragonDetectRate()
+    {
+        Debug.Log("reqDragonDetectRate()");
+        mContractCommunicator.reqDragonDetectRate();
+    }
+
+    public void resDragonDetectRate(string _json)
+    {
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int rate = int.Parse(values["rate"].ToString());
+
+        inventoryWindowController.responseDragonDetectRate(rate);
+    }
+
+    internal void reqUseDragonCheckScroll(List<CharacterData> list, int maxCount, int dragonTokenId)
+    {
+        globalUIController.showLoading();
+
+        Debug.Log("reqUseDragonCheckScroll()");
+        mContractCommunicator.reqUseDragonCheckScroll(list, maxCount, dragonTokenId);
+    }
+
+    public void resUseDragonCheckScroll(string _json)
+    {
+        globalUIController.hideLoading();
+
+        var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(_json);
+        int[] list = JsonConvert.DeserializeObject<int[]>(values["tokenIdList"].ToString());
+        int dragonTokenId = int.Parse(values["dragonTokenId"].ToString());
+
+        inventoryWindowController.responseUseDragonCheckScroll(list, dragonTokenId != -1);
+
+        if (dragonTokenId != -1)
+        {
+            var characterData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["characterData"].ToString());
+            var statusData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["statusData"].ToString());
+            var equipData = JsonConvert.DeserializeObject<Dictionary<string, object>>(values["equipData"].ToString());
+
+            CharacterManager.instance.updateMyCharacterData(characterData, statusData, equipData);
+        }
+        reqInventoryItemList();
+    }
+
 }

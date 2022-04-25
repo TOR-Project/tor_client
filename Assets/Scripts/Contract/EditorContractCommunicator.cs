@@ -17,6 +17,7 @@ public class EditorContractCommunicator : IContractCommunicator
     Dictionary<int, CharacterData> allCharacterMapArchive = new Dictionary<int, CharacterData>();
     Dictionary<int, SellItemData> sellItemDataArchive = new Dictionary<int, SellItemData>();
     Dictionary<int, int> inventoryDataArchive = new Dictionary<int, int>();
+    BigInteger myCoin = BigInteger.Parse("1234567800000000000000");
 
     public EditorContractCommunicator(ContractManager cm)
     {
@@ -214,7 +215,7 @@ public class EditorContractCommunicator : IContractCommunicator
     public void reqCoinAmount()
     {
         Dictionary<string, object> data = new Dictionary<string, object>();
-        data["amount"] = BigInteger.Parse("1234567800000000000000");
+        data["amount"] = myCoin;
         var values = JsonConvert.SerializeObject(data);
 
         mContractManager.resCoinAmount(values);
@@ -394,6 +395,14 @@ public class EditorContractCommunicator : IContractCommunicator
             equipData["accessory"] = cData.equipData.accessory;
 
             data["equipData"] = JsonConvert.SerializeObject(equipData);
+
+            Dictionary<string, object> pfpData = new Dictionary<string, object>();
+
+            pfpData["address"] = "";
+            pfpData["nftId"] = 0;
+            pfpData["metadataUrl"] = "";
+
+            data["pfpData"] = JsonConvert.SerializeObject(pfpData);
 
             var outValue = JsonConvert.SerializeObject(data);
 
@@ -1805,13 +1814,13 @@ public class EditorContractCommunicator : IContractCommunicator
             return;
         }
 
-        SellItemData data1 = new SellItemData();
-        data1.id = 1;
-        data1.price = new BigInteger(10000000000000000000);
-        data1.sellPrice = new BigInteger(1000000000000000000);
-        data1.deadline = blockNumber + 86400;
-        data1.remainCount = UnityEngine.Random.Range(0, 100); // buy count
-        sellItemDataArchive[1] = data1;
+        SellItemData data = new SellItemData();
+        data.id = 1;
+        data.price = new BigInteger(10000000000000000000);
+        data.sellPrice = new BigInteger(1000000000000000000);
+        data.deadline = blockNumber + 300;
+        data.remainCount = UnityEngine.Random.Range(0, 1000); // buy count
+        sellItemDataArchive[1] = data;
     }
 
     public void reqSellItemList()
@@ -1823,20 +1832,9 @@ public class EditorContractCommunicator : IContractCommunicator
             Dictionary<string, object> itemData = new Dictionary<string, object>();
 
             itemData["id"] = sd.id;
-            if (sd.id == 1) {
-                int remainCount = characterListArchive.Count - sd.remainCount;
-                if (remainCount <= 0)
-                {
-                    remainCount = -1;
-                }
-                itemData["price"] = (sd.price * (remainCount < 0 ? 5 : 1)).ToString();
-                itemData["remainCount"] = remainCount;
-            } else
-            {
-                itemData["price"] = sd.price.ToString();
-                itemData["remainCount"] = -1; // infinity
-            }
+            itemData["price"] = sd.price.ToString();
             itemData["sellPrice"] = sd.sellPrice.ToString();
+            itemData["remainCount"] = sd.remainCount;
             itemData["deadline"] = sd.deadline;
 
             itemList.Add(itemData);
@@ -1864,6 +1862,11 @@ public class EditorContractCommunicator : IContractCommunicator
         List<Dictionary<string, object>> itemList = new List<Dictionary<string, object>>();
         foreach (int id in inventoryDataArchive.Keys)
         {
+            if (inventoryDataArchive[id] <= 0)
+            {
+                continue;
+            }
+
             Dictionary<string, object> itemData = new Dictionary<string, object>();
 
             itemData["id"] = id;
@@ -1877,4 +1880,94 @@ public class EditorContractCommunicator : IContractCommunicator
         mContractManager.resInventoryItemList(value);
     }
 
+    public void reqBuySecretShopItem(int _id, int _amount)
+    {
+        if (sellItemDataArchive[_id].remainCount != -1)
+        {
+            sellItemDataArchive[_id].remainCount -= _amount;
+        }
+        inventoryDataArchive[_id] += _amount;
+        myCoin -= BigInteger.Parse(sellItemDataArchive[_id].price.ToString()) * BigInteger.Parse(_amount.ToString());
+
+        mContractManager.resBuySecretShopItem("");
+    }
+
+    public void reqSellSecretShopItem(int _id, int _amount)
+    {
+        inventoryDataArchive[_id] -= _amount;
+        myCoin += BigInteger.Parse(sellItemDataArchive[_id].sellPrice.ToString()) * BigInteger.Parse(_amount.ToString());
+
+        mContractManager.resSellSecretShopItem("");
+    }
+
+    int dragonFoundCount = 0;
+
+    public void reqDragonDetectRate()
+    {
+        int rate = (10 - dragonFoundCount) * 10;
+
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["rate"] = rate;
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resDragonDetectRate(value);
+    }
+
+    public void reqUseDragonCheckScroll(List<CharacterData> list, int maxCount, int dragonTokenId)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["tokenIdList"] = list.ConvertAll(cd => cd.tokenId).ToArray();
+        data["dragonTokenId"] = dragonTokenId;
+
+        inventoryDataArchive[1] -= maxCount;
+
+        if (dragonTokenId != -1)
+        {
+            CharacterData cData = allCharacterMapArchive[dragonTokenId];
+            cData.race = CharacterManager.RACE_DRAGON;
+            cData.job = CharacterManager.JOB_DRAGON_ILAER + dragonFoundCount;
+            cData.statusData.att = 500;
+            cData.statusData.def = 500;
+            cData.equipData.weapon = 0;
+            cData.equipData.armor = 0;
+            cData.equipData.pants = 0;
+            cData.equipData.head = 0;
+            cData.equipData.shoes = 0;
+            cData.equipData.accessory = 0;
+
+            Dictionary<string, object> characterData = new Dictionary<string, object>();
+            characterData["name"] = cData.name;
+            characterData["tokenId"] = cData.tokenId;
+            characterData["level"] = 10;
+            characterData["exp"] = cData.exp;
+            characterData["country"] = cData.country;
+            characterData["race"] = cData.race;
+            characterData["job"] = cData.job;
+            characterData["statusBonus"] = cData.statusBonus;
+            characterData["version"] = cData.version;
+
+            data["characterData"] = JsonConvert.SerializeObject(characterData);
+
+            Dictionary<string, object> statusData = new Dictionary<string, object>();
+            statusData["att"] = cData.statusData.att;
+            statusData["def"] = cData.statusData.def;
+
+            data["statusData"] = JsonConvert.SerializeObject(statusData);
+
+            Dictionary<string, object> equipData = new Dictionary<string, object>();
+            equipData["weapon"] = cData.equipData.weapon;
+            equipData["armor"] = cData.equipData.armor;
+            equipData["pants"] = cData.equipData.pants;
+            equipData["head"] = cData.equipData.head;
+            equipData["shoes"] = cData.equipData.shoes;
+            equipData["accessory"] = cData.equipData.accessory;
+
+            data["equipData"] = JsonConvert.SerializeObject(equipData);
+
+            dragonFoundCount++;
+        }
+
+        var value = JsonConvert.SerializeObject(data);
+        mContractManager.resUseDragonCheckScroll(value);
+    }
 }

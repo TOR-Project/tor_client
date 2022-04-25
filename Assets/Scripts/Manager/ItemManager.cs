@@ -38,7 +38,9 @@ public class ItemManager : MonoBehaviour
     {
         mInstance = this;
 
-        itemDataMap.Add(1, new ItemData(1, "ID_ITEM_DRAGON_CHECK_SCROLL", "ID_ITEM_DRAGON_CHECK_SCROLL_EXP", ItemCategory.CONSUME, ItemGrade.RARE, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/3_item/1_image/dragon_scroll.png"));
+        itemDataMap.Add(1, new ItemData(1, "ID_ITEM_DRAGON_CHECK_SCROLL", "ID_ITEM_DRAGON_CHECK_SCROLL_EXP", "ID_ITEM_DRAGON_CHECK_SCROLL_USING", ItemCategory.CONSUME, ItemGrade.RARE, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/3_item/1_image/dragon_scroll.png"));
+        itemDataMap.Add(2, new ItemData(2, "ID_ITEM_RENAME_SCROLL", "ID_ITEM_RENAME_SCROLL_EXP", "ID_ITEM_RENAME_SCROLL_USING", ItemCategory.CONSUME, ItemGrade.COMMON, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/3_item/1_image/rename_scroll.png"));
+        itemDataMap.Add(3, new ItemData(3, "ID_ITEM_PFP_CHANGE_SCROLL", "ID_ITEM_PFP_CHANGE_SCROLL_EXP", "ID_ITEM_PFP_CHANGE_SCROLL_USING", ItemCategory.CONSUME, ItemGrade.COMMON, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/2_cypress/3_item/1_image/pfp_change_scroll.png"));
 
         addEquipItemData(1, "ID_EQUIP_NAME_NORMAL_ASSASSIN_DAGGER", EquipItemCategory.WEAPON, ItemGrade.NORMAL, EquipItemJobLimit.ASSASSIN, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Normal+Assassin+Dagger.png");
         addEquipItemData(2, "ID_EQUIP_NAME_RARE_ASSASSIN_DAGGER", EquipItemCategory.WEAPON, ItemGrade.RARE, EquipItemJobLimit.ASSASSIN, EquipItemRaceLimit.ALL, "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/darkelf_assassin/3.+weapon/Rare+Assassin+Dagger.png");

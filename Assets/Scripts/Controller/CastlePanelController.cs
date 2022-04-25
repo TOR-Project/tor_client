@@ -402,7 +402,7 @@ public class CastlePanelController : MonoBehaviour
     private bool onMiningTaxSettingConfirmed(string _input)
     {
         float.TryParse(_input, out float tax);
-        if (tax < 0 || tax > 70 || float.IsNaN(tax))
+        if (tax < 0 || tax > 30 || float.IsNaN(tax))
         {
             inputPopupController.setFeedbackText(LanguageManager.instance.getText("ID_POPUP_ERROR_INVALID"));
             return false;

@@ -22,6 +22,7 @@ public class CharacterData
     public int version = 0;
     public StatusData statusData = new StatusData();
     public EquipData equipData = new EquipData();
+    public PFPData pfpData = new PFPData();
 
     public StakingData stakingData = new StakingData();
 }

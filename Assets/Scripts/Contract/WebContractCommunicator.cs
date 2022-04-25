@@ -616,11 +616,54 @@ public class WebContractCommunicator : IContractCommunicator
 
     public void reqSellItemList()
     {
-        throw new System.NotImplementedException();
+        Application.ExternalCall("reqSellItemList", null);
     }
 
     public void reqInventoryItemList()
     {
-        throw new System.NotImplementedException();
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqInventoryItemList", values);
+    }
+
+    public void reqBuySecretShopItem(int id, int amount)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = id;
+        data["amount"] = amount;
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqBuySecretShopItem", values);
+    }
+
+    public void reqSellSecretShopItem(int id, int amount)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["id"] = id;
+        data["amount"] = amount;
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqSellSecretShopItem", values);
+    }
+
+    public void reqDragonDetectRate()
+    {
+        Application.ExternalCall("reqDragonDetectRate", null);
+    }
+
+    public void reqUseDragonCheckScroll(List<CharacterData> list, int maxCount, int dragonTokenId)
+    {
+        Dictionary<string, object> data = new Dictionary<string, object>();
+        data["address"] = UserManager.instance.getWalletAddress();
+        data["tokenIdList"] = list.ConvertAll(cd => cd.tokenId).ToArray();
+        data["maxCount"] = maxCount;
+        data["dragonTokenId"] = dragonTokenId;
+
+        var values = JsonConvert.SerializeObject(data);
+        Application.ExternalCall("reqUseDragonCheckScroll", values);
     }
 }

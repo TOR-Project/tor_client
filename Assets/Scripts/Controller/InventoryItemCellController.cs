@@ -25,20 +25,25 @@ public class InventoryItemCellController : MonoBehaviour
 
     public void setItem(ItemData _itemData)
     {
-        itemData = _itemData;
-
-        defaultIcon.SetActive(_itemData == null);
-        itemIcon.gameObject.SetActive(_itemData != null);
-        cellButton.interactable = _itemData != null;
-
-        if (_itemData != null)
+        if (_itemData != null && InventoryManager.instance.getMyItemCount(_itemData.id) <= 0)
         {
-            itemIcon.sprite = _itemData.imageSpirte;
-            itemCountText.text = InventoryManager.instance.getMyItemCount(_itemData.id).ToString();
+            itemData = null;
         } else
         {
-            itemCountText.text = "";
+            itemData = _itemData;
         }
+
+        defaultIcon.SetActive(itemData == null);
+        itemIcon.gameObject.SetActive(itemData != null);
+        itemCountText.gameObject.SetActive(itemData != null);
+        cellButton.interactable = itemData != null;
+
+        if (itemData != null)
+        {
+            itemIcon.sprite = itemData.imageSpirte;
+            itemCountText.text = "x" + InventoryManager.instance.getMyItemCount(itemData.id).ToString();
+        }
+
     }
 
     public void onClickItem()

@@ -30,6 +30,14 @@ public class CharacterGridController : MonoBehaviour
     [SerializeField]
     Text pageText;
     [SerializeField]
+    Button allSelectButton;
+    [SerializeField]
+    Button allDeselectButton;
+    [SerializeField]
+    Button confirmButton;
+    [SerializeField]
+    Button cancelButton;
+    [SerializeField]
     CharacterCardController.CharacterCardState state;
 
     List<CharacterData> selectedCharacterDataList = new List<CharacterData>();
@@ -45,6 +53,7 @@ public class CharacterGridController : MonoBehaviour
 
     Func<List<CharacterData>, bool> onButtonClickedCallback = null;
     Func<CharacterData, bool> characterSelectCallbck = null;
+    private bool buttonEnabled = true;
 
     private void updateAllLayout()
     {
@@ -178,11 +187,33 @@ public class CharacterGridController : MonoBehaviour
         pageText.text = (maxPageNum == 0 ? 0 : (_page + 1)) + "/" + maxPageNum;
 
         if (setDefaultSelect && selectedCharacterDataList.Count == 0)
-        { 
+        {
             selectCharacterCard(filteredCharacterDataList.Count > 0 ? characterCardControllerList[0] : null);
         }
 
         countText.text = selectedCharacterDataList.Count + "/" + maxSelectedCount;
+    }
+
+    internal void setEnableAllButtons(bool enable)
+    {
+        buttonEnabled = enable;
+        prevButton.interactable = enable;
+        nextButton.interactable = enable;
+        allDeselectButton.interactable = enable;
+        allSelectButton.interactable = enable;
+        confirmButton.interactable = enable;
+        cancelButton.interactable = enable;
+    }
+
+    public void showDragonCheckEffect(int[] tokenIdArr)
+    {
+        List<int> tokenIdList = new List<int>(tokenIdArr);
+        foreach(CharacterCardController controller in characterCardControllerList)
+        {
+            if (tokenIdList.Contains(controller.getCharacterData().tokenId)) {
+                controller.showEnchantEffect();
+            }
+        }
     }
 
     private List<CharacterData> getFilteredCharacterList(Predicate<CharacterData> _filter)
@@ -233,7 +264,7 @@ public class CharacterGridController : MonoBehaviour
 
     private bool selectCharacterCard(CharacterCardController _cardController)
     {
-        if (isSameCharacterSelectedWhenSingleMode(_cardController))
+        if (!buttonEnabled || isSameCharacterSelectedWhenSingleMode(_cardController))
         {
             // not reaction for same item selected when single mode
             return false;
@@ -244,16 +275,19 @@ public class CharacterGridController : MonoBehaviour
             selectedCharacterDataList.Clear();
         }
 
-        if (selectedCharacterDataList.Contains(_cardController.getCharacterData())) {
+        if (selectedCharacterDataList.Contains(_cardController.getCharacterData()))
+        {
             selectedCharacterDataList.Remove(_cardController.getCharacterData());
-        } else if (selectedCharacterDataList.Count >= maxSelectedCount)
+        }
+        else if (selectedCharacterDataList.Count >= maxSelectedCount)
         {
             return false;
-        } else
+        }
+        else
         {
             selectedCharacterDataList.Add(_cardController.getCharacterData());
         }
-        
+
         updateGrid(pageNum);
         countText.text = selectedCharacterDataList.Count + "/" + maxSelectedCount;
 

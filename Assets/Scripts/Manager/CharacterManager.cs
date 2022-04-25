@@ -20,6 +20,16 @@ public class CharacterManager : MonoBehaviour
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/doctor+witch.png",
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/assassin.png",
         "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/staking_page/pub+additional+sample+(22.01.04)/avator/sorcerer.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_000.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_001.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_002.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_003.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_004.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_005.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_006.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_007.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_008.png",
+        "https://project-ks1.s3.ap-northeast-2.amazonaws.com/2_tor_nft/4_assets/asset+layer/Dragon/Dragon_009.png",
     };
 
     public const int RACE_HUMAN = 0;
@@ -39,7 +49,17 @@ public class CharacterManager : MonoBehaviour
     public const int JOB_WITCH_DOCTOR = 6;
     public const int JOB_ASSASSIN = 7;
     public const int JOB_SORCERER = 8;
-    public const int JOB_MAX = 9;
+    public const int JOB_DRAGON_ILAER = 9;
+    public const int JOB_DRAGON_CHROMINIAN = 10;
+    public const int JOB_DRAGON_MARBASKER = 11;
+    public const int JOB_DRAGON_EURAVERIS = 12;
+    public const int JOB_DRAGON_HILKABASS = 13;
+    public const int JOB_DRAGON_LASCARIS = 14;
+    public const int JOB_DRAGON_ISABRIAN = 15;
+    public const int JOB_DRAGON_ANGELOS = 16;
+    public const int JOB_DRAGON_COMNIOLOGOS = 17;
+    public const int JOB_DRAGON_KLEINEUS = 18;
+    public const int JOB_MAX = 19;
     public const int JOB_ALL = 99;
 
     public const int TX_SPLIT_AMOUNT = 200;
@@ -69,8 +89,10 @@ public class CharacterManager : MonoBehaviour
     public bool thereIsNotInitCharacter = false;
 
     static CharacterManager mInstance;
-    public static CharacterManager instance {
-        get {
+    public static CharacterManager instance
+    {
+        get
+        {
             return mInstance;
         }
     }
@@ -83,7 +105,7 @@ public class CharacterManager : MonoBehaviour
     public void resetAllData()
     {
         myCharacterDataMap.Clear();
-        characterCount  = 0;
+        characterCount = 0;
         characterIdList = new int[] { };
         notInitCharacterIdList = new int[] { };
         notInitedCharacterDataList.Clear();
@@ -105,12 +127,12 @@ public class CharacterManager : MonoBehaviour
 
     internal bool hasCharacter(int _id)
     {
-       return myCharacterDataMap.ContainsKey(_id);
+        return myCharacterDataMap.ContainsKey(_id);
     }
 
     public bool isCitizenOfCountry(int _cid)
     {
-        foreach(CharacterData characterData in getMyCharacterList())
+        foreach (CharacterData characterData in getMyCharacterList())
         {
             if (characterData.country == _cid)
             {
@@ -205,6 +227,36 @@ public class CharacterManager : MonoBehaviour
             case JOB_SORCERER:
                 key = "ID_JOB_SORCERER";
                 break;
+            case JOB_DRAGON_ILAER:
+                key = "ID_JOB_DRAGON_ILAER";
+                break;
+            case JOB_DRAGON_CHROMINIAN:
+                key = "ID_JOB_DRAGON_CHROMINIAN";
+                break;
+            case JOB_DRAGON_MARBASKER:
+                key = "ID_JOB_DRAGON_MARBASKER";
+                break;
+            case JOB_DRAGON_EURAVERIS:
+                key = "ID_JOB_DRAGON_EURAVERIS";
+                break;
+            case JOB_DRAGON_HILKABASS:
+                key = "ID_JOB_DRAGON_HILKABASS";
+                break;
+            case JOB_DRAGON_LASCARIS:
+                key = "ID_JOB_DRAGON_LASCARIS";
+                break;
+            case JOB_DRAGON_ISABRIAN:
+                key = "ID_JOB_DRAGON_ISABRIAN";
+                break;
+            case JOB_DRAGON_ANGELOS:
+                key = "ID_JOB_DRAGON_ANGELOS";
+                break;
+            case JOB_DRAGON_COMNIOLOGOS:
+                key = "ID_JOB_DRAGON_COMNIOLOGOS";
+                break;
+            case JOB_DRAGON_KLEINEUS:
+                key = "ID_JOB_DRAGON_KLEINEUS";
+                break;
             default:
                 break;
         }
@@ -214,7 +266,8 @@ public class CharacterManager : MonoBehaviour
 
     public void startAvatarImageLoading()
     {
-        for (int i = 0; i < AVATAR_IMAGE_URL_LIST.Length; i++) {
+        for (int i = 0; i < AVATAR_IMAGE_URL_LIST.Length; i++)
+        {
             if (AVATAR_IMAGE_URL_LIST[i] == "")
             {
                 continue;
@@ -239,6 +292,10 @@ public class CharacterManager : MonoBehaviour
 
     public Sprite getAvatarImage(int _jid)
     {
+        if (!avatarSpriteMap.ContainsKey(_jid))
+        {
+            return null;
+        }
         return avatarSpriteMap[_jid];
     }
 
@@ -264,7 +321,8 @@ public class CharacterManager : MonoBehaviour
         if (notInitCharacterIdList.Length > 0)
         {
             loadCharacterFromMetadata();
-        } else
+        }
+        else
         {
             thereIsNotInitCharacter = false;
         }
@@ -318,7 +376,7 @@ public class CharacterManager : MonoBehaviour
             }
             else
             {
-                ContractManager.instance.printLog("ERROR: " + www.error);
+                Debug.Log("ERROR: " + www.error);
             }
         }
     }
@@ -371,7 +429,7 @@ public class CharacterManager : MonoBehaviour
             pendingIdList[i] = cd.tokenId;
             pendingCharacterDataList[i] = cd.level + cd.country * 10 + cd.race * 100 + cd.job * 1000;
             pendingStatusDataList[i] = cd.statusData.att + cd.statusData.def * 1000;
-            pendingEquipDataList[i] = (int) (cd.equipData.weapon + cd.equipData.armor * 10 + cd.equipData.pants * 100 + cd.equipData.head * 1000 + cd.equipData.shoes * 10000 + cd.equipData.accessory * 100000);
+            pendingEquipDataList[i] = (int)(cd.equipData.weapon + cd.equipData.armor * 10 + cd.equipData.pants * 100 + cd.equipData.head * 1000 + cd.equipData.shoes * 10000 + cd.equipData.accessory * 100000);
         }
 
         splitMax = notInitedCharacterDataList.Count / TX_SPLIT_AMOUNT + (notInitedCharacterDataList.Count % TX_SPLIT_AMOUNT > 0 ? 1 : 0);
@@ -435,7 +493,7 @@ public class CharacterManager : MonoBehaviour
      *  3. request character list
      * */
     public void setCharacterCount(int _count, int _stakingCount)
-    { 
+    {
         if (isSameCharacterCount(_count, _stakingCount))
         {
             finishCharacterLoading();
@@ -472,7 +530,7 @@ public class CharacterManager : MonoBehaviour
     /**
       *  6. receive character data from blockchain
       * */
-    public void parsingCharacterData(Dictionary<string, object> _characterData, Dictionary<string, object> _statusData, Dictionary<string, object> _equipData)
+    public void parsingCharacterData(Dictionary<string, object> _characterData, Dictionary<string, object> _statusData, Dictionary<string, object> _equipData, Dictionary<string, object> _pfpData)
     {
         CharacterData data = new CharacterData();
 
@@ -503,6 +561,14 @@ public class CharacterManager : MonoBehaviour
         data.equipData.pants = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.PANTS, data, int.Parse(_equipData["pants"].ToString()));
         data.equipData.shoes = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.SHOES, data, int.Parse(_equipData["shoes"].ToString()));
 
+        data.pfpData.address = _pfpData["address"].ToString();
+        data.pfpData.nftId = int.Parse(_pfpData["nftId"].ToString());
+        data.pfpData.metadataUrl = _pfpData["metadataUrl"].ToString();
+        if (data.pfpData.metadataUrl != "")
+        {
+            loadImageUrlFromMetadata(data, data.pfpData.metadataUrl);
+        }
+
         if (loadingStep == 3)
         {
             if (!myCharacterDataMap.ContainsKey(data.tokenId))
@@ -518,7 +584,8 @@ public class CharacterManager : MonoBehaviour
             {
                 reqStakingData();
             }
-        } else
+        }
+        else
         {
             if (!otherCharacterDataMap.ContainsKey(data.tokenId))
             {
@@ -591,6 +658,44 @@ public class CharacterManager : MonoBehaviour
         loadingStep = 5;
     }
 
+    public void updateMyCharacterData(Dictionary<string, object> _characterData, Dictionary<string, object> _statusData, Dictionary<string, object> _equipData)
+    {
+        CharacterData data = new CharacterData();
+
+        data.tokenId = int.Parse(_characterData["tokenId"].ToString());
+        data.isMine = true;
+        data.image = IMAGE_URL + data.tokenId + ".jpg";
+        data.name = _characterData["name"].ToString();
+        if (data.name.Equals(""))
+        {
+            data.name = "#" + data.tokenId.ToString("0000");
+        }
+
+        data.level = int.Parse(_characterData["level"].ToString());
+        data.exp = int.Parse(_characterData["exp"].ToString());
+        data.country = int.Parse(_characterData["country"].ToString());
+        data.race = int.Parse(_characterData["race"].ToString());
+        data.job = int.Parse(_characterData["job"].ToString());
+        data.statusBonus = int.Parse(_characterData["statusBonus"].ToString());
+        data.version = int.Parse(_characterData["version"].ToString());
+
+        data.statusData.att = int.Parse(_statusData["att"].ToString());
+        data.statusData.def = int.Parse(_statusData["def"].ToString());
+
+        data.equipData.head = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.HELMET, data, int.Parse(_equipData["head"].ToString()));
+        data.equipData.weapon = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.WEAPON, data, int.Parse(_equipData["weapon"].ToString()));
+        data.equipData.accessory = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.ACCESSORY, data, int.Parse(_equipData["accessory"].ToString()));
+        data.equipData.armor = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.ARMOR, data, int.Parse(_equipData["armor"].ToString()));
+        data.equipData.pants = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.PANTS, data, int.Parse(_equipData["pants"].ToString()));
+        data.equipData.shoes = ItemManager.instance.getEquipItemKeyV1(EquipItemCategory.SHOES, data, int.Parse(_equipData["shoes"].ToString()));
+
+        if (myCharacterDataMap.ContainsKey(data.tokenId))
+        {
+            myCharacterDataMap.Remove(data.tokenId);
+        }
+        myCharacterDataMap.Add(data.tokenId, data);
+    }
+
     public void resetLoadingStep()
     {
         loadingStep = 0;
@@ -601,17 +706,38 @@ public class CharacterManager : MonoBehaviour
         int count = 0;
         int stakingCount = 0;
 
-        foreach(CharacterData cd in myCharacterDataMap.Values)
+        foreach (CharacterData cd in myCharacterDataMap.Values)
         {
             if (cd.stakingData.tokenId == -1)
             {
                 count++;
-            } else
+            }
+            else
             {
                 stakingCount++;
             }
         }
 
         return count == _count && stakingCount == _stakingCount;
+    }
+
+    public IEnumerator loadImageUrlFromMetadata(CharacterData refData, string url)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+
+            WWW www = new WWW(url);
+            yield return www;
+            if (www.error == null)
+            {
+                var values = JsonConvert.DeserializeObject<Dictionary<string, object>>(www.text);
+                refData.pfpData.imageUrl = values["image"].ToString();
+                break;
+            }
+            else
+            {
+                Debug.Log("ERROR: " + www.error);
+            }
+        }
     }
 }

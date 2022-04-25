@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Numerics;
 
 public interface IContractCommunicator
@@ -116,5 +117,8 @@ public interface IContractCommunicator
     void reqVoteAgenda(int _selectedIdx, AgendaData _agendaData);
     void reqSellItemList();
     void reqInventoryItemList();
-
+    void reqBuySecretShopItem(int id, int amount);
+    void reqSellSecretShopItem(int id, int amount);
+    void reqDragonDetectRate();
+    void reqUseDragonCheckScroll(List<CharacterData> list, int maxCount, int dragonTokenId);
 }

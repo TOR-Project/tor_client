@@ -19,7 +19,8 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         STATE_WAITING_ROOM,
         STATE_WORKING_PLACE,
         STATE_ELECTION,
-        STATE_GOVERNANCE
+        STATE_GOVERNANCE,
+        STATE_DRAGON_SCROLL
     }
 
     [SerializeField]
@@ -43,7 +44,9 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     Text stateText;
 
     [SerializeField]
-    GameObject selectFrame;
+    GameObject selectFrameEffect;
+    [SerializeField]
+    GameObject enchantEffect;
 
     [SerializeField]
     GameObject loadingObject;
@@ -101,6 +104,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
 
         loadingObject.SetActive(true);
         setSelected(false);
+        enchantEffect.SetActive(false);
 
         updateCharacterImage();
     }
@@ -126,14 +130,14 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
         if (_set)
         {
             updateGemImageAndParticle();
-            selectFrame.SetActive(selected);
+            selectFrameEffect.SetActive(selected);
         } else
         {
             for (int i = 0; i < gemParticleList.Length; i++)
             {
                 gemParticleList[i].SetActive(false);
             }
-            selectFrame.SetActive(false);
+            selectFrameEffect.SetActive(false);
         }
     }
 
@@ -199,7 +203,7 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     public void setSelected(bool _set)
     {
         selected = _set;
-        selectFrame.SetActive(_set);
+        selectFrameEffect.SetActive(_set);
     }
 
     public bool isSelected()
@@ -221,5 +225,19 @@ public class CharacterCardController : MonoBehaviour, MiningDataObserever
     {
         BigInteger basicAmount = _data.amount[MiningManager.IDX_BASIC];
         stateText.text = Utils.convertPebToTorStr(basicAmount) + " " + Const.TOR_COIN; // display total amount not final
+    }
+
+    public void showEnchantEffect()
+    {
+        enchantEffect.SetActive(true);
+
+        StartCoroutine(disabledEffect(3));
+    }
+
+    IEnumerator disabledEffect(int delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        enchantEffect.SetActive(false);
     }
 }

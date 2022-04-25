@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SecretShopManager : MonoBehaviour
 {
-    public const int DATA_REQUEST_INTERVAL = 300; // 1 min
+    public const int DATA_REQUEST_INTERVAL = 60; // 1 min
 
     long lastRequestBlock = 0;
 

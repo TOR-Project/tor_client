@@ -91,7 +91,7 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
         int minDay = Const.GOVERNANCE_MIN_PROPOSER_PERIOD / 86400;
         int maxDay = Const.GOVERNANCE_MAX_PROPOSER_PERIOD / 86400;
 
-        periodExpText.text = string.Format(LanguageManager.instance.getText("ID_VOTING_PERIOD_EXP"), minDay, Const.GOVERNANCE_MIN_PROPOSER_PERIOD, maxDay, Const.GOVERNANCE_MAX_PROPOSER_PERIOD);
+        periodExpText.text = string.Format(LanguageManager.instance.getText("ID_VOTING_PERIOD_EXP"), Const.GOVERNANCE_MIN_PROPOSER_PERIOD, minDay, Const.GOVERNANCE_MAX_PROPOSER_PERIOD, maxDay);
 
         stakingExpText.text = string.Format(LanguageManager.instance.getText("ID_CHARACTER_STAKING_EXP"), Const.GOVERNANCE_CHARACTER_COUNT);
 
@@ -112,7 +112,7 @@ public class AgendaPanelController : MonoBehaviour, BlockNumberObserever
 
         if (showPanel.activeSelf && agendaData.id >= 0)
         {
-            foreach(AgendaData ad in list)
+            foreach (AgendaData ad in list)
             {
                 if (agendaData.id == ad.id)
                 {
