@@ -13,6 +13,9 @@
 /Assets/_TerrainAutoUpgrade*
 /Assets/OccaSoftware
 /Assets/Fireworks
+/Assets/*Poly*
+/Assets/BrokenVector
+/Assets/MegaPack1Lite
 
 ###
 # VS/MD solution and project files

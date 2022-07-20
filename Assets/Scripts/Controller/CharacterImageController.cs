@@ -1,11 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using System;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Collections;
-using System.Numerics;
-using Coffee.UIExtensions;
 
 public class CharacterImageController : MonoBehaviour
 {

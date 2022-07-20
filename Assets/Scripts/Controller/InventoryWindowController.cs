@@ -100,6 +100,7 @@ public class InventoryWindowController : MonoBehaviour, DataObserver<Dictionary<
             case 1: // Dragon check scroll
                 int maxCount = InventoryManager.instance.getMyItemCount(_data.id);
                 characterGridController.setMaxSelectedCount(maxCount);
+                characterGridController.setCharacterSelectCallback(null);
                 characterGridController.setOnButtonClickedCallback(list =>
                 {
                     useDragonCheckScroll(maxCount, list);
