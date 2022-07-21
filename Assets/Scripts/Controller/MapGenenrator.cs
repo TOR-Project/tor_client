@@ -11,7 +11,22 @@ public class MapGenenrator : MonoBehaviour
     GameObject[] tilePrefab;
 
     [SerializeField]
-    GameObject[] objectPrefab;
+    GameObject[] wastelandDecorationPrefabs;
+    [SerializeField]
+    GameObject[] desertDecorationPrefabs;
+    [SerializeField]
+    GameObject[] plainDecorationPrefabs;
+    [SerializeField]
+    GameObject[] jungleDecorationPrefabs;
+    [SerializeField]
+    GameObject[] riverDecorationPrefabs;
+    [SerializeField]
+    GameObject[] snowDecorationPrefabs;
+    [SerializeField]
+    GameObject[] mountainDecorationPrefabs;
+
+    [SerializeField]
+    GameObject[] commonConstuctionsPrefabs;
 
     private void Awake()
     {
@@ -24,12 +39,52 @@ public class MapGenenrator : MonoBehaviour
 
             foreach (Dictionary<string, object> tileData in values)
             {
-                GameObject tr = Instantiate(tilePrefab[int.Parse(tileData["tile"].ToString())], new UnityEngine.Vector3(float.Parse(tileData["x"].ToString()), 0, float.Parse(tileData["z"].ToString())), UnityEngine.Quaternion.Euler(0, 90, 0), fieldTR);
-                tr.transform.localScale = new Vector3(1, 1 + float.Parse(tileData["y"].ToString()), 1);
+                GameObject tileObject = Instantiate(tilePrefab[int.Parse(tileData["tile"].ToString())], new UnityEngine.Vector3(float.Parse(tileData["x"].ToString()), 0, float.Parse(tileData["z"].ToString())), UnityEngine.Quaternion.Euler(0, 90, 0), fieldTR);
+                tileObject.transform.GetChild(0).transform.localScale = new Vector3(1, float.Parse(tileData["y"].ToString()), 1);
+                TileController tileController = tileObject.GetComponent<TileController>();
+                tileController.parseTileData(tileData);
 
-                GameObject ob = Instantiate(objectPrefab[UnityEngine.Random.Range(0, objectPrefab.Length)], tr.transform.position + new UnityEngine.Vector3(0, float.Parse(tileData["y"].ToString()), 0), UnityEngine.Quaternion.Euler(0, 0, 0), tr.transform);
-                ob.transform.localScale = new Vector3(1, 1 / (1 + float.Parse(tileData["y"].ToString())), 1);
+                foreach (Dictionary<string, object> decoData in JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(tileData["decorations"].ToString()))
+                {
+                    GameObject[] decoPrefabs;
+                    if (decoData["category"].ToString() == "Wasteland")
+                    {
+                        decoPrefabs = wastelandDecorationPrefabs;
+                    }
+                    else if (decoData["category"].ToString() == "Desert")
+                    {
+                        decoPrefabs = desertDecorationPrefabs;
+                    }
+                    else if (decoData["category"].ToString() == "Plain")
+                    {
+                        decoPrefabs = plainDecorationPrefabs;
+                    }
+                    else if (decoData["category"].ToString() == "Jungle")
+                    {
+                        decoPrefabs = jungleDecorationPrefabs;
+                    }
+                    else if (decoData["category"].ToString() == "River")
+                    {
+                        decoPrefabs = riverDecorationPrefabs;
+                    }
+                    else if (decoData["category"].ToString() == "Snow")
+                    {
+                        decoPrefabs = snowDecorationPrefabs;
+                    }
+                    else
+                    {
+                        decoPrefabs = mountainDecorationPrefabs;
+                    }
+                    GameObject decorationObject = (GameObject)Instantiate(decoPrefabs[int.Parse(decoData["name"].ToString()) - 1], tileObject.transform.position + new UnityEngine.Vector3(float.Parse(decoData["dx"].ToString()), float.Parse(decoData["dy"].ToString()), float.Parse(decoData["dz"].ToString())), UnityEngine.Quaternion.Euler(float.Parse(decoData["rx"].ToString()), float.Parse(decoData["ry"].ToString()), float.Parse(decoData["rz"].ToString())), tileObject.transform);
+                    decorationObject.transform.localScale = new Vector3(float.Parse(decoData["sx"].ToString()), float.Parse(decoData["sy"].ToString()), float.Parse(decoData["sz"].ToString()));
+                }
 
+                foreach(Dictionary<string, object> decoData in JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(tileData["constructions"].ToString()))
+                {
+                    GameObject[] constPrefabs = commonConstuctionsPrefabs;
+                    GameObject decorationObject = (GameObject)Instantiate(constPrefabs[int.Parse(decoData["name"].ToString()) - 1], tileObject.transform.position + new UnityEngine.Vector3(float.Parse(decoData["dx"].ToString()), float.Parse(decoData["dy"].ToString()), float.Parse(decoData["dz"].ToString())), UnityEngine.Quaternion.Euler(float.Parse(decoData["rx"].ToString()), float.Parse(decoData["ry"].ToString()), float.Parse(decoData["rz"].ToString())), tileObject.transform);
+                    decorationObject.transform.localScale = new Vector3(float.Parse(decoData["sx"].ToString()), float.Parse(decoData["sy"].ToString()), float.Parse(decoData["sz"].ToString()));
+                }
             }
         }
     }
