@@ -1,18 +1,24 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
 
 public class TileController : MonoBehaviour
 {
     [SerializeField]
-    GameObject selectionObject;
-    [SerializeField]
-    TileData tileData = new TileData();
+    TileData tileData;
 
-    public void parseTileData(Dictionary<string, object> _data)
+    MapWindowController mapWindowController;
+
+    public void setTileData(TileData tData)
     {
-        tileData.parseData(_data);
+        tileData = tData;
     }
 
+    public void setMapWindowController(MapWindowController _mapWindowController)
+    {
+        mapWindowController = _mapWindowController;
+    }
+
+    public TileData getTileData()
+    {
+        return tileData;
+    }
 }

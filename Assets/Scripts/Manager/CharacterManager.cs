@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -363,7 +364,6 @@ public class CharacterManager : MonoBehaviour
         // ContractManager.instance.printLog("Character loading start : " + url);
         for (int i = 0; i < 10; i++)
         {
-
             WWW www = new WWW(url);
             yield return www;
             if (www.error == null)
@@ -376,7 +376,7 @@ public class CharacterManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("ERROR: " + www.error);
+                Debug.LogError("ERROR: " + www.error);
             }
         }
     }

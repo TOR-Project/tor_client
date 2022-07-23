@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class CountryManager : MonoBehaviour
@@ -66,6 +63,7 @@ public class CountryManager : MonoBehaviour
     };
 
     Dictionary<int, CountryData> countryDataMap = new Dictionary<int, CountryData>();
+
     Dictionary<int, List<Func<CountryData, bool>>> countryDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
     Dictionary<int, List<Func<CountryData, bool>>> logDataCallbackPendingMap = new Dictionary<int, List<Func<CountryData, bool>>>();
 
@@ -139,6 +137,24 @@ public class CountryManager : MonoBehaviour
         }
 
         return LanguageManager.instance.getText(key);
+    }
+    internal Color32 getBaseColor(int _cid)
+    {
+        switch (_cid)
+        {
+            case COUNTRY_EVEGENIS:
+                return new Color32(255, 255, 255, 255);
+            case COUNTRY_ENFILIIS:
+                return new Color32(128, 255, 128, 255);
+            case COUNTRY_HELLVESTA:
+                return new Color32(255, 128, 128, 255);
+            case COUNTRY_TRIPOLI:
+                return new Color32(128, 128, 255, 255);
+            case COUNTRY_BARBAROS:
+                return new Color32(0, 0, 0, 255);
+            default:
+                return new Color32(255, 255, 255, 255);
+        }
     }
 
     public string getPropertyTitle(int _id)

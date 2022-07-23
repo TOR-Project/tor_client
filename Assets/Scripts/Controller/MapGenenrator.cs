@@ -7,83 +7,77 @@ public class MapGenenrator : MonoBehaviour
 {
     [SerializeField]
     Transform fieldTR;
-    [SerializeField]
-    GameObject[] tilePrefab;
 
     [SerializeField]
-    GameObject[] wastelandDecorationPrefabs;
-    [SerializeField]
-    GameObject[] desertDecorationPrefabs;
-    [SerializeField]
-    GameObject[] plainDecorationPrefabs;
-    [SerializeField]
-    GameObject[] jungleDecorationPrefabs;
-    [SerializeField]
-    GameObject[] riverDecorationPrefabs;
-    [SerializeField]
-    GameObject[] snowDecorationPrefabs;
-    [SerializeField]
-    GameObject[] mountainDecorationPrefabs;
-
-    [SerializeField]
-    GameObject[] commonConstuctionsPrefabs;
+    MapWindowController mapWindowController;
 
     private void Awake()
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "world_map.json");
+
+        List<TileController>[] countryTileList = new List<TileController>[CountryManager.COUNTRY_MAX];
+        for (int i = 0; i < countryTileList.Length; i++)
+        {
+            countryTileList[i] = new List<TileController>();
+        }
+
         if (File.Exists(filePath))
         {
             string dataAsJson = File.ReadAllText(filePath);
 
             var values = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(dataAsJson);
 
-            foreach (Dictionary<string, object> tileData in values)
+            foreach (Dictionary<string, object> tileDataRaw in values)
             {
-                GameObject tileObject = Instantiate(tilePrefab[int.Parse(tileData["tile"].ToString())], new UnityEngine.Vector3(float.Parse(tileData["x"].ToString()), 0, float.Parse(tileData["z"].ToString())), UnityEngine.Quaternion.Euler(0, 90, 0), fieldTR);
-                tileObject.transform.GetChild(0).transform.localScale = new Vector3(1, float.Parse(tileData["y"].ToString()), 1);
-                TileController tileController = tileObject.GetComponent<TileController>();
-                tileController.parseTileData(tileData);
+                TileData tData = new TileData();
+                tData.parseData(tileDataRaw);
 
-                foreach (Dictionary<string, object> decoData in JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(tileData["decorations"].ToString()))
+                GameObject tileObject = Instantiate(MapManager.instance.getTilePrefab(tData), new UnityEngine.Vector3(tData.x, 0, tData.z), UnityEngine.Quaternion.Euler(0, 0, 0), fieldTR);
+                tileObject.transform.GetChild(0).transform.localScale = new Vector3(1, tData.y, 1);
+                TileController tileController = tileObject.GetComponent<TileController>();
+                tileController.setTileData(tData);
+                tileController.setMapWindowController(mapWindowController);
+
+                foreach (DecorationsData decoData in tData.decoList)
                 {
-                    GameObject[] decoPrefabs;
-                    if (decoData["category"].ToString() == "Wasteland")
-                    {
-                        decoPrefabs = wastelandDecorationPrefabs;
-                    }
-                    else if (decoData["category"].ToString() == "Desert")
-                    {
-                        decoPrefabs = desertDecorationPrefabs;
-                    }
-                    else if (decoData["category"].ToString() == "Plain")
-                    {
-                        decoPrefabs = plainDecorationPrefabs;
-                    }
-                    else if (decoData["category"].ToString() == "Jungle")
-                    {
-                        decoPrefabs = jungleDecorationPrefabs;
-                    }
-                    else if (decoData["category"].ToString() == "River")
-                    {
-                        decoPrefabs = riverDecorationPrefabs;
-                    }
-                    else if (decoData["category"].ToString() == "Snow")
-                    {
-                        decoPrefabs = snowDecorationPrefabs;
-                    }
-                    else
-                    {
-                        decoPrefabs = mountainDecorationPrefabs;
-                    }
-                    GameObject decorationObject = (GameObject)Instantiate(decoPrefabs[int.Parse(decoData["name"].ToString()) - 1], tileObject.transform.position + new UnityEngine.Vector3(float.Parse(decoData["dx"].ToString()), float.Parse(decoData["dy"].ToString()), float.Parse(decoData["dz"].ToString())), UnityEngine.Quaternion.Euler(float.Parse(decoData["rx"].ToString()), float.Parse(decoData["ry"].ToString()), float.Parse(decoData["rz"].ToString())), tileObject.transform);
-                    decorationObject.transform.localScale = new Vector3(float.Parse(decoData["sx"].ToString()), float.Parse(decoData["sy"].ToString()), float.Parse(decoData["sz"].ToString()));
+                    GameObject decorationObject = Instantiate(MapManager.instance.getDecorationPrefab(decoData), tileObject.transform.position + new UnityEngine.Vector3(decoData.dx, decoData.dy, decoData.dz), UnityEngine.Quaternion.Euler(decoData.rx, decoData.ry, decoData.rz), tileObject.transform);
+                    decorationObject.transform.localScale = new Vector3(decoData.sx, decoData.sy, decoData.sz);
                 }
 
-                foreach(Dictionary<string, object> decoData in JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(tileData["constructions"].ToString()))
+                foreach (ConstructionsData constData in tData.constList)
                 {
-                    GameObject[] constPrefabs = commonConstuctionsPrefabs;
-                    GameObject decorationObject = (GameObject)Instantiate(constPrefabs[int.Parse(decoData["name"].ToString()) - 1], tileObject.transform.position + new UnityEngine.Vector3(float.Parse(decoData["dx"].ToString()), float.Parse(decoData["dy"].ToString()), float.Parse(decoData["dz"].ToString())), UnityEngine.Quaternion.Euler(float.Parse(decoData["rx"].ToString()), float.Parse(decoData["ry"].ToString()), float.Parse(decoData["rz"].ToString())), tileObject.transform);
-                    decorationObject.transform.localScale = new Vector3(float.Parse(decoData["sx"].ToString()), float.Parse(decoData["sy"].ToString()), float.Parse(decoData["sz"].ToString()));
+                    GameObject constuctionsObject = Instantiate(MapManager.instance.getConstructionPrefab(constData), tileObject.transform.position + new UnityEngine.Vector3(constData.dx, constData.dy, constData.dz), UnityEngine.Quaternion.Euler(constData.rx, constData.ry, constData.rz), tileObject.transform);
+                    constuctionsObject.transform.localScale = new Vector3(constData.sx, constData.sy, constData.sz);
+                }
+
+                MapManager.instance.addTileController(tData.ix, tData.iy, tileController);
+
+                if (tData.country != -1)
+                {
+                    countryTileList[tData.country].Add(tileController);
+                }
+            }
+
+            for (int i = 0; i < countryTileList.Length; i++)
+            {
+                foreach(TileController tileController in countryTileList[i])
+                {
+                    TileData tileData = tileController.getTileData();
+                    TileController[] nearTileArr = MapManager.instance.getNearTileControllerArr(tileData.ix, tileData.iy);
+                    for (int j = 0; j < 6; j++)
+                    {
+                        if (nearTileArr[j] == null || nearTileArr[j].getTileData().country == tileData.country)
+                        {
+                            continue;
+                        }
+
+                        GameObject borderParts = Instantiate(MapManager.instance.getBorderPartsPrefab(), tileController.transform.position + new UnityEngine.Vector3(0, tileData.y * 0.2f + 0.1f, 0), UnityEngine.Quaternion.Euler(0, 60 * j - 30, 0), tileController.transform);
+                        BorderPartsController borderPartsController = borderParts.GetComponent<BorderPartsController>();
+                        if (borderPartsController != null)
+                        {
+                            borderPartsController.setParticleBaseColor(CountryManager.instance.getBaseColor(tileData.country));
+                        }
+                    }
                 }
             }
         }

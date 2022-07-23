@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Numerics;
+using Newtonsoft.Json;
 
 public class WebContractCommunicator : IContractCommunicator
 {
